@@ -16,15 +16,13 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       EventDto eventDto = await calendarApiClient.getEvents(format);
       eventDto.items?.forEach((element) {
         EventModel eventModel = EventModel(
-            date: element.created!,
+            date: DateTime.parse(element.start!.date!),
             eventType: EventType.Taiwan,
             eventName: element.summary!);
         result.add(eventModel);
       });
-      print('[Tony] api success (${result.length})');
       return result;
     } on Exception catch (e) {
-      print('[Tony] api error = $e');
       return result;
     }
   }

@@ -13,6 +13,6 @@ abstract class CalendarApiClient {
   // v3/calendars/en.usa%23holiday%40group.v.calendar.google.com/events?key=xxxxxx
   // v3/calendars/zh-tw.taiwan%23holiday%40group.v.calendar.google.com/events?key=xxxxxx
   // v3/calendars/ja.japanese.taiwan%23holiday%40group.v.calendar.google.com/events?key=xxxxxx
-  @GET("v3/calendars/{countryCalendarEventPath}/key=$apiKey")
+  @GET("v3/calendars/{countryCalendarEventPath}?key=$apiKey")
   Future<EventDto> getEvents(@Path() String countryCalendarEventPath);
 }

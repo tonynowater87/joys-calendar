@@ -25,7 +25,7 @@ class _CalendarApiClient implements CalendarApiClient {
         EventDto>(Options(
             method: 'GET', headers: _headers, extra: _extra)
         .compose(_dio.options,
-            'v3/calendars/${countryCalendarEventPath}/key=AIzaSyBNrWMucYxJLwAtjogSJE-xk-bPwGKaF3o',
+            'v3/calendars/${countryCalendarEventPath}?key=AIzaSyBNrWMucYxJLwAtjogSJE-xk-bPwGKaF3o',
             queryParameters: queryParameters, data: _data)
         .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
     final value = EventDto.fromJson(_result.data!);

@@ -1,8 +1,11 @@
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
+import 'package:joys_calendar/view/home/home_cubit.dart';
 
 class MyHomePage extends StatefulWidget {
-  MyHomePage({Key? key, required this.title}) : super(key: key);
+  const MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
   static DateTime now = DateTime.now();
 
@@ -11,41 +14,46 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
-  final cellCalendarPageController = CellCalendarPageController();
-
   @override
-  void initState() {
-    super.initState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) =>
+          HomeCubit(context.read<CalendarEventRepository>())..getEvents(),
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text(widget.title),
+        ),
+        body: HomeCalendarPage(),
+      ),
+    );
   }
+}
+
+class HomeCalendarPage extends StatelessWidget {
+  final CellCalendarPageController cellCalendarPageController =
+      CellCalendarPageController();
+
+  var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
+
+  HomeCalendarPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    final _sampleEvents = [
-      CalendarEvent(eventName: "TestEventName1", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName2", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName3", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName4", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName5", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName6", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName7", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName8", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName9", eventDate: DateTime.now()),
-      CalendarEvent(eventName: "TestEventName10", eventDate: DateTime.now()),
-    ];
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.title),
-      ),
-      body: SizedBox(
-        width: MediaQuery.of(context).size.width,
-        height: MediaQuery.of(context).size.height,
-        child: Column(
+    final state = context.watch<HomeCubit>().state;
+    switch (state.status) {
+      case HomeStatus.loading:
+        return Center(child: CircularProgressIndicator());
+      case HomeStatus.failure:
+        return Center(
+          child: Text('Oops something went wrong!'),
+        );
+      case HomeStatus.success:
+        return Column(
           children: [
             Expanded(
               child: CellCalendar(
                 cellCalendarPageController: cellCalendarPageController,
-                events: _sampleEvents,
+                events: state.events,
                 daysOfTheWeekBuilder: (dayIndex) {
                   final labels = ["S", "M", "T", "W", "T", "F", "S"];
                   return Padding(
@@ -124,7 +132,7 @@ class _MyHomePageState extends State<MyHomePage> {
                   );
                 },
                 onCellTapped: (date) {
-                  final eventsOnTheDate = _sampleEvents.where((event) {
+                  final eventsOnTheDate = state.events.where((event) {
                     final eventDate = event.eventDate;
                     return eventDate.year == date.year &&
                         eventDate.month == date.month &&
@@ -158,14 +166,12 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 onPageChanged: (firstDate, lastDate) {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
-                  print(
-                      '[Tony] onPageChanged, firstDate = $firstDate, lastDate = $lastDate, currentPage = ${cellCalendarPageController.page}, initPage = ${cellCalendarPageController.initialPage}');
                 },
               ),
             ),
           ],
-        ),
-      ),
-    );
+        );
+    }
+    ;
   }
 }
