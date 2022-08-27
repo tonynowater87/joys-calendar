@@ -7,6 +7,7 @@ import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy_impl.dart';
 import 'package:joys_calendar/repo/constants.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
+import 'package:joys_calendar/view/settings/settings_page.dart';
 
 void main() {
   runApp(const MyApp());
@@ -34,7 +35,11 @@ class MyApp extends StatelessWidget {
             primarySwatch: Colors.blue,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: const MyHomePage(title: 'Joy\' Calendar')),
+          initialRoute: "/home",
+          routes: <String, WidgetBuilder>{
+            '/home': (context) => const MyHomePage(title: 'Joy\' Calendar'),
+            '/settings': (context) => const SettingsPage()
+          }),
     );
   }
 }

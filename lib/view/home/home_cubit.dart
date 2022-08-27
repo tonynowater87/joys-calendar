@@ -9,6 +9,8 @@ part 'home_state.dart';
 class HomeCubit extends Cubit<HomeState> {
   late CalendarEventRepository calendarEventRepository;
 
+  int _currentYear = DateTime.now().year;
+
   HomeCubit(this.calendarEventRepository) : super(const HomeState.loading());
 
   Future<void> getEvents() async {
@@ -20,7 +22,8 @@ class HomeCubit extends Cubit<HomeState> {
       var getUkEvents =
           calendarEventRepository.getEvents(EventType.uk.toCountryCode());
       var getUsEvents =
-          calendarEventRepository.getEvents(EventType.us.toCountryCode());
+          calendarEventRepository.getEvents(EventType.usa.toCountryCode());
+
       final allCountryEvents = await Future.wait(
           [getTaiwanEvents, getJapanEvents, getUkEvents, getUsEvents]);
 
@@ -29,9 +32,41 @@ class HomeCubit extends Cubit<HomeState> {
         combinedCalendarEvents.addAll(events.map(
             (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
       }
+
+      combinedCalendarEvents.addAll(calendarEventRepository
+          .getLunarEvents(_currentYear)
+          .map(
+              (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
       emit(const HomeState.failure());
     }
+  }
+
+  void getLunarEvents() {
+    var getLunarEvents = calendarEventRepository.getLunarEvents(_currentYear);
+    final List<CalendarEvent> calendarEvents = [];
+    calendarEvents.addAll(getLunarEvents
+        .map((e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
+    emit(HomeState.success(calendarEvents));
+  }
+
+  addYear() {
+    _currentYear++;
+    // TODO
+  }
+
+  minusYear() {
+    _currentYear--;
+    // TODO
+  }
+
+  resetYear() {
+    _currentYear = DateTime.now().year;
+    // TODO
+  }
+
+  void refreshFromSettings() {
+    // TODO
   }
 }

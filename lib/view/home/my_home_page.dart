@@ -15,13 +15,23 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext rootContext) {
     return BlocProvider(
       create: (context) =>
           HomeCubit(context.read<CalendarEventRepository>())..getEvents(),
       child: Scaffold(
         appBar: AppBar(
           title: Text(widget.title),
+          actions: [
+            Builder(builder: (context) {
+              return IconButton(
+                  onPressed: () async {
+                    await Navigator.of(rootContext).pushNamed("/settings");
+                    context.read<HomeCubit>().getEvents();
+                  },
+                  icon: const Icon(Icons.settings));
+            })
+          ],
         ),
         body: HomeCalendarPage(),
       ),
@@ -53,7 +63,7 @@ class HomeCalendarPage extends StatelessWidget {
             Expanded(
               child: CellCalendar(
                 cellCalendarPageController: cellCalendarPageController,
-                events: state.events,
+                events: state.events.toList(),
                 daysOfTheWeekBuilder: (dayIndex) {
                   final labels = ["日", "一", "二", "三", "四", "五", "六"];
                   return Padding(
@@ -88,6 +98,7 @@ class HomeCalendarPage extends StatelessWidget {
                             icon: const Icon(Icons.navigate_before),
                             onPressed: () {
                               if (currentDate.month == 1) {
+                                context.read<HomeCubit>().minusYear();
                                 currentDate = DateTime(
                                     currentDate.year - 1, DateTime.december);
                               } else {
@@ -109,6 +120,7 @@ class HomeCalendarPage extends StatelessWidget {
                               curve: Curves.linear,
                               duration: const Duration(milliseconds: 300),
                             );
+                            context.read<HomeCubit>().resetYear();
                           },
                         ),
                         IconButton(
@@ -116,6 +128,7 @@ class HomeCalendarPage extends StatelessWidget {
                             icon: const Icon(Icons.navigate_next),
                             onPressed: () {
                               if (currentDate.month == 12) {
+                                context.read<HomeCubit>().addYear();
                                 currentDate = DateTime(
                                     currentDate.year + 1, DateTime.january);
                               } else {
@@ -141,9 +154,7 @@ class HomeCalendarPage extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text(date.month.monthName +
-                                " " +
-                                date.day.toString()),
+                            title: Text("${date.month.monthName} ${date.day}"),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: eventsOnTheDate

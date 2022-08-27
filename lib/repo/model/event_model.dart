@@ -14,7 +14,8 @@ enum EventType {
   taiwan,
   japan,
   uk,
-  us;
+  usa,
+  lunar;
 }
 
 extension EventTypeExtensions on EventType {
@@ -26,8 +27,8 @@ extension EventTypeExtensions on EventType {
         return EventType.japan;
       case "en.uk":
         return EventType.uk;
-      case "en.us":
-        return EventType.us;
+      case "en.usa":
+        return EventType.usa;
       default:
         throw Exception("illegal countryCode = $countryCode");
     }
@@ -41,8 +42,10 @@ extension EventTypeExtensions on EventType {
         return "ja.japanese";
       case EventType.uk:
         return "en.uk";
-      case EventType.us:
-        return "en.us";
+      case EventType.usa:
+        return "en.usa";
+      case EventType.lunar:
+        throw Exception("illegal eventType = $this");
     }
   }
 }
