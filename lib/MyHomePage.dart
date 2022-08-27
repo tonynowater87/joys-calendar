@@ -1,11 +1,23 @@
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 
-class MyHomePage extends StatelessWidget {
+class MyHomePage extends StatefulWidget {
   MyHomePage({Key? key, required this.title}) : super(key: key);
   final String title;
   static DateTime now = DateTime.now();
-  var currentDate = DateTime(now.year, now.month);
+
+  @override
+  State<MyHomePage> createState() => _MyHomePageState();
+}
+
+class _MyHomePageState extends State<MyHomePage> {
+  var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
+  final cellCalendarPageController = CellCalendarPageController();
+
+  @override
+  void initState() {
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,41 +33,15 @@ class MyHomePage extends StatelessWidget {
       CalendarEvent(eventName: "TestEventName9", eventDate: DateTime.now()),
       CalendarEvent(eventName: "TestEventName10", eventDate: DateTime.now()),
     ];
-    final cellCalendarPageController = CellCalendarPageController();
-
     return Scaffold(
       appBar: AppBar(
-        title: Text(title),
+        title: Text(widget.title),
       ),
-      body: Container(
+      body: SizedBox(
         width: MediaQuery.of(context).size.width,
         height: MediaQuery.of(context).size.height,
         child: Column(
           children: [
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              mainAxisSize: MainAxisSize.max,
-              children: [
-                MaterialButton(child: const Text('Left'), onPressed: () {
-                  if (currentDate.month == 1) {
-                    currentDate = DateTime(currentDate.year - 1, DateTime.december);
-                  } else {
-                    currentDate = DateTime(currentDate.year, currentDate.month - 1);
-                  }
-                  print('[Tony] jumpTo $currentDate');
-                  cellCalendarPageController.jumpToDate(currentDate);
-                }),
-                MaterialButton(child: const Text('Right'), onPressed: () {
-                  if (currentDate.month == 12) {
-                    currentDate = DateTime(currentDate.year + 1, DateTime.january);
-                  } else {
-                    currentDate = DateTime(currentDate.year, currentDate.month + 1);
-                  }
-                  print('[Tony] jumpTo $currentDate');
-                  cellCalendarPageController.jumpToDate(currentDate);
-                })
-              ],
-            ),
             Expanded(
               child: CellCalendar(
                 cellCalendarPageController: cellCalendarPageController,
@@ -66,7 +52,7 @@ class MyHomePage extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: Text(
                       labels[dayIndex],
-                      style: TextStyle(
+                      style: const TextStyle(
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
@@ -83,23 +69,56 @@ class MyHomePage extends StatelessWidget {
                         const SizedBox(width: 16),
                         Text(
                           "$month  $year",
-                          style: TextStyle(
+                          style: const TextStyle(
                             fontSize: 24,
                             fontWeight: FontWeight.bold,
                           ),
                         ),
                         const Spacer(),
                         IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.navigate_before),
+                            onPressed: () {
+                              if (currentDate.month == 1) {
+                                currentDate = DateTime(
+                                    currentDate.year - 1, DateTime.december);
+                              } else {
+                                currentDate = DateTime(
+                                    currentDate.year, currentDate.month - 1);
+                              }
+                              cellCalendarPageController.animateToDate(
+                                  currentDate,
+                                  curve: Curves.linear,
+                                  duration: const Duration(milliseconds: 300));
+                            }),
+                        IconButton(
                           padding: EdgeInsets.zero,
-                          icon: Icon(Icons.calendar_today),
+                          icon: const Icon(Icons.calendar_today),
                           onPressed: () {
+                            currentDate = DateTime.now();
                             cellCalendarPageController.animateToDate(
-                              DateTime.now(),
+                              currentDate,
                               curve: Curves.linear,
-                              duration: Duration(milliseconds: 300),
+                              duration: const Duration(milliseconds: 300),
                             );
                           },
-                        )
+                        ),
+                        IconButton(
+                            padding: EdgeInsets.zero,
+                            icon: const Icon(Icons.navigate_next),
+                            onPressed: () {
+                              if (currentDate.month == 12) {
+                                currentDate = DateTime(
+                                    currentDate.year + 1, DateTime.january);
+                              } else {
+                                currentDate = DateTime(
+                                    currentDate.year, currentDate.month + 1);
+                              }
+                              cellCalendarPageController.animateToDate(
+                                  currentDate,
+                                  curve: Curves.linear,
+                                  duration: const Duration(milliseconds: 300));
+                            }),
                       ],
                     ),
                   );
@@ -114,8 +133,9 @@ class MyHomePage extends StatelessWidget {
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text(
-                                date.month.monthName + " " + date.day.toString()),
+                            title: Text(date.month.monthName +
+                                " " +
+                                date.day.toString()),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: eventsOnTheDate
@@ -127,8 +147,8 @@ class MyHomePage extends StatelessWidget {
                                       color: event.eventBackgroundColor,
                                       child: Text(
                                         event.eventName,
-                                        style:
-                                            TextStyle(color: event.eventTextColor),
+                                        style: TextStyle(
+                                            color: event.eventTextColor),
                                       ),
                                     ),
                                   )
