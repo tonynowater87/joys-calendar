@@ -17,7 +17,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       eventDto.items?.forEach((element) {
         EventModel eventModel = EventModel(
             date: DateTime.parse(element.start!.date!),
-            eventType: EventType.Taiwan,
+            eventType: EventType.taiwan,
             eventName: element.summary!);
         result.add(eventModel);
       });

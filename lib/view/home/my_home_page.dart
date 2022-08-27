@@ -55,7 +55,7 @@ class HomeCalendarPage extends StatelessWidget {
                 cellCalendarPageController: cellCalendarPageController,
                 events: state.events,
                 daysOfTheWeekBuilder: (dayIndex) {
-                  final labels = ["S", "M", "T", "W", "T", "F", "S"];
+                  final labels = ["日", "一", "二", "三", "四", "五", "六"];
                   return Padding(
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: Text(
