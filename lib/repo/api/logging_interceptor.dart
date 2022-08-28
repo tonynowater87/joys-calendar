@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:dio/dio.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 
 /// [LoggingInterceptor] is used to print logs during network requests.
 /// It's better to add [LoggingInterceptor] to the tail of the interceptor queue,
@@ -19,8 +20,9 @@ class LoggingInterceptor extends Interceptor {
     logPrint('HEADERS:');
     options.headers.forEach((key, v) => printKV(' - $key', v));
     logPrint('BODY:');
-    printAll(options.data ?? '');
-
+    if (kDebugMode) {
+      printAll(options.data ?? '');
+    }
     logPrint('*** API Request - End ***');
 
     return handler.next(options);
@@ -53,7 +55,9 @@ class LoggingInterceptor extends Interceptor {
     printKV('STATUS CODE', response.statusCode ?? '');
     printKV('REDIRECT', response.isRedirect ?? false);
     logPrint('BODY:');
-    printAll(response.data ?? '');
+    if (false/*kDebugMode*/) {
+      printAll(response.data ?? '');
+    }
 
     logPrint('*** Api Response - End ***');
 

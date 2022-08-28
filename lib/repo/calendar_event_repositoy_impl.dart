@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_dto/event_dto.dart';
@@ -29,8 +30,17 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
-  List<EventModel> getLunarEvents(int year) {
-    List<EventModel> result = [];
+  Future<List<EventModel>> getLunarEvents(int year) {
+    return compute(getLunarEventTask, year);
+  }
+}
+
+// task on the other thread
+List<EventModel> getLunarEventTask(int year) {
+  int startYear = year - 1;
+  int endYear = year + 1;
+  List<EventModel> result = [];
+  for (var year = startYear; year <= endYear; year++) {
     var dateTime = DateTime(year);
     for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
       var thisDay = dateTime.add(Duration(days: dayOfYear));
@@ -38,8 +48,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       result.add(EventModel(
           date: thisDay,
           eventType: EventType.lunar,
-          eventName: "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+          eventName:
+              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
     }
-    return result;
   }
+  return result;
 }

@@ -33,37 +33,14 @@ class HomeCubit extends Cubit<HomeState> {
             (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
       }
 
-      combinedCalendarEvents.addAll(calendarEventRepository
-          .getLunarEvents(_currentYear)
-          .map(
-              (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
+      var lunarEvents =
+          await calendarEventRepository.getLunarEvents(_currentYear);
+      combinedCalendarEvents.addAll(lunarEvents.map(
+          (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
       emit(const HomeState.failure());
     }
-  }
-
-  void getLunarEvents() {
-    var getLunarEvents = calendarEventRepository.getLunarEvents(_currentYear);
-    final List<CalendarEvent> calendarEvents = [];
-    calendarEvents.addAll(getLunarEvents
-        .map((e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
-    emit(HomeState.success(calendarEvents));
-  }
-
-  addYear() {
-    _currentYear++;
-    // TODO
-  }
-
-  minusYear() {
-    _currentYear--;
-    // TODO
-  }
-
-  resetYear() {
-    _currentYear = DateTime.now().year;
-    // TODO
   }
 
   void refreshFromSettings() {

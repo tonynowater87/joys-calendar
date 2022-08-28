@@ -98,7 +98,6 @@ class HomeCalendarPage extends StatelessWidget {
                             icon: const Icon(Icons.navigate_before),
                             onPressed: () {
                               if (currentDate.month == 1) {
-                                context.read<HomeCubit>().minusYear();
                                 currentDate = DateTime(
                                     currentDate.year - 1, DateTime.december);
                               } else {
@@ -120,7 +119,6 @@ class HomeCalendarPage extends StatelessWidget {
                               curve: Curves.linear,
                               duration: const Duration(milliseconds: 300),
                             );
-                            context.read<HomeCubit>().resetYear();
                           },
                         ),
                         IconButton(
@@ -128,7 +126,6 @@ class HomeCalendarPage extends StatelessWidget {
                             icon: const Icon(Icons.navigate_next),
                             onPressed: () {
                               if (currentDate.month == 12) {
-                                context.read<HomeCubit>().addYear();
                                 currentDate = DateTime(
                                     currentDate.year + 1, DateTime.january);
                               } else {
