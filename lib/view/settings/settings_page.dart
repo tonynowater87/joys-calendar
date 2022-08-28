@@ -10,11 +10,7 @@ class SettingsPage extends StatelessWidget {
         title: const Text('Settings'),
       ),
       body: Placeholder(
-        child: InkResponse(
-          onTap: () {
-            Navigator.pop(context);
-          },
-        ),
+        child: const Text('施工中...'),
       ),
     );
   }

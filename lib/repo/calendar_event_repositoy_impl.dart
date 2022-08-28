@@ -16,10 +16,12 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     List<EventModel> result = [];
     try {
       EventDto eventDto = await calendarApiClient.getEvents(format);
-      eventDto.items?.forEach((element) {
+      eventDto.items?.takeWhile((element) {
+        return fromCreatorEmail(element.creator?.email) != null;
+      }).forEach((element) {
         EventModel eventModel = EventModel(
             date: DateTime.parse(element.start!.date!),
-            eventType: EventType.taiwan,
+            eventType: fromCreatorEmail(element.creator!.email!)!,
             eventName: element.summary!);
         result.add(eventModel);
       });
@@ -45,6 +47,11 @@ List<EventModel> getLunarEventTask(int year) {
     for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
       var thisDay = dateTime.add(Duration(days: dayOfYear));
       var thisDayLunar = Lunar.fromDate(thisDay);
+      var jieQi = thisDayLunar.getJieQi();
+      if (jieQi.isNotEmpty) {
+        result.add(EventModel(
+            date: thisDay, eventType: EventType.solar, eventName: jieQi));
+      }
       result.add(EventModel(
           date: thisDay,
           eventType: EventType.lunar,

@@ -52,9 +52,9 @@ class HomeCalendarPage extends StatelessWidget {
     final state = context.watch<HomeCubit>().state;
     switch (state.status) {
       case HomeStatus.loading:
-        return Center(child: CircularProgressIndicator());
+        return const Center(child: CircularProgressIndicator());
       case HomeStatus.failure:
-        return Center(
+        return const Center(
           child: Text('Oops something went wrong!'),
         );
       case HomeStatus.success:
@@ -62,6 +62,7 @@ class HomeCalendarPage extends StatelessWidget {
           children: [
             Expanded(
               child: CellCalendar(
+                todayMarkColor: Theme.of(context).primaryColor,
                 cellCalendarPageController: cellCalendarPageController,
                 events: state.events.toList(),
                 daysOfTheWeekBuilder: (dayIndex) {
@@ -158,8 +159,8 @@ class HomeCalendarPage extends StatelessWidget {
                                   .map(
                                     (event) => Container(
                                       width: double.infinity,
-                                      padding: EdgeInsets.all(4),
-                                      margin: EdgeInsets.only(bottom: 12),
+                                      padding: const EdgeInsets.all(4),
+                                      margin: const EdgeInsets.only(bottom: 12),
                                       color: event.eventBackgroundColor,
                                       child: Text(
                                         event.eventName,

@@ -32,7 +32,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
           title: 'Joy\' Calendar',
           theme: ThemeData(
-            primarySwatch: Colors.blue,
+            primarySwatch: Colors.green,
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
           initialRoute: "/home",

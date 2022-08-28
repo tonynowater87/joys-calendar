@@ -15,6 +15,14 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> getEvents() async {
     try {
+      final List<CalendarEvent> combinedCalendarEvents = [];
+      var lunarEvents =
+          await calendarEventRepository.getLunarEvents(_currentYear);
+      combinedCalendarEvents.addAll(lunarEvents.map((e) => CalendarEvent(
+          eventName: e.eventName,
+          eventDate: e.date,
+          eventBackgroundColor: e.eventType.toEventColor())));
+
       var getTaiwanEvents =
           calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
       var getJapanEvents =
@@ -27,16 +35,13 @@ class HomeCubit extends Cubit<HomeState> {
       final allCountryEvents = await Future.wait(
           [getTaiwanEvents, getJapanEvents, getUkEvents, getUsEvents]);
 
-      final List<CalendarEvent> combinedCalendarEvents = [];
       for (var events in allCountryEvents) {
-        combinedCalendarEvents.addAll(events.map(
-            (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
+        combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            eventName: e.eventName,
+            eventDate: e.date,
+            eventBackgroundColor: e.eventType.toEventColor())));
       }
 
-      var lunarEvents =
-          await calendarEventRepository.getLunarEvents(_currentYear);
-      combinedCalendarEvents.addAll(lunarEvents.map(
-          (e) => CalendarEvent(eventName: e.eventName, eventDate: e.date)));
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
       emit(const HomeState.failure());

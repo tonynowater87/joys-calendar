@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:joys_calendar/common/nord_color.dart';
+
 class EventModel {
   late DateTime date;
   late EventType eventType;
@@ -15,7 +19,18 @@ enum EventType {
   japan,
   uk,
   usa,
-  lunar;
+  lunar,
+  solar,
+}
+
+EventType? fromCreatorEmail(String? email) {
+  if (email == null) return null;
+  for (var eventType in EventType.values) {
+    if (email.contains(eventType.toCountryCode())) {
+      return eventType;
+    }
+  }
+  return null;
 }
 
 extension EventTypeExtensions on EventType {
@@ -46,6 +61,25 @@ extension EventTypeExtensions on EventType {
         return "en.usa";
       case EventType.lunar:
         throw Exception("illegal eventType = $this");
+      case EventType.solar:
+        throw Exception("illegal eventType = $this");
+    }
+  }
+
+  Color toEventColor() {
+    switch (this) {
+      case EventType.taiwan:
+        return nord11;
+      case EventType.japan:
+        return nord14;
+      case EventType.uk:
+        return nord7;
+      case EventType.usa:
+        return nord10;
+      case EventType.lunar:
+        return nord13;
+      case EventType.solar:
+        return nord13;
     }
   }
 }
