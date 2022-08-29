@@ -62,7 +62,7 @@ class HomeCalendarPage extends StatelessWidget {
           children: [
             Expanded(
               child: CellCalendar(
-                todayMarkColor: Theme.of(context).primaryColor,
+                todayMarkColor: Theme.of(context).colorScheme.primary,
                 cellCalendarPageController: cellCalendarPageController,
                 events: state.events.toList(),
                 daysOfTheWeekBuilder: (dayIndex) {
@@ -71,9 +71,6 @@ class HomeCalendarPage extends StatelessWidget {
                     padding: const EdgeInsets.only(bottom: 4.0),
                     child: Text(
                       labels[dayIndex],
-                      style: const TextStyle(
-                        fontWeight: FontWeight.bold,
-                      ),
                       textAlign: TextAlign.center,
                     ),
                   );
@@ -86,13 +83,7 @@ class HomeCalendarPage extends StatelessWidget {
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
-                        Text(
-                          "$month  $year",
-                          style: const TextStyle(
-                            fontSize: 24,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
+                        Text("$month  $year",),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,

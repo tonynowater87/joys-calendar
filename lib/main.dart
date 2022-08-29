@@ -1,6 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/api/logging_interceptor.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
@@ -31,10 +32,7 @@ class MyApp extends StatelessWidget {
       ],
       child: MaterialApp(
           title: 'Joy\' Calendar',
-          theme: ThemeData(
-            primarySwatch: Colors.green,
-            visualDensity: VisualDensity.adaptivePlatformDensity,
-          ),
+          theme: JoysCalendarThemeData.lightThemeData,
           initialRoute: "/home",
           routes: <String, WidgetBuilder>{
             '/home': (context) => const MyHomePage(title: 'Joy\' Calendar'),

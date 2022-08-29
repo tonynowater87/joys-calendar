@@ -9,9 +9,19 @@ class SettingsPage extends StatelessWidget {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
-      body: Placeholder(
-        child: const Text('施工中...'),
+      body: const SizedBox(
+        width: double.infinity,
+        height: double.infinity,
+        child: Center(child: Text('施工中...')),
       ),
     );
   }
+}
+
+enum _ExpandableSetting {
+  textScale,
+  textDirection,
+  locale,
+  platform,
+  theme,
 }

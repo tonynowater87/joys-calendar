@@ -1,6 +1,6 @@
 import 'dart:ui';
 
-import 'package:joys_calendar/common/nord_color.dart';
+import 'package:joys_calendar/common/themes/nord_color.dart';
 
 class EventModel {
   late DateTime date;
@@ -77,9 +77,9 @@ extension EventTypeExtensions on EventType {
       case EventType.usa:
         return nord10;
       case EventType.lunar:
-        return nord13;
+        return nord13.withRed(104);
       case EventType.solar:
-        return nord13;
+        return nord13.withRed(104);
     }
   }
 }
