@@ -1,14 +1,19 @@
-
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
+import 'package:joys_calendar/common/configs/colors.dart';
+import 'package:joys_calendar/common/configs/fonts.dart';
 
 class JoysCalendarThemeData {
   static const _lightFillColor = Colors.black;
   static const _darkFillColor = Colors.white;
   static final Color _lightFocusColor = Colors.black.withOpacity(0.12);
 
+  static TextStyle lightText = const TextStyle(
+    color: AppColors.black,
+    fontFamily: AppFonts.circularStd,
+  );
 
-  static ThemeData lightThemeData = themeData(lightColorScheme, _lightFocusColor);
+  static ThemeData lightThemeData =
+      themeData(lightColorScheme, _lightFocusColor);
 
   static ThemeData themeData(ColorScheme colorScheme, Color focusColor) {
     return ThemeData(
@@ -53,22 +58,23 @@ class JoysCalendarThemeData {
     brightness: Brightness.light,
   );
 
-
   static const _regular = FontWeight.w400;
   static const _medium = FontWeight.w500;
   static const _semiBold = FontWeight.w600;
   static const _bold = FontWeight.w700;
 
   static final TextTheme _textTheme = TextTheme(
-    headline4: GoogleFonts.montserrat(fontWeight: _bold, fontSize: 20.0),
-    caption: GoogleFonts.oswald(fontWeight: _semiBold, fontSize: 16.0),
-    headline5: GoogleFonts.oswald(fontWeight: _medium, fontSize: 16.0),
-    subtitle1: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 16.0),
-    overline: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 12.0),
-    bodyText1: GoogleFonts.montserrat(fontWeight: _regular, fontSize: 14.0),
-    subtitle2: GoogleFonts.montserrat(fontWeight: _medium, fontSize: 14.0),
-    bodyText2: GoogleFonts.montserrat(fontWeight: _regular, fontSize: 16.0),
-    headline6: GoogleFonts.montserrat(fontWeight: _bold, fontSize: 16.0),
-    button: GoogleFonts.montserrat(fontWeight: _semiBold, fontSize: 14.0),
+    headline4: lightText.copyWith(fontWeight: _bold, fontSize: 20.0),
+    caption: lightText.copyWith(fontWeight: _semiBold, fontSize: 16.0),
+    headline5: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
+    subtitle1: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
+    overline: lightText.copyWith(fontWeight: _medium, fontSize: 12.0),
+    bodyText1: lightText.copyWith(fontWeight: _regular, fontSize: 14.0),
+    subtitle2: lightText.copyWith(fontWeight: _medium, fontSize: 14.0),
+    bodyText2: lightText.copyWith(fontWeight: _regular, fontSize: 16.0),
+    headline6: lightText.copyWith(fontWeight: _bold, fontSize: 16.0),
+    button: lightText.copyWith(fontWeight: _semiBold, fontSize: 14.0),
   );
+
+  static TextTheme get calendarTextTheme => _textTheme;
 }

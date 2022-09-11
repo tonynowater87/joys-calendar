@@ -1,6 +1,7 @@
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 
@@ -76,6 +77,7 @@ class HomeCalendarPage extends StatelessWidget {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
+                  // TODO 顯示生肖、甲子年
                   final year = datetime!.year.toString();
                   final month = datetime.month.monthName;
                   return Padding(
@@ -83,7 +85,9 @@ class HomeCalendarPage extends StatelessWidget {
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
-                        Text("$month  $year",),
+                        Text(
+                          "$month  $year",
+                        ),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,
@@ -167,6 +171,8 @@ class HomeCalendarPage extends StatelessWidget {
                 onPageChanged: (firstDate, lastDate) {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
                 },
+                dateTextStyle:
+                    JoysCalendarThemeData.calendarTextTheme.bodyMedium,
               ),
             ),
           ],
