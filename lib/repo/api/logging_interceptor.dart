@@ -11,6 +11,8 @@ import 'package:flutter/foundation.dart';
 class LoggingInterceptor extends Interceptor {
   LoggingInterceptor();
 
+  static bool debug = false;
+
   @override
   Future onRequest(RequestOptions options, RequestInterceptorHandler handler) async {
     logPrint('*** API Request - Start ***');
@@ -20,9 +22,9 @@ class LoggingInterceptor extends Interceptor {
     logPrint('HEADERS:');
     options.headers.forEach((key, v) => printKV(' - $key', v));
     logPrint('BODY:');
-    if (kDebugMode) {
-      printAll(options.data ?? '');
-    }
+
+    printAll(options.data ?? '');
+
     logPrint('*** API Request - End ***');
 
     return handler.next(options);
@@ -73,6 +75,8 @@ class LoggingInterceptor extends Interceptor {
   }
 
   void logPrint(String s) {
-    debugPrint(s);
+    if (debug && kDebugMode) {
+      debugPrint(s);
+    }
   }
 }

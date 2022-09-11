@@ -1,3 +1,5 @@
+import 'package:joys_calendar/repo/model/event_model.dart';
+
 enum SettingType { eventType, locale }
 
 extension SettingTypeExtensions on SettingType {
@@ -11,9 +13,16 @@ extension SettingTypeExtensions on SettingType {
   }
 }
 
-class SettingsItem {
+class SettingsTitleItem {
   SettingType headerValue;
   bool isExpanded;
 
-  SettingsItem(this.headerValue, this.isExpanded);
+  SettingsTitleItem(this.headerValue, this.isExpanded);
+}
+
+class SettingsEventItem {
+  EventType eventType;
+  bool isSelected;
+
+  SettingsEventItem(this.eventType, this.isSelected);
 }

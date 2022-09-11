@@ -6,7 +6,9 @@ import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:lunar/lunar.dart';
 
 class CalendarEventRepositoryImpl implements CalendarEventRepository {
+
   late CalendarApiClient calendarApiClient;
+  List<EventType> eventTypes = [EventType.lunar, EventType.solar];
 
   CalendarEventRepositoryImpl(this.calendarApiClient);
 
@@ -34,6 +36,16 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   @override
   Future<List<EventModel>> getLunarEvents(int year) {
     return compute(getLunarEventTask, year);
+  }
+
+  @override
+  List<EventType> getDisplayEventType() {
+    return eventTypes.toList();
+  }
+
+  @override
+  void setDisplayEventType(List<EventType> eventTypes) {
+    this.eventTypes = eventTypes.toList();
   }
 }
 
