@@ -47,17 +47,55 @@ class _SettingsPageState extends State<SettingsPage> {
                             return ListTile(
                                 title: Text(item.headerValue.toLocalization()));
                           },
-                          body: BlocBuilder<SettingsBloc, SettingsState>(
-                            builder: (context, state) {
-                              return Text('text');
-                              // TODO can't display body row??
-                              /*return Row(
-                                  children: state.settingEventItems
-                                      .map((e) => ListTile(
-                                          title: Text(
-                                              '${e.eventType}, ${e.isSelected}')))
-                                      .toList());*/
-                            },
+                          body: SizedBox(
+                            width: double.infinity,
+                            height: 100,
+                            child: BlocBuilder<SettingsBloc, SettingsState>(
+                              builder: (context, state) {
+                                final children = state.settingEventItems
+                                    .map(
+                                      (e) => Center(
+                                        child: SizedBox(
+                                          width: 150,
+                                          height: 50,
+                                          child: CheckboxListTile(
+                                            value: e.isSelected,
+                                            title: Text(e.eventType.name),
+                                            onChanged: (bool? isChecked) {
+                                              if (isChecked == true) {
+                                                context
+                                                    .read<SettingsBloc>()
+                                                    .add(AddFilterEvent(
+                                                        eventType:
+                                                            e.eventType));
+                                              } else if (isChecked == false) {
+                                                context
+                                                    .read<SettingsBloc>()
+                                                    .add(RemoveFilterEvent(
+                                                        eventType:
+                                                            e.eventType));
+                                              } else {
+                                                context
+                                                    .read<SettingsBloc>()
+                                                    .add(AddFilterEvent(
+                                                        eventType:
+                                                            e.eventType));
+                                              }
+                                            },
+                                          ),
+                                        ),
+                                      ),
+                                    )
+                                    .toList();
+                                return ListView.builder(
+                                  itemBuilder: (context, position) {
+                                    return children[position];
+                                  },
+                                  scrollDirection: Axis.horizontal,
+                                  itemCount: children.length,
+                                );
+                              },
+                            ),
                           ),
                           isExpanded: item.isExpanded);
                     case SettingType.locale:

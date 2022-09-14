@@ -11,8 +11,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc(this.calendarEventRepository) : super(SettingsState.initial()) {
     on<LoadStarted>(_initSettingEventItems);
-    on<AddFilterEvent>((event, emit) {});
-    on<RemoveFilterEvent>((event, emit) {});
+    on<AddFilterEvent>(_addSettingEventItems);
+    on<RemoveFilterEvent>(_removeSettingEventItems);
   }
 
   _initSettingEventItems(SettingsEvent event, Emitter<SettingsState> emitter) {
@@ -25,7 +25,24 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
             EventType.values[index],
             currentEventTypes
                 .any((element) => EventType.values[index] == element)));
-    emitter(
+    emitter.call(
         state.copyWith(settingsEventItems.toList(), SettingsStateStatus.ready));
+  }
+
+  _addSettingEventItems(AddFilterEvent event, Emitter<SettingsState> emitter) {
+    settingsEventItems
+        .firstWhere((element) => element.eventType == event.eventType)
+        .isSelected = true;
+    emitter.call(
+        state.copyWith(settingsEventItems.toList(), SettingsStateStatus.add));
+  }
+
+  _removeSettingEventItems(
+      RemoveFilterEvent event, Emitter<SettingsState> emitter) {
+    settingsEventItems
+        .firstWhere((element) => element.eventType == event.eventType)
+        .isSelected = false;
+    emitter.call(state.copyWith(
+        settingsEventItems.toList(), SettingsStateStatus.remove));
   }
 }

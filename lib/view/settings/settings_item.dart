@@ -1,3 +1,4 @@
+import 'package:equatable/equatable.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 
 enum SettingType { eventType, locale }
@@ -20,9 +21,12 @@ class SettingsTitleItem {
   SettingsTitleItem(this.headerValue, this.isExpanded);
 }
 
-class SettingsEventItem {
+class SettingsEventItem extends Equatable {
   EventType eventType;
   bool isSelected;
 
   SettingsEventItem(this.eventType, this.isSelected);
+
+  @override
+  List<Object?> get props => [eventType, isSelected];
 }

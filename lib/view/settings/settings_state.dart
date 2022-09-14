@@ -1,15 +1,17 @@
+import 'package:equatable/equatable.dart';
+
 import 'settings_item.dart';
 
-enum SettingsStateStatus { initial, ready }
+enum SettingsStateStatus { initial, ready, add, remove }
 
-class SettingsState {
+class SettingsState extends Equatable {
   final SettingsStateStatus status;
   final List<SettingsEventItem> settingEventItems;
 
   SettingsState.initial() : this._();
 
   SettingsState copyWith(List<SettingsEventItem> events, SettingsStateStatus status) {
-    return SettingsState(settingEventItems: events, status: status);
+    return SettingsState(settingEventItems: events.toList(), status: status);
   }
 
   const SettingsState({
@@ -20,4 +22,7 @@ class SettingsState {
   SettingsState._(
       {this.status = SettingsStateStatus.initial,
       this.settingEventItems = const []});
+
+  @override
+  List<Object?> get props => [status, settingEventItems];
 }
