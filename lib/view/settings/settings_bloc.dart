@@ -34,6 +34,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     settingsEventItems[settingsEventItems.indexWhere((element) =>
     element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, true);
+    _update();
     emitter.call(
         state.copyWith(settingsEventItems.toList(), SettingsStateStatus.add));
   }
@@ -43,7 +44,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     settingsEventItems[settingsEventItems.indexWhere((element) =>
     element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, false);
+    _update();
     emitter.call(state.copyWith(
         settingsEventItems.toList(), SettingsStateStatus.remove));
+  }
+
+  void _update() {
+    calendarEventRepository.setDisplayEventType(settingsEventItems.where((element) => element.isSelected).map((e) => e.eventType).toList());
   }
 }

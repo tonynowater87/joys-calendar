@@ -15,22 +15,46 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> getEvents() async {
     try {
-      final List<CalendarEvent> combinedCalendarEvents = [];
-      var lunarEvents =
-          await calendarEventRepository.getLunarEvents(_currentYear);
-      combinedCalendarEvents.addAll(lunarEvents.map((e) => CalendarEvent(
-          eventName: e.eventName,
-          eventDate: e.date,
-          eventBackgroundColor: e.eventType.toEventColor())));
 
-      var getTaiwanEvents =
-          calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
-      var getJapanEvents =
-          calendarEventRepository.getEvents(EventType.japan.toCountryCode());
-      var getUkEvents =
-          calendarEventRepository.getEvents(EventType.uk.toCountryCode());
-      var getUsEvents =
-          calendarEventRepository.getEvents(EventType.usa.toCountryCode());
+      emit(const HomeState.loading());
+
+      final List<CalendarEvent> combinedCalendarEvents = [];
+
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.lunar)) {
+        var lunarEvents =
+        await calendarEventRepository.getLunarEvents(_currentYear);
+        combinedCalendarEvents.addAll(lunarEvents.map((e) =>
+            CalendarEvent(
+                eventName: e.eventName,
+                eventDate: e.date,
+                eventBackgroundColor: e.eventType.toEventColor())));
+      }
+
+
+      Future<List<EventModel>> getTaiwanEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.taiwan)) {
+        getTaiwanEvents = calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
+      } else {
+        getTaiwanEvents = Future.value(List.empty());
+      }
+      Future<List<EventModel>> getJapanEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.japan)) {
+        getJapanEvents = calendarEventRepository.getEvents(EventType.japan.toCountryCode());
+      } else {
+        getJapanEvents = Future.value(List.empty());
+      }
+      Future<List<EventModel>> getUkEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
+        getUkEvents = calendarEventRepository.getEvents(EventType.uk.toCountryCode());
+      } else {
+        getUkEvents = Future.value(List.empty());
+      }
+      Future<List<EventModel>> getUsEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
+        getUsEvents = calendarEventRepository.getEvents(EventType.usa.toCountryCode());
+      } else {
+        getUsEvents = Future.value(List.empty());
+      }
 
       final allCountryEvents = await Future.wait(
           [getTaiwanEvents, getJapanEvents, getUkEvents, getUsEvents]);

@@ -8,7 +8,7 @@ import 'package:lunar/lunar.dart';
 class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   late CalendarApiClient calendarApiClient;
-  List<EventType> eventTypes = [EventType.lunar, EventType.solar];
+  List<EventType> eventTypes = [EventType.taiwan, EventType.japan, EventType.lunar, EventType.solar];
 
   CalendarEventRepositoryImpl(this.calendarApiClient);
 
