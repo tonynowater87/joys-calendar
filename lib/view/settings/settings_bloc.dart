@@ -17,31 +17,32 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   _initSettingEventItems(SettingsEvent event, Emitter<SettingsState> emitter) {
     List<EventType> currentEventTypes =
-        calendarEventRepository.getDisplayEventType();
+    calendarEventRepository.getDisplayEventType();
 
     settingsEventItems = List.generate(
         EventType.values.length,
-        (index) => SettingsEventItem(
-            EventType.values[index],
-            currentEventTypes
-                .any((element) => EventType.values[index] == element)));
+            (index) =>
+            SettingsEventItem(
+                EventType.values[index],
+                currentEventTypes
+                    .any((element) => EventType.values[index] == element)));
     emitter.call(
         state.copyWith(settingsEventItems.toList(), SettingsStateStatus.ready));
   }
 
   _addSettingEventItems(AddFilterEvent event, Emitter<SettingsState> emitter) {
-    settingsEventItems
-        .firstWhere((element) => element.eventType == event.eventType)
-        .isSelected = true;
+    settingsEventItems[settingsEventItems.indexWhere((element) =>
+    element.eventType == event.eventType)] =
+        SettingsEventItem(event.eventType, true);
     emitter.call(
         state.copyWith(settingsEventItems.toList(), SettingsStateStatus.add));
   }
 
-  _removeSettingEventItems(
-      RemoveFilterEvent event, Emitter<SettingsState> emitter) {
-    settingsEventItems
-        .firstWhere((element) => element.eventType == event.eventType)
-        .isSelected = false;
+  _removeSettingEventItems(RemoveFilterEvent event,
+      Emitter<SettingsState> emitter) {
+    settingsEventItems[settingsEventItems.indexWhere((element) =>
+    element.eventType == event.eventType)] =
+        SettingsEventItem(event.eventType, false);
     emitter.call(state.copyWith(
         settingsEventItems.toList(), SettingsStateStatus.remove));
   }
