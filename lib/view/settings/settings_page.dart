@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_event.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
@@ -46,54 +47,62 @@ class _SettingsPageState extends State<SettingsPage> {
                             return ListTile(
                                 title: Text(item.headerValue.toLocalization()));
                           },
-                          body: SizedBox(
-                            width: double.infinity,
-                            height: 100,
-                            child: BlocBuilder<SettingsBloc, SettingsState>(
-                              builder: (context, state) {
-                                final children = state.settingEventItems
-                                    .map(
-                                      (e) => Center(
-                                        child: SizedBox(
-                                          width: 150,
-                                          height: 50,
-                                          child: CheckboxListTile(
-                                            value: e.isSelected,
-                                            title: Text(e.eventType.name),
-                                            onChanged: (bool? isChecked) {
-                                              if (isChecked == true) {
-                                                context
-                                                    .read<SettingsBloc>()
-                                                    .add(AddFilterEvent(
-                                                        eventType:
-                                                            e.eventType));
-                                              } else if (isChecked == false) {
-                                                context
-                                                    .read<SettingsBloc>()
-                                                    .add(RemoveFilterEvent(
-                                                        eventType:
-                                                            e.eventType));
-                                              } else {
-                                                context
-                                                    .read<SettingsBloc>()
-                                                    .add(AddFilterEvent(
-                                                        eventType:
-                                                            e.eventType));
-                                              }
-                                            },
+                          body: Padding(
+                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                            child: SizedBox(
+                              width: double.infinity,
+                              height: 450,
+                              child: BlocBuilder<SettingsBloc, SettingsState>(
+                                builder: (context, state) {
+                                  final children = state.settingEventItems
+                                      .map(
+                                        (e) => Center(
+                                          child: SizedBox(
+                                            width: 100,
+                                            height: 50,
+                                            child: Row(
+                                              children: [
+                                                Text(e.eventType.toSettingName()),
+                                                Checkbox(
+                                                  value: e.isSelected,
+                                                  onChanged: (bool? isChecked) {
+                                                    if (isChecked == true) {
+                                                      context
+                                                          .read<SettingsBloc>()
+                                                          .add(AddFilterEvent(
+                                                              eventType:
+                                                                  e.eventType));
+                                                    } else if (isChecked ==
+                                                        false) {
+                                                      context
+                                                          .read<SettingsBloc>()
+                                                          .add(RemoveFilterEvent(
+                                                              eventType:
+                                                                  e.eventType));
+                                                    } else {
+                                                      context
+                                                          .read<SettingsBloc>()
+                                                          .add(AddFilterEvent(
+                                                              eventType:
+                                                                  e.eventType));
+                                                    }
+                                                  },
+                                                ),
+                                              ],
+                                            ),
                                           ),
                                         ),
-                                      ),
-                                    )
-                                    .toList();
-                                return ListView.builder(
-                                  itemBuilder: (context, position) {
-                                    return children[position];
-                                  },
-                                  scrollDirection: Axis.horizontal,
-                                  itemCount: children.length,
-                                );
-                              },
+                                      )
+                                      .toList();
+                                  return ListView.builder(
+                                    itemBuilder: (context, position) {
+                                      return children[position];
+                                    },
+                                    scrollDirection: Axis.horizontal,
+                                    itemCount: children.length,
+                                  );
+                                },
+                              ),
                             ),
                           ),
                           isExpanded: item.isExpanded);
