@@ -65,11 +65,6 @@ List<EventModel> getLunarEventTask(int year) {
     for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
       var thisDay = dateTime.add(Duration(days: dayOfYear));
       var thisDayLunar = Lunar.fromDate(thisDay);
-      var jieQi = thisDayLunar.getJieQi();
-      if (jieQi.isNotEmpty) {
-        result.add(EventModel(
-            date: thisDay, eventType: EventType.solar, eventName: jieQi));
-      }
       result.add(EventModel(
           date: thisDay,
           eventType: EventType.lunar,

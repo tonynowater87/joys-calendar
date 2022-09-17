@@ -65,7 +65,7 @@ class HomeCalendarPage extends StatelessWidget {
               child: CellCalendar(
                 todayMarkColor: Theme.of(context).colorScheme.primary,
                 cellCalendarPageController: cellCalendarPageController,
-                events: state.events.toList(),
+                events: state.events,
                 daysOfTheWeekBuilder: (dayIndex) {
                   final labels = ["日", "一", "二", "三", "四", "五", "六"];
                   return Padding(
@@ -178,6 +178,5 @@ class HomeCalendarPage extends StatelessWidget {
           ],
         );
     }
-    ;
   }
 }

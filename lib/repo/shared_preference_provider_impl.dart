@@ -5,6 +5,12 @@ import 'model/event_model.dart';
 
 class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _calendarKey = "CALENDAR_KEY";
+  static const List<EventType> _defaultCalendarEvent = [
+    EventType.taiwan,
+    EventType.japan,
+    EventType.lunar,
+    EventType.solar
+  ];
 
   final SharedPreferences _sharedPreferences;
 
@@ -17,11 +23,12 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
             ?.map((e) => EventType.values[
                 EventType.values.indexWhere((element) => element.name == e)])
             .toList() ??
-        [EventType.taiwan, EventType.japan, EventType.lunar, EventType.solar];
+        _defaultCalendarEvent;
   }
 
   @override
   Future<bool> saveCalendarEvents(List<EventType> calendarEvents) {
-    return _sharedPreferences.setStringList(_calendarKey, calendarEvents.map((e) => e.name).toList());
+    return _sharedPreferences.setStringList(
+        _calendarKey, calendarEvents.map((e) => e.name).toList());
   }
 }

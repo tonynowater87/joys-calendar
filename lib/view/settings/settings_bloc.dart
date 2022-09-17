@@ -41,6 +41,14 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   _removeSettingEventItems(RemoveFilterEvent event,
       Emitter<SettingsState> emitter) {
+    if (state.settingEventItems
+        .where((element) =>
+    element.isSelected)
+        .length ==
+        1) {
+      return;
+    }
+
     settingsEventItems[settingsEventItems.indexWhere((element) =>
     element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, false);

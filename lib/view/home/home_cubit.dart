@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
@@ -75,7 +77,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
-      emit(const HomeState.failure());
+      emit(HomeState.failure());
     }
   }
 
