@@ -35,7 +35,6 @@ class _SettingsPageState extends State<SettingsPage> {
             child: ExpansionPanelList(
                 expansionCallback: (index, bool) {
                   setState(() {
-                    print('[Tony] $index expanded=$bool');
                     settingsItem[index].isExpanded = !bool;
                   });
                 },
@@ -104,7 +103,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             return ListTile(
                                 title: Text(item.headerValue.toLocalization()));
                           },
-                          body: ListTile(title: Text('中、日、英')),
+                          body: const ListTile(title: Text('施工中')),
                           isExpanded: item.isExpanded);
                   }
                 }).toList()),

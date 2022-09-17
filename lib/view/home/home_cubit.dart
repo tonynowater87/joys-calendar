@@ -21,8 +21,7 @@ class HomeCubit extends Cubit<HomeState> {
       final List<CalendarEvent> combinedCalendarEvents = [];
 
       if (calendarEventRepository.getDisplayEventType().contains(EventType.lunar)) {
-        var lunarEvents =
-        await calendarEventRepository.getLunarEvents(_currentYear);
+        var lunarEvents = await calendarEventRepository.getLunarEvents(_currentYear);
         combinedCalendarEvents.addAll(lunarEvents.map((e) =>
             CalendarEvent(
                 eventName: e.eventName,
@@ -30,6 +29,14 @@ class HomeCubit extends Cubit<HomeState> {
                 eventBackgroundColor: e.eventType.toEventColor())));
       }
 
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.solar)) {
+        var solarEvents = await calendarEventRepository.getSolarEvents(_currentYear);
+        combinedCalendarEvents.addAll(solarEvents.map((e) =>
+            CalendarEvent(
+                eventName: e.eventName,
+                eventDate: e.date,
+                eventBackgroundColor: e.eventType.toEventColor())));
+      }
 
       Future<List<EventModel>> getTaiwanEvents;
       if (calendarEventRepository.getDisplayEventType().contains(EventType.taiwan)) {

@@ -40,6 +40,11 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
+  Future<List<EventModel>> getSolarEvents(int year) {
+    return compute(getSolarEventTask, year);
+  }
+
+  @override
   List<EventType> getDisplayEventType() {
     return _sharedPreferenceProvider.getSavedCalendarEvents();
   }
@@ -70,6 +75,26 @@ List<EventModel> getLunarEventTask(int year) {
           eventType: EventType.lunar,
           eventName:
               "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+    }
+  }
+  return result;
+}
+
+// task on the other thread
+List<EventModel> getSolarEventTask(int year) {
+  int startYear = year - 1;
+  int endYear = year + 1;
+  List<EventModel> result = [];
+  for (var year = startYear; year <= endYear; year++) {
+    var dateTime = DateTime(year);
+    for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
+      var thisDay = dateTime.add(Duration(days: dayOfYear));
+      var thisDayLunar = Lunar.fromDate(thisDay);
+      var jieQi = thisDayLunar.getJieQi();
+      if (jieQi.isNotEmpty) {
+        result.add(EventModel(
+            date: thisDay, eventType: EventType.solar, eventName: jieQi));
+      }
     }
   }
   return result;
