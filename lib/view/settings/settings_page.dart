@@ -51,56 +51,51 @@ class _SettingsPageState extends State<SettingsPage> {
                             padding: const EdgeInsets.symmetric(horizontal: 8.0),
                             child: SizedBox(
                               width: double.infinity,
-                              height: 450,
+                              height: 250,
                               child: BlocBuilder<SettingsBloc, SettingsState>(
                                 builder: (context, state) {
                                   final children = state.settingEventItems
                                       .map(
                                         (e) => Center(
-                                          child: SizedBox(
-                                            width: 100,
-                                            height: 50,
-                                            child: Row(
-                                              children: [
-                                                Text(e.eventType.toSettingName()),
-                                                Checkbox(
-                                                  value: e.isSelected,
-                                                  onChanged: (bool? isChecked) {
-                                                    if (isChecked == true) {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(AddFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    } else if (isChecked ==
-                                                        false) {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(RemoveFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    } else {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(AddFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            ),
+                                          child: Row(
+                                            children: [
+                                              Text(e.eventType.toSettingName()),
+                                              Checkbox(
+                                                value: e.isSelected,
+                                                onChanged: (bool? isChecked) {
+                                                  if (isChecked == true) {
+                                                    context
+                                                        .read<SettingsBloc>()
+                                                        .add(AddFilterEvent(
+                                                            eventType:
+                                                                e.eventType));
+                                                  } else if (isChecked ==
+                                                      false) {
+                                                    context
+                                                        .read<SettingsBloc>()
+                                                        .add(RemoveFilterEvent(
+                                                            eventType:
+                                                                e.eventType));
+                                                  } else {
+                                                    context
+                                                        .read<SettingsBloc>()
+                                                        .add(AddFilterEvent(
+                                                            eventType:
+                                                                e.eventType));
+                                                  }
+                                                },
+                                              ),
+                                            ],
                                           ),
                                         ),
                                       )
                                       .toList();
-                                  return ListView.builder(
-                                    itemBuilder: (context, position) {
-                                      return children[position];
-                                    },
-                                    scrollDirection: Axis.horizontal,
-                                    itemCount: children.length,
-                                  );
+                                  return GridView.count(
+                                    primary: false,
+                                    padding: const EdgeInsets.all(5),
+                                    crossAxisCount: 3,
+                                    shrinkWrap: true,
+                                    children: children);
                                 },
                               ),
                             ),
@@ -112,7 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             return ListTile(
                                 title: Text(item.headerValue.toLocalization()));
                           },
-                          body: const ListTile(title: Text('施工中')),
+                          body: const ListTile(title: Text('施工中...')),
                           isExpanded: item.isExpanded);
                   }
                 }).toList()),
