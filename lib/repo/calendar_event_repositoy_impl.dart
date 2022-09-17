@@ -3,21 +3,22 @@ import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_dto/event_dto.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:lunar/lunar.dart';
 
 class CalendarEventRepositoryImpl implements CalendarEventRepository {
+  final CalendarApiClient _calendarApiClient;
+  final SharedPreferenceProvider _sharedPreferenceProvider;
 
-  late CalendarApiClient calendarApiClient;
-  List<EventType> eventTypes = [EventType.taiwan, EventType.japan, EventType.lunar, EventType.solar];
-
-  CalendarEventRepositoryImpl(this.calendarApiClient);
+  CalendarEventRepositoryImpl(
+      this._calendarApiClient, this._sharedPreferenceProvider);
 
   @override
   Future<List<EventModel>> getEvents(String country) async {
     String format = "$country%23holiday%40group.v.calendar.google.com/events";
     List<EventModel> result = [];
     try {
-      EventDto eventDto = await calendarApiClient.getEvents(format);
+      EventDto eventDto = await _calendarApiClient.getEvents(format);
       eventDto.items?.takeWhile((element) {
         return fromCreatorEmail(element.creator?.email) != null;
       }).forEach((element) {
@@ -40,12 +41,12 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   List<EventType> getDisplayEventType() {
-    return eventTypes.toList();
+    return _sharedPreferenceProvider.getSavedCalendarEvents();
   }
 
   @override
-  void setDisplayEventType(List<EventType> eventTypes) {
-    this.eventTypes = eventTypes.toList();
+  Future<void> setDisplayEventType(List<EventType> eventTypes) async {
+    await _sharedPreferenceProvider.saveCalendarEvents(eventTypes);
   }
 }
 
