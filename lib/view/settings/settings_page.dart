@@ -32,86 +32,78 @@ class _SettingsPageState extends State<SettingsPage> {
           title: const Text('Settings'),
         ),
         body: SingleChildScrollView(
-          child: Container(
-            child: ExpansionPanelList(
-                expansionCallback: (index, bool) {
-                  setState(() {
-                    settingsItem[index].isExpanded = !bool;
-                  });
-                },
-                children: settingsItem.map<ExpansionPanel>((item) {
-                  switch (item.headerValue) {
-                    case SettingType.eventType:
-                      return ExpansionPanel(
-                          headerBuilder: (context, bool isExpanded) {
-                            return ListTile(
-                                title: Text(item.headerValue.toLocalization()));
-                          },
-                          body: Padding(
-                            padding: const EdgeInsets.symmetric(horizontal: 8.0),
-                            child: SizedBox(
-                              width: double.infinity,
-                              height: 250,
-                              child: BlocBuilder<SettingsBloc, SettingsState>(
-                                builder: (context, state) {
-                                  final children = state.settingEventItems
-                                      .map(
-                                        (e) => Center(
-                                          child: Row(
-                                            children: [
-                                              Text(e.eventType.toSettingName()),
-                                              Checkbox(
-                                                value: e.isSelected,
-                                                onChanged: (bool? isChecked) {
-                                                  if (isChecked == true) {
-                                                    context
-                                                        .read<SettingsBloc>()
-                                                        .add(AddFilterEvent(
-                                                            eventType:
-                                                                e.eventType));
-                                                  } else if (isChecked ==
-                                                      false) {
-                                                    context
-                                                        .read<SettingsBloc>()
-                                                        .add(RemoveFilterEvent(
-                                                            eventType:
-                                                                e.eventType));
-                                                  } else {
-                                                    context
-                                                        .read<SettingsBloc>()
-                                                        .add(AddFilterEvent(
-                                                            eventType:
-                                                                e.eventType));
-                                                  }
-                                                },
-                                              ),
-                                            ],
-                                          ),
+          child: ExpansionPanelList(
+              expansionCallback: (index, bool) {
+                setState(() {
+                  settingsItem[index].isExpanded = !bool;
+                });
+              },
+              children: settingsItem.map<ExpansionPanel>((item) {
+                switch (item.headerValue) {
+                  case SettingType.eventType:
+                    return ExpansionPanel(
+                        headerBuilder: (context, bool isExpanded) {
+                          return ListTile(
+                              title: Text(item.headerValue.toLocalization()));
+                        },
+                        body: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 8.0),
+                          child: BlocBuilder<SettingsBloc, SettingsState>(
+                            builder: (context, state) {
+                              final children = state.settingEventItems
+                                  .map(
+                                    (e) => Row(
+                                      children: [
+                                        Text(e.eventType.toSettingName()),
+                                        Checkbox(
+                                          value: e.isSelected,
+                                          onChanged: (bool? isChecked) {
+                                            if (isChecked == true) {
+                                              context
+                                                  .read<SettingsBloc>()
+                                                  .add(AddFilterEvent(
+                                                      eventType:
+                                                          e.eventType));
+                                            } else if (isChecked ==
+                                                false) {
+                                              context
+                                                  .read<SettingsBloc>()
+                                                  .add(RemoveFilterEvent(
+                                                      eventType:
+                                                          e.eventType));
+                                            } else {
+                                              context
+                                                  .read<SettingsBloc>()
+                                                  .add(AddFilterEvent(
+                                                      eventType:
+                                                          e.eventType));
+                                            }
+                                          },
                                         ),
-                                      )
-                                      .toList();
-                                  return GridView.count(
-                                    primary: false,
-                                    padding: const EdgeInsets.all(5),
-                                    crossAxisCount: 3,
-                                    shrinkWrap: true,
-                                    children: children);
-                                },
-                              ),
-                            ),
+                                      ],
+                                    ),
+                                  )
+                                  .toList();
+                              return GridView.count(
+                                primary: false,
+                                padding: const EdgeInsets.all(5),
+                                crossAxisCount: 3,
+                                shrinkWrap: true,
+                                children: children);
+                            },
                           ),
-                          isExpanded: item.isExpanded);
-                    case SettingType.locale:
-                      return ExpansionPanel(
-                          headerBuilder: (context, bool isExpanded) {
-                            return ListTile(
-                                title: Text(item.headerValue.toLocalization()));
-                          },
-                          body: const ListTile(title: Text('施工中...')),
-                          isExpanded: item.isExpanded);
-                  }
-                }).toList()),
-          ),
+                        ),
+                        isExpanded: item.isExpanded);
+                  case SettingType.locale:
+                    return ExpansionPanel(
+                        headerBuilder: (context, bool isExpanded) {
+                          return ListTile(
+                              title: Text(item.headerValue.toLocalization()));
+                        },
+                        body: const ListTile(title: Text('施工中...')),
+                        isExpanded: item.isExpanded);
+                }
+              }).toList()),
         ));
   }
 }

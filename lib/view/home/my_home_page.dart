@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
+import 'package:lunar/lunar.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -77,16 +78,18 @@ class HomeCalendarPage extends StatelessWidget {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
-                  // TODO 顯示生肖、甲子年
                   final year = datetime!.year.toString();
                   final month = datetime.month.monthName;
+                  Lunar lunar = Lunar.fromDate(datetime);
+                  final ganZhi = lunar.getYearInGanZhi();
+                  final shenXiao = lunar.getYearShengXiao(); // TODO 簡轉繁
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
                         Text(
-                          "$month  $year",
+                          "$month  $year $ganZhi $shenXiao",
                         ),
                         const Spacer(),
                         IconButton(

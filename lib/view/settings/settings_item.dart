@@ -7,7 +7,7 @@ extension SettingTypeExtensions on SettingType {
   String toLocalization() {
     switch (this) {
       case SettingType.eventType:
-        return "國家節日、農曆、節氣"; // TODO locale
+        return "選擇要顯示的項目(國家節日、農曆、節氣)"; // TODO locale
       case SettingType.locale:
         return "其它"; // TODO locale
     }
