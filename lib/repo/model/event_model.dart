@@ -16,6 +16,8 @@ class EventModel {
 
 enum EventType {
   taiwan,
+  china,
+  hongKong,
   japan,
   uk,
   usa,
@@ -38,6 +40,10 @@ extension EventTypeExtensions on EventType {
     switch (countryCode) {
       case "zh-tw.taiwan":
         return EventType.taiwan;
+      case "zh-tw.china":
+        return EventType.china;
+      case "zh-tw.hong_kong":
+        return EventType.hongKong;
       case "ja.japanese":
         return EventType.japan;
       case "en.uk":
@@ -53,6 +59,10 @@ extension EventTypeExtensions on EventType {
     switch (this) {
       case EventType.taiwan:
         return "zh-tw.taiwan";
+      case EventType.china:
+        return "zh-tw.china";
+        case EventType.hongKong:
+        return "zh-tw.hong_kong";
       case EventType.japan:
         return "ja.japanese";
       case EventType.uk:
@@ -70,6 +80,10 @@ extension EventTypeExtensions on EventType {
     switch (this) {
       case EventType.taiwan:
         return "台灣";
+      case EventType.china:
+        return "中國";
+      case EventType.hongKong:
+        return "香港";
       case EventType.japan:
         return "日本";
       case EventType.uk:
@@ -86,7 +100,11 @@ extension EventTypeExtensions on EventType {
   Color toEventColor() {
     switch (this) {
       case EventType.taiwan:
+        return AppColors.blue;
+      case EventType.china:
         return AppColors.nord11;
+      case EventType.hongKong:
+        return AppColors.yellow;
       case EventType.japan:
         return AppColors.nord14;
       case EventType.uk:

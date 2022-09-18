@@ -46,6 +46,18 @@ class HomeCubit extends Cubit<HomeState> {
       } else {
         getTaiwanEvents = Future.value(List.empty());
       }
+      Future<List<EventModel>> getChinaEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.china)) {
+        getChinaEvents = calendarEventRepository.getEvents(EventType.china.toCountryCode());
+      } else {
+        getChinaEvents = Future.value(List.empty());
+      }
+      Future<List<EventModel>> getHongKongEvents;
+      if (calendarEventRepository.getDisplayEventType().contains(EventType.hongKong)) {
+        getHongKongEvents = calendarEventRepository.getEvents(EventType.hongKong.toCountryCode());
+      } else {
+        getHongKongEvents = Future.value(List.empty());
+      }
       Future<List<EventModel>> getJapanEvents;
       if (calendarEventRepository.getDisplayEventType().contains(EventType.japan)) {
         getJapanEvents = calendarEventRepository.getEvents(EventType.japan.toCountryCode());
@@ -66,7 +78,7 @@ class HomeCubit extends Cubit<HomeState> {
       }
 
       final allCountryEvents = await Future.wait(
-          [getTaiwanEvents, getJapanEvents, getUkEvents, getUsEvents]);
+          [getTaiwanEvents, getChinaEvents, getHongKongEvents, getJapanEvents, getUkEvents, getUsEvents]);
 
       for (var events in allCountryEvents) {
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
@@ -77,7 +89,7 @@ class HomeCubit extends Cubit<HomeState> {
 
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
-      emit(HomeState.failure());
+      emit(const HomeState.failure());
     }
   }
 
