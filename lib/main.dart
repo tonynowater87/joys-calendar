@@ -9,6 +9,7 @@ import 'package:joys_calendar/repo/api/logging_interceptor.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy_impl.dart';
 import 'package:joys_calendar/repo/constants.dart';
+import 'package:joys_calendar/repo/local/local_datasource_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
@@ -17,7 +18,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-
+  await LocalDatasourceImpl.init();
   if (kDebugMode) {
     LoggingInterceptor.debug = false;
     Bloc.observer = AppBlocObserver();
