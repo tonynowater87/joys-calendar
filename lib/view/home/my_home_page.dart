@@ -37,7 +37,7 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: HomeCalendarPage(),
-        floatingActionButton: FloatingActionButton.small(onPressed: () {
+        floatingActionButton: FloatingActionButton.small(child: Icon(Icons.event_note), onPressed: () {
           showDialog(context: context, builder: (context) {
             return AddEventPage();
           });

@@ -4,6 +4,7 @@ import 'package:joys_calendar/repo/local/model/memo_model.dart';
 
 class LocalDatasourceImpl extends LocalDatasource {
   static Future<void> init() async {
+    await Hive.initFlutter();
     Hive.registerAdapter<MemoModel>(MemoModelAdapter());
     await Hive.openBox<MemoModel>(MemoModel.boxKey);
   }

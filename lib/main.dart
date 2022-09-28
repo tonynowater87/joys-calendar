@@ -17,7 +17,6 @@ import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
   await LocalDatasourceImpl.init();
   if (kDebugMode) {
     LoggingInterceptor.debug = false;

@@ -27,7 +27,10 @@ class _AddEventPageState extends State<AddEventPage> {
                 border: const Border.fromBorderSide(BorderSide()),
                 borderRadius: const BorderRadius.all(Radius.circular(8))),
             child: Column(children: <Widget>[
-              const Text('Add Event'),
+              const Padding(
+                padding: EdgeInsets.all(8.0),
+                child: Text('手動新增日曆事件'),
+              ),
               const Divider(),
               Align(
                 alignment: Alignment.centerLeft,
@@ -44,7 +47,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     });
                   },
                   icon: const Icon(Icons.edit_calendar_outlined),
-                  label: Text(currentDate.toIso8601String()),
+                  label: Text(currentDate.toIso8601String()), //TODO format date
                 ),
               ),
               const SizedBox(
@@ -91,7 +94,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                         borderRadius: BorderRadius.zero,
                                         side: BorderSide()))),
                             onPressed: () {},
-                            child: const Text('Cancel'))),
+                            child: const Text('取消'))),
                     const SizedBox(width: 20),
                     Expanded(
                       child: ElevatedButton(
@@ -102,7 +105,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                       borderRadius: BorderRadius.zero,
                                       side: BorderSide()))),
                           onPressed: () {},
-                          child: const Text('Add')),
+                          child: const Text('新增')),
                     )
                   ],
                 ),
