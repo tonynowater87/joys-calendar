@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
+import 'package:joys_calendar/view/addEvent/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:lunar/lunar.dart';
 
@@ -36,6 +37,11 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: HomeCalendarPage(),
+        floatingActionButton: FloatingActionButton.small(onPressed: () {
+          showDialog(context: context, builder: (context) {
+            return AddEventPage();
+          });
+        }),
       ),
     );
   }

@@ -60,7 +60,7 @@ class MyApp extends StatelessWidget {
             '/settings': (context) => BlocProvider(
                   create: (context) =>
                       SettingsBloc(context.read<CalendarEventRepository>()),
-                  child: SettingsPage(),
+                  child: const SettingsPage(),
                 )
           }),
     );
