@@ -46,15 +46,14 @@ class JoysCalendarThemeData {
     primary: Colors.green,
     primaryContainer: Color(0xFF117378),
     secondary: Color(0xFFEFF3F3),
-    secondaryContainer: Color(0xFFFAFBFB),
     background: Color(0xFFE6EBEB),
     surface: Color(0xFFFAFBFB),
-    onBackground: Colors.white,
     error: _lightFillColor,
     onError: _lightFillColor,
     onPrimary: _lightFillColor,
-    onSecondary: Colors.teal,
-    onSurface: Colors.teal.shade50,
+    onSecondary: Colors.teal.shade900,
+    onSurface: Colors.teal.shade900,
+    onBackground: Colors.teal.shade900,
     brightness: Brightness.light,
   );
 
