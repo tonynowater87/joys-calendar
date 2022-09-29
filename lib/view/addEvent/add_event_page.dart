@@ -93,7 +93,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                     const RoundedRectangleBorder(
                                         borderRadius: BorderRadius.zero,
                                         side: BorderSide()))),
-                            onPressed: () {},
+                            onPressed: () {
+                              // TODO
+                              Navigator.pop(context);
+                            },
                             child: const Text('取消'))),
                     const SizedBox(width: 20),
                     Expanded(
@@ -104,7 +107,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                   const RoundedRectangleBorder(
                                       borderRadius: BorderRadius.zero,
                                       side: BorderSide()))),
-                          onPressed: () {},
+                          onPressed: () {
+                            // TODO
+                            Navigator.pop(context);
+                          },
                           child: const Text('新增')),
                     )
                   ],

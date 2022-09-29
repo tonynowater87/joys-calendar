@@ -1,6 +1,7 @@
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/addEvent/add_event_page.dart';
@@ -17,6 +18,8 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
+  var isDialOpen = ValueNotifier<bool>(false);
+
   @override
   Widget build(BuildContext rootContext) {
     return BlocProvider(
@@ -37,11 +40,34 @@ class _MyHomePageState extends State<MyHomePage> {
           ],
         ),
         body: HomeCalendarPage(),
-        floatingActionButton: FloatingActionButton.small(child: Icon(Icons.event_note), onPressed: () {
-          showDialog(context: context, builder: (context) {
-            return AddEventPage();
-          });
-        }),
+        floatingActionButton: SpeedDial(
+          icon: Icons.menu_rounded,
+          activeIcon: Icons.close,
+          spacing: 3,
+          overlayOpacity: 0,
+          openCloseDial: isDialOpen,
+          childPadding: const EdgeInsets.all(5),
+          spaceBetweenChildren: 4,
+          children: [
+            SpeedDialChild(
+                label: "新增",
+                child: FloatingActionButton.small(
+                    child: const Icon(Icons.event_note),
+                    onPressed: () {
+                      isDialOpen.value = !isDialOpen.value;
+                      showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AddEventPage();
+                          });
+                    })),
+            SpeedDialChild(
+                label: "我的日曆列表",
+                child: FloatingActionButton.small(
+                    child: const Icon(Icons.list_alt_outlined),
+                    onPressed: () {}))
+          ],
+        ),
       ),
     );
   }
