@@ -23,6 +23,7 @@ enum EventType {
   usa,
   lunar,
   solar,
+  custom
 }
 
 EventType? fromCreatorEmail(String? email) {
@@ -73,6 +74,8 @@ extension EventTypeExtensions on EventType {
         throw Exception("illegal eventType = $this");
       case EventType.solar:
         throw Exception("illegal eventType = $this");
+      case EventType.custom:
+        throw Exception("illegal eventType = $this");
     }
   }
 
@@ -94,6 +97,8 @@ extension EventTypeExtensions on EventType {
         return "農曆";
       case EventType.solar:
         return "節氣";
+      case EventType.custom:
+        return "自訂";
     }
   }
 
@@ -115,6 +120,8 @@ extension EventTypeExtensions on EventType {
         return AppColors.nord13.withRed(104);
       case EventType.solar:
         return AppColors.nord13.withRed(104);
+      case EventType.custom:
+        return AppColors.lightBlue;
     }
   }
 }

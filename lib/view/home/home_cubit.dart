@@ -96,4 +96,8 @@ class HomeCubit extends Cubit<HomeState> {
   void refreshFromSettings() {
     // TODO
   }
+
+  void refreshFromAddPage() {
+
+  }
 }

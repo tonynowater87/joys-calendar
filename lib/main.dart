@@ -9,6 +9,7 @@ import 'package:joys_calendar/repo/api/logging_interceptor.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy_impl.dart';
 import 'package:joys_calendar/repo/constants.dart';
+import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/local_datasource_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
@@ -48,6 +49,9 @@ class MyApp extends StatelessWidget {
           return CalendarEventRepositoryImpl(
               CalendarApiClient(dio, baseUrl: apiBaseURL),
               sharedPreferenceProvider);
+        }),
+        RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
+          return LocalDatasourceImpl();
         })
       ],
       child: MaterialApp(

@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
               return IconButton(
                   onPressed: () async {
                     await Navigator.of(rootContext).pushNamed("/settings");
+                    if (!mounted) return;
                     context.read<HomeCubit>().getEvents();
                   },
                   icon: const Icon(Icons.settings));

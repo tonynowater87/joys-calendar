@@ -20,15 +20,33 @@ class LocalDatasourceImpl extends LocalDatasource {
   }
 
   @override
-  Future<void> saveMemo(DateTime dateTime, String memo) {
-    return Hive.box<MemoModel>(MemoModel.boxKey).add(MemoModel()
-      ..dateTime = dateTime
-      ..memo = memo);
+  Future<void> saveMemo(MemoModel memoModel) {
+    final box = Hive.box(MemoModel.boxKey);
+    final existModel = Hive.box<MemoModel>(MemoModel.boxKey)
+        .values
+        .where((element) => element.key == memoModel.key);
+    if (existModel.isEmpty) {
+      return box.add(memoModel);
+    } else {
+      return box.put(memoModel.key, memoModel);
+    }
   }
 
   @override
   Future<bool> hasMemo(DateTime dateTime) async {
     final box = Hive.box(MemoModel.boxKey);
     return box.isNotEmpty;
+  }
+
+  @override
+  Future<void> deleteMemo(MemoModel memoModel) {
+    final box = Hive.box(MemoModel.boxKey);
+    return box.delete(memoModel);
+  }
+
+  @override
+  Future<MemoModel> getMemo(dynamic key) {
+    final box = Hive.box(MemoModel.boxKey);
+    return box.get(key);
   }
 }
