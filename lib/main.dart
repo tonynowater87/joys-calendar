@@ -34,12 +34,16 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   SharedPreferences _prefs;
 
-  MyApp(this._prefs, {super.key});
+  MyApp(this._prefs, {super.key}) {
+  }
 
   @override
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
+          return LocalDatasourceImpl();
+        }),
         RepositoryProvider<CalendarEventRepository>(
             create: (BuildContext context) {
           var dio = Dio(BaseOptions(
@@ -48,11 +52,9 @@ class MyApp extends StatelessWidget {
           var sharedPreferenceProvider = SharedPreferenceProviderImpl(_prefs);
           return CalendarEventRepositoryImpl(
               CalendarApiClient(dio, baseUrl: apiBaseURL),
-              sharedPreferenceProvider);
+              sharedPreferenceProvider,
+              context.read<LocalDatasource>());
         }),
-        RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
-          return LocalDatasourceImpl();
-        })
       ],
       child: MaterialApp(
           title: 'Joy\' Calendar',

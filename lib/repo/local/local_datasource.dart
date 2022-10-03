@@ -7,7 +7,7 @@ abstract class LocalDatasource {
 
   Future<void> deleteMemo(MemoModel memoModel);
 
-  Future<List<MemoModel>> getMemos(DateTime dateTime);
+  List<MemoModel> getMemos(DateTime dateTime);
 
-  Future<MemoModel> getMemo(dynamic key);
+  MemoModel getMemo(dynamic key);
 }
