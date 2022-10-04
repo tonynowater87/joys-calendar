@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/addEvent/add_event_bloc.dart';
 
@@ -58,8 +59,7 @@ class _AddEventPageState extends State<AddEventPage> {
                           }
                         },
                         icon: const Icon(Icons.edit_calendar_outlined),
-                        label: Text(
-                            state.memoModel.dateTime.toIso8601String()), //TODO format date
+                        label: Text(DateFormat(DateFormat.YEAR_MONTH_DAY).format(state.memoModel.dateTime)), // Locale
                       ),
                     ),
                     const SizedBox(
