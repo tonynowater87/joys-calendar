@@ -118,9 +118,12 @@ class _AddEventPageState extends State<AddEventPage> {
                                         const RoundedRectangleBorder(
                                             borderRadius: BorderRadius.zero,
                                             side: BorderSide()))),
-                                onPressed: () {
-                                  context.read<AddEventBloc>().add(SaveEvent());
-                                  Navigator.pop(context);
+                                onPressed: () async {
+                                  await context.read<AddEventBloc>().saveEvent();
+                                  if (!mounted) {
+                                    return;
+                                  }
+                                  Navigator.pop(context, true);
                                 },
                                 child: const Text('新增')),
                           )

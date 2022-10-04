@@ -13,5 +13,3 @@ class UpdateMemoEvent extends AddEventEvent {
 
   UpdateMemoEvent(this.memo);
 }
-
-class SaveEvent extends AddEventEvent {}

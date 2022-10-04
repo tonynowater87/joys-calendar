@@ -12,18 +12,15 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
 
   AddEventBloc(this.localMemoRepository) : super(AddEventState.initial()) {
     on<UpdateDateTimeEvent>((event, emit) {
-      print('[Tony] UpdateDateTimeEvent $event');
       emit.call(state.copyWith(dateTime: event.memoDateTime));
     });
 
     on<UpdateMemoEvent>((event, emit) {
-      print('[Tony] UpdateMemoEvent $event');
       emit.call(state.copyWith(memo: event.memo));
     });
+  }
 
-    on<SaveEvent>((event, emit) {
-      print('[Tony] SaveEvent $event');
-      localMemoRepository.saveMemo(state.memoModel);
-    });
+  Future<void> saveEvent() async {
+    await localMemoRepository.saveMemo(state.memoModel);
   }
 }
