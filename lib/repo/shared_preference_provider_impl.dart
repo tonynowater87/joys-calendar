@@ -9,7 +9,8 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
     EventType.taiwan,
     EventType.japan,
     EventType.lunar,
-    EventType.solar
+    EventType.solar,
+    EventType.custom,
   ];
 
   final SharedPreferences _sharedPreferences;
