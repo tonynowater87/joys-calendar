@@ -1,12 +1,39 @@
 part of 'add_event_bloc.dart';
 
-@immutable
-abstract class AddEventState {}
+enum AddEventStatus { initial, update }
 
-class AddEventLoading extends AddEventState {}
+class AddEventState extends Equatable {
+  late MemoModel memoModel;
+  late AddEventStatus status;
 
-class AddEventLoaded extends AddEventState {
-  late String memo;
+  AddEventState(this.memoModel, this.status);
 
-  AddEventLoaded(this.memo);
+  AddEventState.initial() {
+    status = AddEventStatus.initial;
+    var now = DateTime.now();
+    memoModel = MemoModel()
+      ..dateTime = DateTime(now.year, now.month, now.day)
+      ..memo = "";
+  }
+
+  AddEventState copyWith({DateTime? dateTime, String? memo}) {
+    if (dateTime != null) {
+      return AddEventState(
+          MemoModel()
+            ..dateTime = dateTime
+            ..memo = memoModel.memo,
+          AddEventStatus.update);
+    }
+    if (memo != null) {
+      return AddEventState(
+          MemoModel()
+            ..dateTime = memoModel.dateTime
+            ..memo = memo,
+          AddEventStatus.update);
+    }
+    throw Exception("not expected case");
+  }
+
+  @override
+  List<Object?> get props => [status, memoModel];
 }
