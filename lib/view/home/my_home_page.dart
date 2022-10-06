@@ -2,12 +2,13 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:lunar/lunar.dart';
+
+import '../../common/constants.dart';
 
 class MyHomePage extends StatefulWidget {
   const MyHomePage({Key? key, required this.title}) : super(key: key);
@@ -26,69 +27,68 @@ class _MyHomePageState extends State<MyHomePage> {
     return BlocProvider(
       create: (context) =>
           HomeCubit(context.read<CalendarEventRepository>())..getEvents(),
-      child: Builder(
-        builder: (scaffoldContext) {
-          return Scaffold(
-            appBar: AppBar(
-              title: Text(widget.title),
-              actions: [
-                Builder(builder: (context) {
-                  return IconButton(
+      child: Builder(builder: (scaffoldContext) {
+        return Scaffold(
+          appBar: AppBar(
+            title: Text(widget.title),
+            actions: [
+              Builder(builder: (context) {
+                return IconButton(
+                    onPressed: () async {
+                      await Navigator.of(rootContext)
+                          .pushNamed(AppConstants.routeSettings);
+                      if (!mounted) return;
+                      context.read<HomeCubit>().getEvents();
+                    },
+                    icon: const Icon(Icons.settings));
+              })
+            ],
+          ),
+          body: HomeCalendarPage(),
+          floatingActionButton: SpeedDial(
+            icon: Icons.menu_rounded,
+            activeIcon: Icons.close,
+            spacing: 3,
+            overlayOpacity: 0,
+            openCloseDial: isDialOpen,
+            childPadding: const EdgeInsets.all(5),
+            spaceBetweenChildren: 4,
+            children: [
+              SpeedDialChild(
+                  label: "新增",
+                  child: FloatingActionButton.small(
+                      child: const Icon(Icons.event_note),
                       onPressed: () async {
-                        await Navigator.of(rootContext).pushNamed("/settings");
-                        if (!mounted) return;
-                        context.read<HomeCubit>().getEvents();
-                      },
-                      icon: const Icon(Icons.settings));
-                })
-              ],
-            ),
-            body: HomeCalendarPage(),
-            floatingActionButton: SpeedDial(
-              icon: Icons.menu_rounded,
-              activeIcon: Icons.close,
-              spacing: 3,
-              overlayOpacity: 0,
-              openCloseDial: isDialOpen,
-              childPadding: const EdgeInsets.all(5),
-              spaceBetweenChildren: 4,
-              children: [
-                SpeedDialChild(
-                    label: "新增",
-                    child: FloatingActionButton.small(
-                        child: const Icon(Icons.event_note),
-                        onPressed: () async {
-                          isDialOpen.value = !isDialOpen.value;
-                          bool? isAdded = await showDialog(
-                              context: context,
-                              builder: (context) {
-                                return AddEventPage();
-                              });
-                          if (!mounted) {
-                            return;
-                          }
-                          if (isAdded == true) {
-                            scaffoldContext.read<HomeCubit>().getEvents();
-                          }
-                        })),
-                SpeedDialChild(
-                    label: "我的日曆列表",
-                    child: FloatingActionButton.small(
-                        child: const Icon(Icons.list_alt_outlined),
-                        onPressed: () {
-                          isDialOpen.value = !isDialOpen.value;
-                          Fluttertoast.showToast(
-                              msg: "施工中",
-                              toastLength: Toast.LENGTH_SHORT,
-                              gravity: ToastGravity.SNACKBAR,
-                              timeInSecForIosWeb: 1,
-                              fontSize: 16.0);
-                        }))
-              ],
-            ),
-          );
-        }
-      ),
+                        isDialOpen.value = !isDialOpen.value;
+                        bool? isAdded = await showDialog(
+                            context: context,
+                            builder: (context) {
+                              return AddEventPage();
+                            });
+                        if (!mounted) {
+                          return;
+                        }
+                        if (isAdded == true) {
+                          scaffoldContext.read<HomeCubit>().getEvents();
+                        }
+                      })),
+              SpeedDialChild(
+                  label: "我的日曆列表",
+                  child: FloatingActionButton.small(
+                      child: const Icon(Icons.list_alt_outlined),
+                      onPressed: () async {
+                        isDialOpen.value = !isDialOpen.value;
+                        if (!mounted) {
+                          return;
+                        }
+                        var isUpdate = await Navigator.pushNamed(
+                            context, AppConstants.routeMyEvent);
+                        // TODO refresh
+                      }))
+            ],
+          ),
+        );
+      }),
     );
   }
 }
