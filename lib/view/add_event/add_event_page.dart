@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
-import 'package:joys_calendar/view/addEvent/add_event_bloc.dart';
+import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 
 class AddEventPage extends StatefulWidget {
 

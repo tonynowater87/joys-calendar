@@ -5,7 +5,7 @@ import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
-import 'package:joys_calendar/view/addEvent/add_event_page.dart';
+import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:lunar/lunar.dart';
 
