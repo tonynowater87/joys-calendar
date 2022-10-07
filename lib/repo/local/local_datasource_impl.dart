@@ -3,7 +3,6 @@ import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
 
 class LocalDatasourceImpl extends LocalDatasource {
-
   static Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter<MemoModel>(MemoModelAdapter());
@@ -49,5 +48,13 @@ class LocalDatasourceImpl extends LocalDatasource {
   MemoModel getMemo(dynamic key) {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     return box.get(key)!;
+  }
+
+  @override
+  List<MemoModel> getAllMemos() {
+    final box = Hive.box<MemoModel>(MemoModel.boxKey);
+    var allMemos = box.values.toList();
+    allMemos.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
+    return allMemos;
   }
 }

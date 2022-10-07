@@ -25,6 +25,5 @@ class MyEventListState extends Equatable {
   }
 
   @override
-  // TODO: implement props
   List<Object?> get props => [myEventListStatus, myEventList];
 }

@@ -14,6 +14,7 @@ import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/local_datasource_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
+import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
@@ -36,8 +37,7 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   SharedPreferences _prefs;
 
-  MyApp(this._prefs, {super.key}) {
-  }
+  MyApp(this._prefs, {super.key}) {}
 
   @override
   Widget build(BuildContext context) {
@@ -63,13 +63,17 @@ class MyApp extends StatelessWidget {
           theme: JoysCalendarThemeData.lightThemeData,
           initialRoute: AppConstants.routeHome,
           routes: <String, WidgetBuilder>{
-            AppConstants.routeHome: (context) => const MyHomePage(title: 'Joy\' Calendar'),
+            AppConstants.routeHome: (context) =>
+                const MyHomePage(title: 'Joy\' Calendar'),
             AppConstants.routeSettings: (context) => BlocProvider(
                   create: (context) =>
                       SettingsBloc(context.read<CalendarEventRepository>()),
                   child: const SettingsPage(),
                 ),
-            AppConstants.routeMyEvent: (context) => const MyEventListPage()
+            AppConstants.routeMyEvent: (context) => BlocProvider(
+                create: (context) =>
+                    MyEventListCubit(context.read<LocalDatasource>()),
+                child: const MyEventListPage())
           }),
     );
   }

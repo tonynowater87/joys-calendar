@@ -9,5 +9,7 @@ abstract class LocalDatasource {
 
   List<MemoModel> getMemos(DateTime dateTime);
 
+  List<MemoModel> getAllMemos();
+
   MemoModel getMemo(dynamic key);
 }
