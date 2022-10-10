@@ -20,6 +20,11 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
       emit.call(state.copyWith(memo: event.memo));
     });
 
+    on<AddDateTimeEvent>((event, emit) {
+      key = null;
+      emit.call(AddEventState.add());
+    });
+
     on<EditDateTimeEvent>((event, emit) {
       final memoModel = localMemoRepository.getMemo(event.key);
       key = memoModel.key;

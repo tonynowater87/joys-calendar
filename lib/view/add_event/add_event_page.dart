@@ -16,17 +16,23 @@ class AddEventPage extends StatefulWidget {
 
 class _AddEventPageState extends State<AddEventPage> {
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _textEditingController =
-      TextEditingController(text: "");
+  final TextEditingController _textEditingController = TextEditingController(text: "");
+  AddEventStatus? status;
 
   @override
   void initState() {
     super.initState();
     SchedulerBinding.instance.addPostFrameCallback((timeStamp) {
       if (widget.memoModelKey != null) {
+        status = AddEventStatus.edit;
         context
             .read<AddEventBloc>()
             .add(EditDateTimeEvent(widget.memoModelKey));
+      } else {
+        status = AddEventStatus.add;
+        context
+            .read<AddEventBloc>()
+            .add(AddDateTimeEvent());
       }
     });
 
@@ -51,9 +57,9 @@ class _AddEventPageState extends State<AddEventPage> {
     final addEventState = context.watch<AddEventBloc>().state;
     if (addEventState.status == AddEventStatus.edit) {
       _textEditingController.text = addEventState.memoModel.memo;
+    } else if (addEventState.status == AddEventStatus.add ){
+      _textEditingController.text = "";
     }
-
-    final isAdded = addEventState.status == AddEventStatus.add;
 
     return Scaffold(
         backgroundColor: Colors.transparent,
@@ -70,7 +76,7 @@ class _AddEventPageState extends State<AddEventPage> {
                 return Column(children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: isAdded ? Text('新增') : Text('編輯'),
+                    child: status == AddEventStatus.add ? Text('新增') : Text('編輯'),
                   ),
                   const Divider(),
                   Align(
@@ -114,7 +120,17 @@ class _AddEventPageState extends State<AddEventPage> {
                         onChanged: (text) {
                           context
                               .read<AddEventBloc>()
-                              .add(UpdateMemoEvent(text));
+                              .add(UpdateMemoEvent(_textEditingController.text));
+                        },
+                        onEditingComplete: () {
+                          context
+                              .read<AddEventBloc>()
+                              .add(UpdateMemoEvent(_textEditingController.text));
+                        },
+                        onFieldSubmitted: (text) {
+                          context
+                              .read<AddEventBloc>()
+                              .add(UpdateMemoEvent(_textEditingController.text));
                         },
                         decoration: const InputDecoration(
                           icon: Icon(Icons.event_note),
@@ -161,7 +177,7 @@ class _AddEventPageState extends State<AddEventPage> {
                                 }
                                 Navigator.pop(context, true);
                               },
-                              child: isAdded ? Text('新增') : Text('更新')),
+                              child: status == AddEventStatus.add ? Text('新增') : Text('更新')),
                         )
                       ],
                     ),

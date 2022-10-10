@@ -1,6 +1,6 @@
 part of 'add_event_bloc.dart';
 
-enum AddEventStatus { add, edit }
+enum AddEventStatus { add, edit, update }
 
 class AddEventState extends Equatable {
   late MemoModel memoModel;
@@ -26,14 +26,14 @@ class AddEventState extends Equatable {
           MemoModel()
             ..dateTime = dateTime
             ..memo = memoModel.memo,
-          status);
+          AddEventStatus.edit);
     }
     if (memo != null) {
       return AddEventState(
           MemoModel()
             ..dateTime = memoModel.dateTime
             ..memo = memo,
-          status);
+          AddEventStatus.edit);
     }
     throw Exception("not expected case");
   }
