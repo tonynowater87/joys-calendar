@@ -4,10 +4,12 @@ import 'package:joys_calendar/view/my_event_list/my_event_list_ui_model.dart';
 
 class MyEventListItemPage extends StatelessWidget {
   MyEventUIModel _model;
+  int index;
   bool isDeleting;
   Function(int index, bool checked) onCheckCallback;
 
-  MyEventListItemPage(this._model, this.onCheckCallback, this.isDeleting,
+  MyEventListItemPage(
+      this._model, this.index, this.onCheckCallback, this.isDeleting,
       {Key? key})
       : super(key: key);
 
@@ -27,11 +29,14 @@ class MyEventListItemPage extends StatelessWidget {
                   Text('$date $memo'),
                   Visibility(
                     visible: isDeleting,
+                    /* below settings are for invisible  */
+                    maintainSize: !isDeleting,
+                    maintainAnimation: !isDeleting,
+                    maintainState: !isDeleting,
                     child: Checkbox(
                         value: _model.isChecked,
                         onChanged: (isChecked) {
-                          onCheckCallback.call(
-                              _model.key, isChecked ?? false);
+                          onCheckCallback.call(index, isChecked ?? false);
                         }),
                   )
                 ],

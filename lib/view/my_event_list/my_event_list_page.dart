@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_item_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_state.dart';
@@ -37,7 +38,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                 if (isDeleting) {
                   context.read<MyEventListCubit>().cancelDeleting();
                 } else {
-                  Navigator.of(context).pop();
+                  Navigator.of(context).pop(true);
                 }
               }),
           title: isDeleting
@@ -45,12 +46,12 @@ class _MyEventListPageState extends State<MyEventListPage> {
               : const Text('我的日曆列表'),
           actions: [
             Padding(
-              padding: EdgeInsets.all(8.0),
+              padding: const EdgeInsets.all(8.0),
               child: InkWell(
                   child: isDeleting
                       ? Icon(Icons.delete,
                           color: hasDeleteCount ? Colors.green : Colors.black12)
-                      : Icon(Icons.edit),
+                      : const Icon(Icons.edit),
                   onTap: () async {
                     if (!isDeleting) {
                       context.read<MyEventListCubit>().startDeleting();
@@ -67,12 +68,30 @@ class _MyEventListPageState extends State<MyEventListPage> {
           padding: const EdgeInsets.only(top: 10),
           childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
-                return MyEventListItemPage(myEventState.myEventList[index],
-                    (index, isChecked) {
-                  context
-                      .read<MyEventListCubit>()
-                      .updateChecked(index, isChecked);
-                }, isDeleting, key: ValueKey<String>(index.toString()));
+                return InkWell(
+                  onTap: () async {
+                    bool? isUpdated = await showDialog(
+                        context: context,
+                        builder: (context) {
+                          return AddEventPage(
+                              memoModelKey:
+                                  myEventState.myEventList[index].key);
+                        });
+                    if (!mounted) {
+                      return;
+                    }
+                    if (isUpdated == true) {
+                      context.read<MyEventListCubit>().load();
+                    }
+                  },
+                  child: MyEventListItemPage(
+                      myEventState.myEventList[index], index,
+                      (index, isChecked) {
+                    context
+                        .read<MyEventListCubit>()
+                        .updateChecked(index, isChecked);
+                  }, isDeleting, key: ValueKey<String>(index.toString())),
+                );
               },
               childCount: myEventState.myEventList.length,
               findChildIndexCallback: (Key key) {

@@ -10,12 +10,12 @@ class MyEventListCubit extends Cubit<MyEventListState> {
   MyEventListCubit(this.localDatasource)
       : super(const MyEventListState.loading());
 
-  List<MyEventUIModel> getMyEventList() {
+  List<MyEventUIModel> _getMyEventList() {
     var allMemos = localDatasource.getAllMemos();
     var myEventList = <MyEventUIModel>[];
     allMemos.asMap().forEach((key, value) {
       myEventList.add(MyEventUIModel(
-          key: key,
+          key: value.key,
           memo: value.memo,
           dateTime: value.dateTime,
           isChecked: false));
@@ -24,7 +24,7 @@ class MyEventListCubit extends Cubit<MyEventListState> {
   }
 
   void load() {
-    emit(MyEventListState.loaded(getMyEventList()));
+    emit(MyEventListState.loaded(_getMyEventList()));
   }
 
   void startDeleting() {
@@ -33,7 +33,7 @@ class MyEventListCubit extends Cubit<MyEventListState> {
 
   void cancelDeleting() {
     checkedCount = 0;
-    emit(MyEventListState.loaded(getMyEventList()));
+    emit(MyEventListState.loaded(_getMyEventList()));
   }
 
   Future<void> delete() async {
@@ -42,7 +42,7 @@ class MyEventListCubit extends Cubit<MyEventListState> {
         await localDatasource.deleteMemo(element.key);
       }
     }
-    emit(MyEventListState.loaded(getMyEventList()));
+    emit(MyEventListState.loaded(_getMyEventList()));
   }
 
   void updateChecked(int index, bool isChecked) {

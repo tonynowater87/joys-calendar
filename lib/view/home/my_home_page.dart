@@ -65,6 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                             builder: (context) {
                               return AddEventPage();
                             });
+
                         if (!mounted) {
                           return;
                         }
@@ -78,12 +79,17 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Icon(Icons.list_alt_outlined),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
+
+                        var isUpdate = await Navigator.pushNamed(
+                            context, AppConstants.routeMyEvent);
+
                         if (!mounted) {
                           return;
                         }
-                        var isUpdate = await Navigator.pushNamed(
-                            context, AppConstants.routeMyEvent);
-                        // TODO refresh
+
+                        if (isUpdate == true) {
+                          scaffoldContext.read<HomeCubit>().getEvents();
+                        }
                       }))
             ],
           ),

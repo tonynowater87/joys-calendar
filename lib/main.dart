@@ -13,6 +13,7 @@ import 'package:joys_calendar/repo/constants.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/local_datasource_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
+import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
@@ -58,23 +59,30 @@ class MyApp extends StatelessWidget {
               context.read<LocalDatasource>());
         }),
       ],
-      child: MaterialApp(
-          title: 'Joy\' Calendar',
-          theme: JoysCalendarThemeData.lightThemeData,
-          initialRoute: AppConstants.routeHome,
-          routes: <String, WidgetBuilder>{
-            AppConstants.routeHome: (context) =>
-                const MyHomePage(title: 'Joy\' Calendar'),
-            AppConstants.routeSettings: (context) => BlocProvider(
+      child: MultiBlocProvider(
+        providers: [
+          BlocProvider<AddEventBloc>(
+              create: (context) =>
+                  AddEventBloc(context.read<LocalDatasource>()))
+        ],
+        child: MaterialApp(
+            title: 'Joy\' Calendar',
+            theme: JoysCalendarThemeData.lightThemeData,
+            initialRoute: AppConstants.routeHome,
+            routes: <String, WidgetBuilder>{
+              AppConstants.routeHome: (context) =>
+                  const MyHomePage(title: 'Joy\' Calendar'),
+              AppConstants.routeSettings: (context) => BlocProvider(
+                    create: (context) =>
+                        SettingsBloc(context.read<CalendarEventRepository>()),
+                    child: const SettingsPage(),
+                  ),
+              AppConstants.routeMyEvent: (context) => BlocProvider(
                   create: (context) =>
-                      SettingsBloc(context.read<CalendarEventRepository>()),
-                  child: const SettingsPage(),
-                ),
-            AppConstants.routeMyEvent: (context) => BlocProvider(
-                create: (context) =>
-                    MyEventListCubit(context.read<LocalDatasource>()),
-                child: const MyEventListPage())
-          }),
+                      MyEventListCubit(context.read<LocalDatasource>()),
+                  child: const MyEventListPage())
+            }),
+      ),
     );
   }
 }
