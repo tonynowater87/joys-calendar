@@ -39,9 +39,9 @@ class LocalDatasourceImpl extends LocalDatasource {
   }
 
   @override
-  Future<void> deleteMemo(MemoModel memoModel) {
+  Future<void> deleteMemo(dynamic key) {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
-    return box.delete(memoModel);
+    return box.delete(key);
   }
 
   @override

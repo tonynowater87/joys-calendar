@@ -26,7 +26,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
     final myEventState = context.watch<MyEventListCubit>().state;
     var isDeleting =
         myEventState.myEventListStatus == MyEventListStatus.deleting;
-
+    var hasDeleteCount = myEventState.checkedCount != 0;
     return Scaffold(
         appBar: AppBar(
           leading: InkWell(
@@ -40,18 +40,23 @@ class _MyEventListPageState extends State<MyEventListPage> {
                   Navigator.of(context).pop();
                 }
               }),
-
-          title: isDeleting ? Text('刪除()') /*TODO*/: Text('我的日曆列表'),
+          title: isDeleting
+              ? Text('刪除(${myEventState.checkedCount})')
+              : const Text('我的日曆列表'),
           actions: [
             Padding(
               padding: EdgeInsets.all(8.0),
               child: InkWell(
-                  child: isDeleting ? Icon(Icons.delete) : Icon(Icons.edit),
-                  onTap: () {
+                  child: isDeleting
+                      ? Icon(Icons.delete,
+                          color: hasDeleteCount ? Colors.green : Colors.black12)
+                      : Icon(Icons.edit),
+                  onTap: () async {
                     if (!isDeleting) {
                       context.read<MyEventListCubit>().startDeleting();
                     } else {
-                      context.read<MyEventListCubit>().delete();
+                      if (!hasDeleteCount) return;
+                      await context.read<MyEventListCubit>().delete();
                     }
                   }),
             )
@@ -63,7 +68,11 @@ class _MyEventListPageState extends State<MyEventListPage> {
           childrenDelegate: SliverChildBuilderDelegate(
               (BuildContext context, int index) {
                 return MyEventListItemPage(myEventState.myEventList[index],
-                    key: ValueKey<String>(index.toString()));
+                    (index, isChecked) {
+                  context
+                      .read<MyEventListCubit>()
+                      .updateChecked(index, isChecked);
+                }, isDeleting, key: ValueKey<String>(index.toString()));
               },
               childCount: myEventState.myEventList.length,
               findChildIndexCallback: (Key key) {
