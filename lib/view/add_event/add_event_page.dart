@@ -106,7 +106,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     height: 10,
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(16.0),
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
                     child: Scrollbar(
                       controller: _scrollController,
                       isAlwaysShown: true,
