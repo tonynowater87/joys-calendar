@@ -6,12 +6,22 @@ class MyEventListCubit extends Cubit<MyEventListState> {
   LocalDatasource localDatasource;
 
   MyEventListCubit(this.localDatasource)
-      : super(MyEventListState(
-      myEventList: const [], myEventListStatus: MyEventListStatus.loading));
+      : super(const MyEventListState.loading());
 
   void load() {
     var allMemos = localDatasource.getAllMemos();
-    emit(state.copyWith(
-        myEventList: allMemos, myEventListStatus: MyEventListStatus.loaded));
+    emit(MyEventListState.loaded(allMemos));
+  }
+
+  void startDeleting() {
+    emit(MyEventListState.deleting(state.myEventList));
+  }
+
+  void cancelDeleting() {
+    emit(MyEventListState.loaded(state.myEventList));
+  }
+
+  void delete() {
+    // TODO
   }
 }

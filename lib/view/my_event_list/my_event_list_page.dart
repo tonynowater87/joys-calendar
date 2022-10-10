@@ -23,34 +23,53 @@ class _MyEventListPageState extends State<MyEventListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final myEventState = context.watch<MyEventListCubit>().state;
+    var isDeleting =
+        myEventState.myEventListStatus == MyEventListStatus.deleting;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('我的日曆列表'),
-        elevation: 0.5,
-      ),
-      body: BlocBuilder<MyEventListCubit, MyEventListState>(
-        builder: (context, state) {
-          if (state.myEventListStatus == MyEventListStatus.loading) {
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
-          } else {
-            return ListView.custom(
-              padding: const EdgeInsets.only(top: 10),
-              childrenDelegate: SliverChildBuilderDelegate(
-                  (BuildContext context, int index) {
-                    return MyEventListItemPage(state.myEventList[index],
-                        key: ValueKey<String>(index.toString()));
-                  },
-                  childCount: state.myEventList.length,
-                  findChildIndexCallback: (Key key) {
-                    final ValueKey<String> valueKey = key as ValueKey<String>;
-                    return int.parse(valueKey.value);
+        appBar: AppBar(
+          leading: InkWell(
+              child: isDeleting
+                  ? Center(child: Text('取消'))
+                  : Icon(Icons.arrow_back),
+              onTap: () {
+                if (isDeleting) {
+                  context.read<MyEventListCubit>().cancelDeleting();
+                } else {
+                  Navigator.of(context).pop();
+                }
+              }),
+
+          title: isDeleting ? Text('刪除()') /*TODO*/: Text('我的日曆列表'),
+          actions: [
+            Padding(
+              padding: EdgeInsets.all(8.0),
+              child: InkWell(
+                  child: isDeleting ? Icon(Icons.delete) : Icon(Icons.edit),
+                  onTap: () {
+                    if (!isDeleting) {
+                      context.read<MyEventListCubit>().startDeleting();
+                    } else {
+                      context.read<MyEventListCubit>().delete();
+                    }
                   }),
-            );
-          }
-        },
-      ),
-    );
+            )
+          ],
+          elevation: 0.5,
+        ),
+        body: ListView.custom(
+          padding: const EdgeInsets.only(top: 10),
+          childrenDelegate: SliverChildBuilderDelegate(
+              (BuildContext context, int index) {
+                return MyEventListItemPage(myEventState.myEventList[index],
+                    key: ValueKey<String>(index.toString()));
+              },
+              childCount: myEventState.myEventList.length,
+              findChildIndexCallback: (Key key) {
+                final ValueKey<String> valueKey = key as ValueKey<String>;
+                return int.parse(valueKey.value);
+              }),
+        ));
   }
 }
