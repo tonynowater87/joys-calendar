@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
+import 'package:joys_calendar/view/my_event_list/my_event_list_item_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_state.dart';
 
 class MyEventListPage extends StatefulWidget {
@@ -25,6 +26,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
     return Scaffold(
       appBar: AppBar(
         title: Text('我的日曆列表'),
+        elevation: 0.5,
       ),
       body: BlocBuilder<MyEventListCubit, MyEventListState>(
         builder: (context, state) {
@@ -33,15 +35,19 @@ class _MyEventListPageState extends State<MyEventListPage> {
               child: CircularProgressIndicator(),
             );
           } else {
-            return ListView.builder(
-                itemCount: state.myEventList.length,
-                itemBuilder: (BuildContext context, int index) {
-                  return ListTile(
-                    title: Text(
-                        state.myEventList[index].dateTime.toIso8601String()),
-                    trailing: Text(state.myEventList[index].memo),
-                  );
-                });
+            return ListView.custom(
+              padding: const EdgeInsets.only(top: 10),
+              childrenDelegate: SliverChildBuilderDelegate(
+                  (BuildContext context, int index) {
+                    return MyEventListItemPage(state.myEventList[index],
+                        key: ValueKey<String>(index.toString()));
+                  },
+                  childCount: state.myEventList.length,
+                  findChildIndexCallback: (Key key) {
+                    final ValueKey<String> valueKey = key as ValueKey<String>;
+                    return int.parse(valueKey.value);
+                  }),
+            );
           }
         },
       ),
