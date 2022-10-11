@@ -70,6 +70,9 @@ class _MyEventListPageState extends State<MyEventListPage> {
               (BuildContext context, int index) {
                 return InkWell(
                   onTap: () async {
+                    if (isDeleting) {
+                      return;
+                    }
                     bool? isUpdated = await showDialog(
                         context: context,
                         builder: (context) {
