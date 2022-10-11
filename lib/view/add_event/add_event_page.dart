@@ -3,6 +3,7 @@ import 'package:flutter/scheduler.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 
 class AddEventPage extends StatefulWidget {
@@ -16,7 +17,8 @@ class AddEventPage extends StatefulWidget {
 
 class _AddEventPageState extends State<AddEventPage> {
   final ScrollController _scrollController = ScrollController();
-  final TextEditingController _textEditingController = TextEditingController(text: "");
+  final TextEditingController _textEditingController =
+      TextEditingController(text: "");
   AddEventStatus? status;
 
   @override
@@ -30,9 +32,7 @@ class _AddEventPageState extends State<AddEventPage> {
             .add(EditDateTimeEvent(widget.memoModelKey));
       } else {
         status = AddEventStatus.add;
-        context
-            .read<AddEventBloc>()
-            .add(AddDateTimeEvent());
+        context.read<AddEventBloc>().add(AddDateTimeEvent());
       }
     });
 
@@ -57,7 +57,7 @@ class _AddEventPageState extends State<AddEventPage> {
     final addEventState = context.watch<AddEventBloc>().state;
     if (addEventState.status == AddEventStatus.edit) {
       _textEditingController.text = addEventState.memoModel.memo;
-    } else if (addEventState.status == AddEventStatus.add ){
+    } else if (addEventState.status == AddEventStatus.add) {
       _textEditingController.text = "";
     }
 
@@ -76,13 +76,15 @@ class _AddEventPageState extends State<AddEventPage> {
                 return Column(children: <Widget>[
                   Padding(
                     padding: EdgeInsets.all(8.0),
-                    child: status == AddEventStatus.add ? Text('新增') : Text('編輯'),
+                    child:
+                        status == AddEventStatus.add ? Text('新增') : Text('編輯'),
                   ),
                   const Divider(),
                   Align(
                     alignment: Alignment.centerLeft,
                     child: OutlinedButton.icon(
                       onPressed: () async {
+                        // TODO locale for DatePicker
                         final pickedDate = await showDatePicker(
                             context: context,
                             initialDate: DateTime.now(),
@@ -98,7 +100,8 @@ class _AddEventPageState extends State<AddEventPage> {
                         }
                       },
                       icon: const Icon(Icons.edit_calendar_outlined),
-                      label: Text(DateFormat(DateFormat.YEAR_MONTH_DAY)
+                      label: Text(DateFormat(DateFormat.YEAR_MONTH_DAY,
+                              AppConstants.defaultLocale)
                           .format(state.memoModel.dateTime)), // Locale
                     ),
                   ),
@@ -118,19 +121,16 @@ class _AddEventPageState extends State<AddEventPage> {
                         scrollController: _scrollController,
                         keyboardType: TextInputType.multiline,
                         onChanged: (text) {
-                          context
-                              .read<AddEventBloc>()
-                              .add(UpdateMemoEvent(_textEditingController.text));
+                          context.read<AddEventBloc>().add(
+                              UpdateMemoEvent(_textEditingController.text));
                         },
                         onEditingComplete: () {
-                          context
-                              .read<AddEventBloc>()
-                              .add(UpdateMemoEvent(_textEditingController.text));
+                          context.read<AddEventBloc>().add(
+                              UpdateMemoEvent(_textEditingController.text));
                         },
                         onFieldSubmitted: (text) {
-                          context
-                              .read<AddEventBloc>()
-                              .add(UpdateMemoEvent(_textEditingController.text));
+                          context.read<AddEventBloc>().add(
+                              UpdateMemoEvent(_textEditingController.text));
                         },
                         decoration: const InputDecoration(
                           icon: Icon(Icons.event_note),
@@ -177,7 +177,9 @@ class _AddEventPageState extends State<AddEventPage> {
                                 }
                                 Navigator.pop(context, true);
                               },
-                              child: status == AddEventStatus.add ? Text('新增') : Text('更新')),
+                              child: status == AddEventStatus.add
+                                  ? Text('新增')
+                                  : Text('更新')),
                         )
                       ],
                     ),

@@ -20,9 +20,11 @@ import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   await LocalDatasourceImpl.init();
+  await initializeDateFormatting();
   if (kDebugMode) {
     LoggingInterceptor.debug = false;
     Bloc.observer = AppBlocObserver();

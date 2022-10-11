@@ -2,6 +2,7 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
@@ -136,8 +137,9 @@ class HomeCalendarPage extends StatelessWidget {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
-                  final year = datetime!.year.toString();
-                  final month = datetime.month.monthName;
+                  final dateString =
+                      DateFormat('y MMMM', AppConstants.defaultLocale)
+                          .format(datetime!);
                   Lunar lunar = Lunar.fromDate(datetime);
                   final ganZhi = lunar.getYearInGanZhi();
                   final shenXiao = lunar.getYearShengXiao(); // TODO 簡轉繁
@@ -147,7 +149,7 @@ class HomeCalendarPage extends StatelessWidget {
                       children: [
                         const SizedBox(width: 16),
                         Text(
-                          "$month  $year $ganZhi $shenXiao",
+                          "$dateString $ganZhi $shenXiao",
                         ),
                         const Spacer(),
                         IconButton(
