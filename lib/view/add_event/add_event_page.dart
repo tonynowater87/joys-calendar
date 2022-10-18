@@ -1,6 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
@@ -34,11 +34,6 @@ class _AddEventPageState extends State<AddEventPage> {
         status = AddEventStatus.add;
         context.read<AddEventBloc>().add(AddDateTimeEvent());
       }
-    });
-
-    _textEditingController.addListener(() {
-      _textEditingController.selection = TextSelection.fromPosition(
-          TextPosition(offset: _textEditingController.text.length));
     });
   }
 
@@ -124,14 +119,8 @@ class _AddEventPageState extends State<AddEventPage> {
                           context.read<AddEventBloc>().add(
                               UpdateMemoEvent(_textEditingController.text));
                         },
-                        onEditingComplete: () {
-                          context.read<AddEventBloc>().add(
-                              UpdateMemoEvent(_textEditingController.text));
-                        },
-                        onFieldSubmitted: (text) {
-                          context.read<AddEventBloc>().add(
-                              UpdateMemoEvent(_textEditingController.text));
-                        },
+                        onEditingComplete: () {},
+                        onFieldSubmitted: (text) {},
                         decoration: const InputDecoration(
                           icon: Icon(Icons.event_note),
                           labelText: '事件',

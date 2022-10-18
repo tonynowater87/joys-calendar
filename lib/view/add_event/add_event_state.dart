@@ -26,14 +26,14 @@ class AddEventState extends Equatable {
           MemoModel()
             ..dateTime = dateTime
             ..memo = memoModel.memo,
-          AddEventStatus.edit);
+          AddEventStatus.update);
     }
     if (memo != null) {
       return AddEventState(
           MemoModel()
             ..dateTime = memoModel.dateTime
             ..memo = memo,
-          AddEventStatus.edit);
+          AddEventStatus.update);
     }
     throw Exception("not expected case");
   }

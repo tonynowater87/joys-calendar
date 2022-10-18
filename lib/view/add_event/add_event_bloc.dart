@@ -10,6 +10,7 @@ part 'add_event_state.dart';
 class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
   LocalDatasource localMemoRepository;
   dynamic? key;
+  String updatedMemo = "";
 
   AddEventBloc(this.localMemoRepository) : super(AddEventState.add()) {
     on<UpdateDateTimeEvent>((event, emit) {
@@ -17,23 +18,25 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
     });
 
     on<UpdateMemoEvent>((event, emit) {
-      emit.call(state.copyWith(memo: event.memo));
+      updatedMemo = event.memo;
     });
 
     on<AddDateTimeEvent>((event, emit) {
       key = null;
+      updatedMemo = "";
       emit.call(AddEventState.add());
     });
 
     on<EditDateTimeEvent>((event, emit) {
       final memoModel = localMemoRepository.getMemo(event.key);
+      updatedMemo = memoModel.memo;
       key = memoModel.key;
       emit.call(AddEventState.edit(memoModel));
     });
   }
 
   Future<void> saveEvent() async {
-    var updatedMemoModel = state.memoModel;
+    var updatedMemoModel = state.memoModel..memo = updatedMemo;
     if (key != null) {
       final memoModel = localMemoRepository.getMemo(key);
       await localMemoRepository.saveMemo(memoModel
