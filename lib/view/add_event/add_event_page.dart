@@ -108,7 +108,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     child: Scrollbar(
                       controller: _scrollController,
                       isAlwaysShown: true,
-                      child: TextFormField(
+                      child: TextField(
                         controller: _textEditingController,
                         cursorColor: Theme.of(context).focusColor,
                         minLines: 1,
@@ -119,8 +119,6 @@ class _AddEventPageState extends State<AddEventPage> {
                           context.read<AddEventBloc>().add(
                               UpdateMemoEvent(_textEditingController.text));
                         },
-                        onEditingComplete: () {},
-                        onFieldSubmitted: (text) {},
                         decoration: const InputDecoration(
                           icon: Icon(Icons.event_note),
                           labelText: '事件',
