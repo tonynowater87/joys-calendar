@@ -2,11 +2,13 @@ import 'package:dio/dio.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/date_symbol_data_local.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/api/logging_interceptor.dart';
+import 'package:joys_calendar/repo/app_info_provider.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy_impl.dart';
 import 'package:joys_calendar/repo/constants.dart';
@@ -20,7 +22,6 @@ import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:intl/date_symbol_data_local.dart';
 
 Future<void> main() async {
   await LocalDatasourceImpl.init();
@@ -46,6 +47,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiRepositoryProvider(
       providers: [
+        RepositoryProvider<AppInfoProvider>(create: (BuildContext context) {
+          return AppInfoProvider();
+        }),
         RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
           return LocalDatasourceImpl();
         }),
