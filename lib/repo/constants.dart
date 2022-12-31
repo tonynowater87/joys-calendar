@@ -1,2 +1,2 @@
 const String apiBaseURL = "https://www.googleapis.com/calendar/";
-const String apiKey = "AIzaSyBNrWMucYxJLwAtjogSJE-xk-bPwGKaF3o";
+const String calendarApiKey = String.fromEnvironment("ApiKey");

@@ -11,16 +11,16 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   final CalendarApiClient _calendarApiClient;
   final SharedPreferenceProvider _sharedPreferenceProvider;
   final LocalDatasource localDatasource;
-
+  final String apiKey;
   CalendarEventRepositoryImpl(this._calendarApiClient,
-      this._sharedPreferenceProvider, this.localDatasource);
+      this._sharedPreferenceProvider, this.localDatasource, this.apiKey);
 
   @override
   Future<List<EventModel>> getEvents(String country) async {
     String format = "$country%23holiday%40group.v.calendar.google.com/events";
     List<EventModel> result = [];
     try {
-      EventDto eventDto = await _calendarApiClient.getEvents(format);
+      EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
       eventDto.items?.takeWhile((element) {
         return fromCreatorEmail(element.creator?.email) != null;
       }).forEach((element) {

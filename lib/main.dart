@@ -59,10 +59,14 @@ class MyApp extends StatelessWidget {
               connectTimeout: 1000 * 10, receiveTimeout: 1000 * 10));
           dio.interceptors.add(LoggingInterceptor());
           var sharedPreferenceProvider = SharedPreferenceProviderImpl(_prefs);
+          const calendarApiKey = String.fromEnvironment('ApiKey');
+          if (calendarApiKey.isEmpty) {
+            throw AssertionError('ApiKey is not set');
+          }
           return CalendarEventRepositoryImpl(
               CalendarApiClient(dio, baseUrl: apiBaseURL),
               sharedPreferenceProvider,
-              context.read<LocalDatasource>());
+              context.read<LocalDatasource>(), calendarApiKey);
         }),
       ],
       child: MultiBlocProvider(
