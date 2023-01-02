@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_item_page.dart';
@@ -75,11 +77,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                     }
                     bool? isUpdated = await showDialog(
                         context: context,
-                        builder: (context) {
-                          return AddEventPage(
-                              memoModelKey:
-                                  myEventState.myEventList[index].key);
-                        });
+                        builder: (context) => AddEventPage(memoModelKey: myEventState.myEventList[index].key));
                     if (!mounted) {
                       return;
                     }

@@ -63,9 +63,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         isDialOpen.value = !isDialOpen.value;
                         bool? isAdded = await showDialog(
                             context: context,
-                            builder: (context) {
-                              return AddEventPage();
-                            });
+                            builder: (context) => AddEventPage()
+                        );
 
                         if (!mounted) {
                           return;

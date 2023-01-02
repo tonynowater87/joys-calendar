@@ -69,30 +69,23 @@ class MyApp extends StatelessWidget {
               context.read<LocalDatasource>(), calendarApiKey);
         }),
       ],
-      child: MultiBlocProvider(
-        providers: [
-          BlocProvider<AddEventBloc>(
-              create: (context) =>
-                  AddEventBloc(context.read<LocalDatasource>()))
-        ],
-        child: MaterialApp(
-            title: 'Joy\' Calendar',
-            theme: JoysCalendarThemeData.lightThemeData,
-            initialRoute: AppConstants.routeHome,
-            routes: <String, WidgetBuilder>{
-              AppConstants.routeHome: (context) =>
-                  const MyHomePage(title: 'Joy\' Calendar'),
-              AppConstants.routeSettings: (context) => BlocProvider(
-                    create: (context) =>
-                        SettingsBloc(context.read<CalendarEventRepository>()),
-                    child: const SettingsPage(),
-                  ),
-              AppConstants.routeMyEvent: (context) => BlocProvider(
+      child: MaterialApp(
+          title: 'Joy\' Calendar',
+          theme: JoysCalendarThemeData.lightThemeData,
+          initialRoute: AppConstants.routeHome,
+          routes: <String, WidgetBuilder>{
+            AppConstants.routeHome: (context) =>
+                const MyHomePage(title: 'Joy\' Calendar'),
+            AppConstants.routeSettings: (context) => BlocProvider(
                   create: (context) =>
-                      MyEventListCubit(context.read<LocalDatasource>()),
-                  child: const MyEventListPage())
-            }),
-      ),
+                      SettingsBloc(context.read<CalendarEventRepository>()),
+                  child: const SettingsPage(),
+                ),
+            AppConstants.routeMyEvent: (context) => BlocProvider(
+                create: (context) =>
+                    MyEventListCubit(context.read<LocalDatasource>()),
+                child: const MyEventListPage())
+          }),
     );
   }
 }
