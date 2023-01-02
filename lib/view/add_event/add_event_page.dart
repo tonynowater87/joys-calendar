@@ -50,8 +50,13 @@ class _AddEventPageState extends State<AddEventPage> {
 
     final addEventState = context.watch<AddEventBloc>().state;
     if (addEventState.status == AddEventStatus.edit) {
-      _textEditingController.text = addEventState.memoModel.memo;
-    } else if (addEventState.status == AddEventStatus.add) {
+      if (_textEditingController.text.isEmpty) {
+        _textEditingController.text = addEventState.memoModel.memo;
+      } else {
+        _textEditingController.text = _textEditingController.text;
+      }
+      _textEditingController.selection = TextSelection.fromPosition(TextPosition(offset: _textEditingController.text.length));
+    } else if (addEventState.status == AddEventStatus.add && _textEditingController.text.isEmpty) {
       _textEditingController.text = "";
     }
 
