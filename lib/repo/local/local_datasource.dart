@@ -15,9 +15,9 @@ abstract class LocalDatasource {
 
   MemoModel getMemo(dynamic key);
 
-  Future<List<CalendarModel>> getCalendarModels(String countryCode);
+  List<CalendarModel> getCalendarModels(String countryCode);
   Future<void> saveCalendarModels(List<CalendarModel> models);
 
-  Future<List<JieQiModel>> getJieQiModels();
-  Future<void> saveJieQiModels();
+  List<JieQiModel> getJieQiModels();
+  Future<void> saveJieQiModels(List<JieQiModel> models);
 }

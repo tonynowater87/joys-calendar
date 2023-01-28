@@ -60,31 +60,38 @@ class LocalDatasourceImpl extends LocalDatasource {
   List<MemoModel> getAllMemos() {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     var allMemos = box.values.toList();
-    allMemos.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
+    allMemos
+        .sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
     return allMemos;
   }
 
   @override
-  Future<List<CalendarModel>> getCalendarModels(String countryCode) {
-    // TODO: implement getCalendarModels
-    throw UnimplementedError();
+  List<CalendarModel> getCalendarModels(String countryCode) {
+    final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
+    final allValues = box.values.where((element) => element.country == countryCode).toList();
+    allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return allValues;
   }
 
   @override
-  Future<List<JieQiModel>> getJieQiModels() {
-    // TODO: implement getJieQiModels
-    throw UnimplementedError();
+  List<JieQiModel> getJieQiModels() {
+    final box = Hive.box<JieQiModel>(JieQiModel.boxKey);
+    final allValues = box.values.toList();
+    allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
+    return allValues;
   }
 
   @override
   Future<void> saveCalendarModels(List<CalendarModel> models) {
-    // TODO: implement saveCalendarModels
-    throw UnimplementedError();
+    final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
+    return Future.forEach(
+        models, (element) => box.put(element.dateTime.toString(), element));
   }
 
   @override
-  Future<void> saveJieQiModels() {
-    // TODO: implement saveJieQiModels
-    throw UnimplementedError();
+  Future<void> saveJieQiModels(List<JieQiModel> models) {
+    final box = Hive.box<JieQiModel>(JieQiModel.boxKey);
+    return Future.forEach(
+        models, (element) => box.put(element.dateTime.toString(), element));
   }
 }

@@ -2,6 +2,8 @@ import 'package:flutter/foundation.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/repo/local/model/calendar_model.dart';
+import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
 import 'package:joys_calendar/repo/model/event_dto/event_dto.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
@@ -12,6 +14,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   final SharedPreferenceProvider _sharedPreferenceProvider;
   final LocalDatasource localDatasource;
   final String apiKey;
+
   CalendarEventRepositoryImpl(this._calendarApiClient,
       this._sharedPreferenceProvider, this.localDatasource, this.apiKey);
 
@@ -30,6 +33,13 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             eventName: element.summary!);
         result.add(eventModel);
       });
+
+      await localDatasource.saveCalendarModels(result
+          .map((e) => CalendarModel()
+            ..displayName = e.eventName
+            ..dateTime = e.date
+            ..country = e.eventType.toCountryCode())
+          .toList());
       return result;
     } on Exception catch (e) {
       return result;
@@ -42,8 +52,18 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
-  Future<List<EventModel>> getSolarEvents(int year) {
-    return compute(getSolarEventTask, year);
+  Future<List<EventModel>> getSolarEvents(int year) async {
+    var start = DateTime.now().millisecondsSinceEpoch;
+    print('[Tony] getSolarEvents1, $start');
+    final solarEvents = await compute(getSolarEventTask, year);
+    print('[Tony] getSolarEvents2, ${DateTime.now().millisecondsSinceEpoch - start}');
+    await localDatasource.saveJieQiModels(solarEvents
+        .map((e) => JieQiModel()
+      ..displayName = e.eventName
+      ..dateTime = e.date)
+        .toList());
+    print('[Tony] getSolarEvents3, ${DateTime.now().millisecondsSinceEpoch - start}');
+    return Future.value(solarEvents);
   }
 
   @override
@@ -56,9 +76,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     await _sharedPreferenceProvider.saveCalendarEvents(eventTypes);
   }
 
-  // TODO performance issue 20 years cost 519 milliseconds
   @override
-  Future<List<EventModel>> getCustomEvents(int year) {
+  Future<List<EventModel>> getCustomEvents(int year) async {
     int startYear = year - 10;
     int endYear = year + 10;
     List<EventModel> result = [];
@@ -82,6 +101,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 }
 
+// TODO performance issue 20 years cost 519 milliseconds
 // task on the other thread
 List<EventModel> getLunarEventTask(int year) {
   int startYear = year - 1;
@@ -99,6 +119,7 @@ List<EventModel> getLunarEventTask(int year) {
               "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
     }
   }
+
   return result;
 }
 
