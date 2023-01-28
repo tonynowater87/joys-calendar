@@ -19,6 +19,8 @@ import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
+import 'package:joys_calendar/view/search_result/search_result_cubit.dart';
+import 'package:joys_calendar/view/search_result/search_result_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -84,7 +86,11 @@ class MyApp extends StatelessWidget {
             AppConstants.routeMyEvent: (context) => BlocProvider(
                 create: (context) =>
                     MyEventListCubit(context.read<LocalDatasource>()),
-                child: const MyEventListPage())
+                child: const MyEventListPage()),
+            AppConstants.routeSearchResult: (context) => BlocProvider(
+                create: (context) =>
+                    SearchResultCubit(),
+                child: const SearchResultPage())
           }),
     );
   }

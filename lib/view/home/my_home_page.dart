@@ -8,6 +8,7 @@ import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
+import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 import 'package:lunar/lunar.dart';
 
 import '../../common/constants.dart';
@@ -37,11 +38,14 @@ class _MyHomePageState extends State<MyHomePage> {
             actions: [
               AnimSearchBar(
                 boxShadow: false,
+                autoFocus: true,
                 width: MediaQuery.of(context).size.width,
                 textController: textEditingController,
-                onSuffixTap: () { },
+                onSuffixTap: () {},
                 onSubmitted: (text) {
-                  // TODO close searchbar, and go to searching result page
+                  Navigator.of(rootContext).pushNamed(
+                      AppConstants.routeSearchResult,
+                      arguments: SearchResultArguments(text));
                 },
               )
             ],
