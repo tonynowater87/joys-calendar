@@ -7,4 +7,5 @@ abstract class CalendarEventRepository {
   Future<List<EventModel>> getCustomEvents(int year);
   Future<void> setDisplayEventType(List<EventType> eventTypes);
   List<EventType> getDisplayEventType();
+  Future<List<EventModel>> search(String keyword);
 }

@@ -33,6 +33,7 @@ class _MyHomePageState extends State<MyHomePage> {
           HomeCubit(context.read<CalendarEventRepository>())..getEvents(),
       child: Builder(builder: (scaffoldContext) {
         return Scaffold(
+          resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Text(widget.title),
             actions: [

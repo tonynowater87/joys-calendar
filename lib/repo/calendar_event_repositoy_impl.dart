@@ -129,6 +129,49 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     }
     return Future.value(result);
   }
+
+  @override
+  Future<List<EventModel>> search(String keyword) async {
+    final start = DateTime.now().millisecondsSinceEpoch;
+    final countries = EventType.values.where((element) => element.index <= 5);
+    List<EventModel> allEvents = [];
+
+    List<EventModel> calendars = [];
+    for (var country in countries) {
+      calendars.addAll(localDatasource
+          .getCalendarModels(country.toCountryCode())
+          .where((element) => element.displayName.contains(keyword))
+          .map((e) => EventModel(
+              date: e.dateTime,
+              eventType: fromCreatorEmail(e.country)!,
+              eventName: e.displayName)));
+    }
+
+    List<EventModel> solarEvents = [];
+    solarEvents.addAll(localDatasource
+        .getJieQiModels()
+        .where((element) => element.displayName.contains(keyword))
+        .map((e) => EventModel(
+            date: e.dateTime,
+            eventType: EventType.solar,
+            eventName: e.displayName)));
+
+    List<EventModel> customEvents = [];
+    customEvents.addAll(localDatasource
+        .getAllMemos()
+        .where((element) => element.memo.contains(keyword))
+        .map((e) => EventModel(
+            date: e.dateTime, eventType: EventType.custom, eventName: e.memo)));
+
+    allEvents.addAll(calendars);
+    allEvents.addAll(solarEvents);
+    allEvents.addAll(customEvents);
+    allEvents.sort((a, b) => b.date.compareTo(a.date));
+
+    final cost = DateTime.now().millisecondsSinceEpoch - start;
+    print('[Tony] searching($keyword) cost $cost');
+    return Future.value(allEvents);
+  }
 }
 
 // TODO performance issue 20 years cost 519 milliseconds

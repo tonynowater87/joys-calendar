@@ -89,7 +89,7 @@ class MyApp extends StatelessWidget {
                 child: const MyEventListPage()),
             AppConstants.routeSearchResult: (context) => BlocProvider(
                 create: (context) =>
-                    SearchResultCubit(),
+                    SearchResultCubit(context.read<CalendarEventRepository>()),
                 child: const SearchResultPage())
           }),
     );
