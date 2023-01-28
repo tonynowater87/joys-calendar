@@ -1,3 +1,4 @@
+import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,6 +23,7 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var isDialOpen = ValueNotifier<bool>(false);
+  TextEditingController textEditingController = TextEditingController();
 
   @override
   Widget build(BuildContext rootContext) {
@@ -33,16 +35,15 @@ class _MyHomePageState extends State<MyHomePage> {
           appBar: AppBar(
             title: Text(widget.title),
             actions: [
-              Builder(builder: (context) {
-                return IconButton(
-                    onPressed: () async {
-                      await Navigator.of(rootContext)
-                          .pushNamed(AppConstants.routeSettings);
-                      if (!mounted) return;
-                      context.read<HomeCubit>().getEvents();
-                    },
-                    icon: const Icon(Icons.settings));
-              })
+              AnimSearchBar(
+                boxShadow: false,
+                width: MediaQuery.of(context).size.width,
+                textController: textEditingController,
+                onSuffixTap: () { },
+                onSubmitted: (text) {
+                  // TODO close searchbar, and go to searching result page
+                },
+              )
             ],
           ),
           body: HomeCalendarPage(),
@@ -63,8 +64,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         isDialOpen.value = !isDialOpen.value;
                         bool? isAdded = await showDialog(
                             context: context,
-                            builder: (context) => AddEventPage()
-                        );
+                            builder: (context) => AddEventPage());
 
                         if (!mounted) {
                           return;
@@ -90,7 +90,18 @@ class _MyHomePageState extends State<MyHomePage> {
                         if (isUpdate == true) {
                           scaffoldContext.read<HomeCubit>().getEvents();
                         }
-                      }))
+                      })),
+              SpeedDialChild(
+                  label: "設定",
+                  child: FloatingActionButton.small(
+                      child: const Icon(Icons.settings),
+                      onPressed: () async {
+                        isDialOpen.value = !isDialOpen.value;
+                        await Navigator.of(rootContext)
+                            .pushNamed(AppConstants.routeSettings);
+                        if (!mounted) return;
+                        context.read<HomeCubit>().getEvents();
+                      })),
             ],
           ),
         );
@@ -234,7 +245,7 @@ class HomeCalendarPage extends StatelessWidget {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
                 },
                 dateTextStyle:
-                    JoysCalendarThemeData.calendarTextTheme.bodyMedium,
+                    JoysCalendarThemeData.calendarTextTheme.bodyText2,
               ),
             ),
           ],
