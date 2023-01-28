@@ -14,6 +14,6 @@ class MemoModel extends HiveObject {
 
   @override
   String toString() {
-    return 'Record{key:$key, memo: $memo, dateTime: $dateTime}';
+    return 'MemoModel{key:$key, memo: $memo, dateTime: $dateTime}';
   }
 }

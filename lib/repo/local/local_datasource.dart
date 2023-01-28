@@ -1,3 +1,5 @@
+import 'package:joys_calendar/repo/local/model/calendar_model.dart';
+import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
 
 abstract class LocalDatasource {
@@ -12,4 +14,10 @@ abstract class LocalDatasource {
   List<MemoModel> getAllMemos();
 
   MemoModel getMemo(dynamic key);
+
+  Future<List<CalendarModel>> getCalendarModels(String countryCode);
+  Future<void> saveCalendarModels(List<CalendarModel> models);
+
+  Future<List<JieQiModel>> getJieQiModels();
+  Future<void> saveJieQiModels();
 }

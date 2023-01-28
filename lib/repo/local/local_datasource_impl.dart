@@ -1,12 +1,18 @@
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/repo/local/model/calendar_model.dart';
+import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
 
 class LocalDatasourceImpl extends LocalDatasource {
   static Future<void> init() async {
     await Hive.initFlutter();
     Hive.registerAdapter<MemoModel>(MemoModelAdapter());
+    Hive.registerAdapter<CalendarModel>(CalendarModelAdapter());
+    Hive.registerAdapter<JieQiModel>(JieQiModelAdapter());
     await Hive.openBox<MemoModel>(MemoModel.boxKey);
+    await Hive.openBox<CalendarModel>(CalendarModel.boxKey);
+    await Hive.openBox<JieQiModel>(JieQiModel.boxKey);
   }
 
   @override
@@ -56,5 +62,29 @@ class LocalDatasourceImpl extends LocalDatasource {
     var allMemos = box.values.toList();
     allMemos.sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
     return allMemos;
+  }
+
+  @override
+  Future<List<CalendarModel>> getCalendarModels(String countryCode) {
+    // TODO: implement getCalendarModels
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<List<JieQiModel>> getJieQiModels() {
+    // TODO: implement getJieQiModels
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveCalendarModels(List<CalendarModel> models) {
+    // TODO: implement saveCalendarModels
+    throw UnimplementedError();
+  }
+
+  @override
+  Future<void> saveJieQiModels() {
+    // TODO: implement saveJieQiModels
+    throw UnimplementedError();
   }
 }
