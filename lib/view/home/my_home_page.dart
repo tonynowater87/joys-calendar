@@ -104,7 +104,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         await Navigator.of(rootContext)
                             .pushNamed(AppConstants.routeSettings);
                         if (!mounted) return;
-                        context.read<HomeCubit>().getEvents();
+                        scaffoldContext.read<HomeCubit>().getEvents();
                       })),
             ],
           ),

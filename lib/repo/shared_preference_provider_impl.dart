@@ -5,6 +5,7 @@ import 'model/event_model.dart';
 
 class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _calendarKey = "CALENDAR_KEY";
+  static const String _googleCalendarApiUpdatedYear = "GOOGLE_CALENDAR_API_UPDATED_YEAR";
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
     EventType.japan,
@@ -20,10 +21,11 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   @override
   List<EventType> getSavedCalendarEvents() {
     return _sharedPreferences
-            .getStringList(_calendarKey)
-            ?.map((e) => EventType.values[
-                EventType.values.indexWhere((element) => element.name == e)])
-            .toList() ??
+        .getStringList(_calendarKey)
+        ?.map((e) =>
+    EventType.values[
+    EventType.values.indexWhere((element) => element.name == e)])
+        .toList() ??
         _defaultCalendarEvent;
   }
 
@@ -31,5 +33,15 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   Future<bool> saveCalendarEvents(List<EventType> calendarEvents) {
     return _sharedPreferences.setStringList(
         _calendarKey, calendarEvents.map((e) => e.name).toList());
+  }
+
+  @override
+  int? getUpdatedGoogleCalendarYear() {
+    return _sharedPreferences.getInt(_googleCalendarApiUpdatedYear);
+  }
+
+  @override
+  Future<bool> updatedGoogleCalendarYear(int year) {
+    return _sharedPreferences.setInt(_googleCalendarApiUpdatedYear, year);
   }
 }

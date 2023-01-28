@@ -4,4 +4,8 @@ abstract class SharedPreferenceProvider {
   Future<bool> saveCalendarEvents(List<EventType> calendarEvents);
 
   List<EventType> getSavedCalendarEvents();
+
+  Future<bool> updatedGoogleCalendarYear(int year);
+
+  int? getUpdatedGoogleCalendarYear();
 }

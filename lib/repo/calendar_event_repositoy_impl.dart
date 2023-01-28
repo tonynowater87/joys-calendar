@@ -20,29 +20,52 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   Future<List<EventModel>> getEvents(String country) async {
-    String format = "$country%23holiday%40group.v.calendar.google.com/events";
+    final currentYear = DateTime.now().year;
+    var updatedGoogleCalendarYear = _sharedPreferenceProvider.getUpdatedGoogleCalendarYear();
+    var hasSavedCountry = localDatasource.getCalendarModels(country).isNotEmpty;
+    //print('[Tony] getEvents($country), updatedGoogleCalendarYear=$updatedGoogleCalendarYear, hasSavedCountry=$hasSavedCountry');
+    var start = DateTime.now().millisecondsSinceEpoch;
     List<EventModel> result = [];
-    try {
-      EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
-      eventDto.items?.takeWhile((element) {
-        return fromCreatorEmail(element.creator?.email) != null;
-      }).forEach((element) {
+    if (updatedGoogleCalendarYear != null && updatedGoogleCalendarYear == currentYear && hasSavedCountry) {
+      localDatasource.getCalendarModels(country).forEach((element) {
         EventModel eventModel = EventModel(
-            date: DateTime.parse(element.start!.date!),
-            eventType: fromCreatorEmail(element.creator!.email!)!,
-            eventName: element.summary!);
+            date: element.dateTime,
+            eventType: fromCreatorEmail(element.country)!,
+            eventName: element.displayName);
         result.add(eventModel);
       });
 
-      await localDatasource.saveCalendarModels(result
-          .map((e) => CalendarModel()
-            ..displayName = e.eventName
-            ..dateTime = e.date
-            ..country = e.eventType.toCountryCode())
-          .toList());
+      var cost = DateTime.now().millisecondsSinceEpoch - start;
+      //print('[Tony] local getEvent cost $cost');
       return result;
-    } on Exception catch (e) {
-      return result;
+    } else {
+      String format = "$country%23holiday%40group.v.calendar.google.com/events";
+      try {
+        EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
+        eventDto.items?.takeWhile((element) {
+          return fromCreatorEmail(element.creator?.email) != null;
+        }).forEach((element) {
+          EventModel eventModel = EventModel(
+              date: DateTime.parse(element.start!.date!),
+              eventType: fromCreatorEmail(element.creator!.email!)!,
+              eventName: element.summary!);
+          result.add(eventModel);
+        });
+
+        await localDatasource.saveCalendarModels(result
+            .map((e) =>
+        CalendarModel()
+          ..displayName = e.eventName
+          ..dateTime = e.date
+          ..country = e.eventType.toCountryCode())
+            .toList());
+        await _sharedPreferenceProvider.updatedGoogleCalendarYear(currentYear);
+        var cost = DateTime.now().millisecondsSinceEpoch - start;
+        //print('[Tony] remote getEvent cost $cost');
+        return result;
+      } on Exception catch (e) {
+        return result;
+      }
     }
   }
 
@@ -78,8 +101,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   Future<List<EventModel>> getCustomEvents(int year) async {
-    int startYear = year - 10;
-    int endYear = year + 10;
+    int startYear = year - 30;
+    int endYear = year + 30;
     List<EventModel> result = [];
     var start = DateTime.now().millisecondsSinceEpoch;
     print('[Tony] $start');
