@@ -21,12 +21,13 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   @override
   Future<List<EventModel>> getEvents(String country) async {
     final currentYear = DateTime.now().year;
-    var updatedGoogleCalendarYear = _sharedPreferenceProvider.getUpdatedGoogleCalendarYear();
+    var updatedGoogleCalendarYear =
+        _sharedPreferenceProvider.getUpdatedGoogleCalendarYear();
     var hasSavedCountry = localDatasource.getCalendarModels(country).isNotEmpty;
-    //print('[Tony] getEvents($country), updatedGoogleCalendarYear=$updatedGoogleCalendarYear, hasSavedCountry=$hasSavedCountry');
-    var start = DateTime.now().millisecondsSinceEpoch;
     List<EventModel> result = [];
-    if (updatedGoogleCalendarYear != null && updatedGoogleCalendarYear == currentYear && hasSavedCountry) {
+    if (updatedGoogleCalendarYear != null &&
+        updatedGoogleCalendarYear == currentYear &&
+        hasSavedCountry) {
       localDatasource.getCalendarModels(country).forEach((element) {
         EventModel eventModel = EventModel(
             date: element.dateTime,
@@ -34,9 +35,6 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             eventName: element.displayName);
         result.add(eventModel);
       });
-
-      var cost = DateTime.now().millisecondsSinceEpoch - start;
-      //print('[Tony] local getEvent cost $cost');
       return result;
     } else {
       String format = "$country%23holiday%40group.v.calendar.google.com/events";
@@ -53,15 +51,12 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         });
 
         await localDatasource.saveCalendarModels(result
-            .map((e) =>
-        CalendarModel()
-          ..displayName = e.eventName
-          ..dateTime = e.date
-          ..country = e.eventType.toCountryCode())
+            .map((e) => CalendarModel()
+              ..displayName = e.eventName
+              ..dateTime = e.date
+              ..country = e.eventType.toCountryCode())
             .toList());
         await _sharedPreferenceProvider.updatedGoogleCalendarYear(currentYear);
-        var cost = DateTime.now().millisecondsSinceEpoch - start;
-        //print('[Tony] remote getEvent cost $cost');
         return result;
       } on Exception catch (e) {
         return result;
@@ -76,16 +71,31 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   Future<List<EventModel>> getSolarEvents(int year) async {
-    var start = DateTime.now().millisecondsSinceEpoch;
-    print('[Tony] getSolarEvents1, $start');
-    final solarEvents = await compute(getSolarEventTask, year);
-    print('[Tony] getSolarEvents2, ${DateTime.now().millisecondsSinceEpoch - start}');
+    final hasJieQi = localDatasource
+        .getJieQiModels()
+        .where((element) => element.dateTime.year == year)
+        .isNotEmpty;
+    List<EventModel> solarEvents;
+    Map<String, int> arguments = {};
+    if (hasJieQi) {
+      var solarEvents = localDatasource
+          .getJieQiModels()
+          .map((e) => EventModel(
+              date: e.dateTime,
+              eventType: EventType.solar,
+              eventName: e.displayName))
+          .toList();
+      return Future.value(solarEvents);
+    } else {
+      arguments['year'] = year;
+      arguments['range'] = 3;
+      solarEvents = await compute(getSolarEventTask, arguments);
+    }
     await localDatasource.saveJieQiModels(solarEvents
         .map((e) => JieQiModel()
-      ..displayName = e.eventName
-      ..dateTime = e.date)
+          ..displayName = e.eventName
+          ..dateTime = e.date)
         .toList());
-    print('[Tony] getSolarEvents3, ${DateTime.now().millisecondsSinceEpoch - start}');
     return Future.value(solarEvents);
   }
 
@@ -104,8 +114,6 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     int startYear = year - 30;
     int endYear = year + 30;
     List<EventModel> result = [];
-    var start = DateTime.now().millisecondsSinceEpoch;
-    print('[Tony] $start');
     for (var year = startYear; year <= endYear; year++) {
       var dateTime = DateTime(year);
       for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
@@ -119,7 +127,6 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         }
       }
     }
-    print('[Tony] ${DateTime.now().millisecondsSinceEpoch - start}');
     return Future.value(result);
   }
 }
@@ -147,9 +154,9 @@ List<EventModel> getLunarEventTask(int year) {
 }
 
 // task on the other thread
-List<EventModel> getSolarEventTask(int year) {
-  int startYear = year - 1;
-  int endYear = year + 1;
+List<EventModel> getSolarEventTask(dynamic map) {
+  int startYear = map['year'] - map['range'];
+  int endYear = map['year'] + map['range'];
   List<EventModel> result = [];
   for (var year = startYear; year <= endYear; year++) {
     var dateTime = DateTime(year);
