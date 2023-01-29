@@ -50,6 +50,7 @@ dependencies:
   intl: ^0.17.0
   package_info_plus: ^3.0.1
   anim_search_bar: ^2.0.3
+  animated_button: ^0.2.0
 
 dev_dependencies:
   flutter_test:
