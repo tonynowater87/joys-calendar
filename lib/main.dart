@@ -23,6 +23,7 @@ import 'package:joys_calendar/view/search_result/search_result_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_page.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
@@ -75,6 +76,9 @@ class MyApp extends StatelessWidget {
           title: 'Joy\' Calendar',
           theme: JoysCalendarThemeData.lightThemeData,
           initialRoute: AppConstants.routeHome,
+          localizationsDelegates: const [
+            MonthYearPickerLocalizations.delegate
+          ],
           routes: <String, WidgetBuilder>{
             AppConstants.routeHome: (context) =>
                 const MyHomePage(title: 'Joy\' Calendar'),

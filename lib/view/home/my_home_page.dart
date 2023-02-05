@@ -10,6 +10,7 @@ import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 import 'package:lunar/lunar.dart';
+import 'package:month_year_picker/month_year_picker.dart';
 
 import '../../common/constants.dart';
 
@@ -115,13 +116,19 @@ class _MyHomePageState extends State<MyHomePage> {
   }
 }
 
-class HomeCalendarPage extends StatelessWidget {
+class HomeCalendarPage extends StatefulWidget {
+
+  HomeCalendarPage({Key? key}) : super(key: key);
+
+  @override
+  State<HomeCalendarPage> createState() => _HomeCalendarPageState();
+}
+
+class _HomeCalendarPageState extends State<HomeCalendarPage> {
   final CellCalendarPageController cellCalendarPageController =
       CellCalendarPageController();
 
   var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
-
-  HomeCalendarPage({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -171,23 +178,51 @@ class HomeCalendarPage extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             icon: const Icon(Icons.navigate_before),
                             onPressed: () {
-                              if (currentDate.month == 1) {
-                                currentDate = DateTime(
-                                    currentDate.year - 1, DateTime.december);
-                              } else {
-                                currentDate = DateTime(
-                                    currentDate.year, currentDate.month - 1);
-                              }
+                              setState(() {
+                                if (currentDate.month == 1) {
+                                  currentDate = DateTime(
+                                      currentDate.year - 1, DateTime.december);
+                                } else {
+                                  currentDate = DateTime(
+                                      currentDate.year, currentDate.month - 1);
+                                }
+                              });
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
                                   duration: const Duration(milliseconds: 300));
                             }),
-                        IconButton(
+                        currentDate.year == DateTime.now().year && currentDate.month == DateTime.now().month ? IconButton(
+                          padding: EdgeInsets.zero,
+                          icon: const Icon(Icons.edit_calendar),
+                          onPressed: () async {
+                            final pickedDate = await showMonthYearPicker(
+                                context: context,
+                                initialMonthYearPickerMode: MonthYearPickerMode.month,
+                                initialDate: DateTime.now(),
+                                firstDate: DateTime(1900),
+                                lastDate: DateTime(2100));
+                            if (!mounted) {
+                              return;
+                            }
+                            if (pickedDate != null) {
+                              setState(() {
+                                currentDate = pickedDate;
+                              });
+                              cellCalendarPageController.animateToDate(
+                                currentDate,
+                                curve: Curves.linear,
+                                duration: const Duration(milliseconds: 300),
+                              );
+                            }
+                          },
+                        ) : IconButton(
                           padding: EdgeInsets.zero,
                           icon: const Icon(Icons.calendar_today),
                           onPressed: () {
-                            currentDate = DateTime.now();
+                            setState(() {
+                              currentDate = DateTime.now();
+                            });
                             cellCalendarPageController.animateToDate(
                               currentDate,
                               curve: Curves.linear,
@@ -199,13 +234,15 @@ class HomeCalendarPage extends StatelessWidget {
                             padding: EdgeInsets.zero,
                             icon: const Icon(Icons.navigate_next),
                             onPressed: () {
-                              if (currentDate.month == 12) {
-                                currentDate = DateTime(
-                                    currentDate.year + 1, DateTime.january);
-                              } else {
-                                currentDate = DateTime(
-                                    currentDate.year, currentDate.month + 1);
-                              }
+                              setState(() {
+                                if (currentDate.month == 12) {
+                                  currentDate = DateTime(
+                                      currentDate.year + 1, DateTime.january);
+                                } else {
+                                  currentDate = DateTime(
+                                      currentDate.year, currentDate.month + 1);
+                                }
+                              });
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
