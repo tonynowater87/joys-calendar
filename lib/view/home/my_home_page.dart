@@ -285,6 +285,11 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                 },
                 onPageChanged: (firstDate, lastDate) {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
+                  final diff = firstDate.difference(lastDate).inMilliseconds ~/ 2;
+                  final midDate = DateTime.fromMillisecondsSinceEpoch(lastDate.millisecondsSinceEpoch + diff);
+                  setState(() {
+                    currentDate = midDate;
+                  });
                 },
                 dateTextStyle:
                     JoysCalendarThemeData.calendarTextTheme.bodyText2,
