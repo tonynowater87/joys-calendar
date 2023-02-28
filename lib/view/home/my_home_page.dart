@@ -1,6 +1,7 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
@@ -133,6 +134,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
   @override
   Widget build(BuildContext context) {
     final state = context.watch<HomeCubit>().state;
+    final cubit = context.read<HomeCubit>();
     switch (state.status) {
       case HomeStatus.loading:
         return const Center(child: CircularProgressIndicator());
@@ -141,6 +143,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
           child: Text('Oops something went wrong!'),
         );
       case HomeStatus.success:
+      case HomeStatus.title:
         return Column(
           children: [
             Expanded(
@@ -159,20 +162,13 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
-                  final dateString =
-                      DateFormat('y MMMM', AppConstants.defaultLocale)
-                          .format(datetime!);
-                  Lunar lunar = Lunar.fromDate(datetime);
-                  final ganZhi = lunar.getYearInGanZhi();
-                  final shenXiao = lunar.getYearShengXiao(); // TODO 簡轉繁
+                  cubit.convertDateTitle(datetime);
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
-                        Text(
-                          "$dateString $ganZhi $shenXiao",
-                        ),
+                        Text(state.title),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,

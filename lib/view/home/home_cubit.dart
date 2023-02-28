@@ -1,12 +1,19 @@
 import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/services.dart';
+import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:lunar/lunar.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
+
+  static const platformOpenCC = MethodChannel('joyscalendar.opencc');
+
   late CalendarEventRepository calendarEventRepository;
 
   int _currentYear = DateTime.now().year;
@@ -132,5 +139,30 @@ class HomeCubit extends Cubit<HomeState> {
 
   void refreshFromSettings() {
     // TODO
+  }
+
+  Future<void> convertDateTitle(DateTime? datetime) async {
+    print('[Tony] convert datetime=$datetime');
+    final dateString =
+    DateFormat('y MMMM', AppConstants.defaultLocale)
+        .format(datetime!);
+    Lunar lunar = Lunar.fromDate(datetime);
+    final ganZhi = await _convert(lunar.getYearInGanZhi());
+    final shenXiao = await _convert(lunar.getYearShengXiao());
+    final currentEvent = state.events;
+    emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
+  }
+
+
+  Future<String> _convert(String input) async {
+    String output;
+    try {
+      output = await platformOpenCC
+          .invokeMethod("convertToTraditionalChinese", <String, String>{"input": input});
+    } on PlatformException catch (e) {
+      output = "轉換失敗";
+    }
+    print('[Tony] convert input=$input, output=$output');
+    return output;
   }
 }
