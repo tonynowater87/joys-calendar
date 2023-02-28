@@ -39,6 +39,7 @@ class LoginCubit extends Cubit<LoginState> {
 
   Future<void> login() async {
     var loginStatus = await backupRepository.login(LoginType.google);
+    await backupRepository.fetch();
     if (loginStatus == BackUpStatus.fail) {
       await backupRepository.logout();
       Fluttertoast.showToast(msg: "登入發生異常！");
