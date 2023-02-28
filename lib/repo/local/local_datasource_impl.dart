@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
@@ -68,7 +70,8 @@ class LocalDatasourceImpl extends LocalDatasource {
   @override
   List<CalendarModel> getCalendarModels(String countryCode) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
-    final allValues = box.values.where((element) => element.country == countryCode).toList();
+    final allValues =
+        box.values.where((element) => element.country == countryCode).toList();
     allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return allValues;
   }
@@ -93,5 +96,42 @@ class LocalDatasourceImpl extends LocalDatasource {
     final box = Hive.box<JieQiModel>(JieQiModel.boxKey);
     return Future.forEach(
         models, (element) => box.put(element.dateTime.toString(), element));
+  }
+
+  @override
+  String localMemoToJson() {
+    var box = Hive.box<MemoModel>(MemoModel.boxKey);
+    Map<String, dynamic> map =
+        box.toMap().map((key, value) => MapEntry(key.toString(), value));
+    if (map.isEmpty) {
+      return "";
+    }
+    String json = jsonEncode(map,
+        toEncodable: (Object? value) => value is MemoModel
+            ? MemoModel.toJson(value)
+            : throw UnsupportedError('Cannot convert to JSON: $value'));
+    return json;
+  }
+
+  @override
+  Future<void> replaceWithJson(String json) async {
+    // clear
+    var box = Hive.box<MemoModel>(MemoModel.boxKey);
+    final i = await box.clear();
+    print('[Tony] clear done, $i');
+
+    // convert to model
+    Map<String, dynamic> jsonDecoded = jsonDecode(json);
+    List<MemoModel> downloadMemos = [];
+    jsonDecoded.forEach((key, value) {
+      MemoModel memoModel = MemoModel.fromJson(value);
+      downloadMemos.add(memoModel);
+      print('[Tony] recover memo=$memoModel');
+    });
+
+    // add to hive
+    for (var element in downloadMemos) {
+      await box.add(element);
+    }
   }
 }

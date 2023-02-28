@@ -1,9 +1,8 @@
-import 'package:animated_button/animated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:joys_calendar/common/configs/colors.dart';
 import 'package:joys_calendar/repo/app_info_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/view/settings/login/login_view.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_event.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
@@ -117,35 +116,14 @@ class _SettingsPageState extends State<SettingsPage> {
                                 isExpanded: item.isExpanded);
                         }
                       }).toList()),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  Row(
-                    children: [
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      AnimatedButton(
-                          width: 100,
-                          height: 50,
-                          color: AppColors.lightGreen,
-                          onPressed: () {
-                            // TODO
-                          },
-                          child: const Text('備份資料')),
-                      const SizedBox(
-                        width: 10,
-                      ),
-                      AnimatedButton(
-                          width: 100,
-                          height: 50,
-                          color: AppColors.lightGreen,
-                          onPressed: () {
-                            // TODO
-                          },
-                          child: const Text('恢復資料')),
-                    ],
-                  ),
+                  SizedBox(
+                    height: 200,
+                    width: 400,
+                    child: Card(
+                      margin: EdgeInsets.symmetric(vertical: 16),
+                      child: LoginView(),
+                    ),
+                  )
                 ],
               ),
             ),

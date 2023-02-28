@@ -20,4 +20,8 @@ abstract class LocalDatasource {
 
   List<JieQiModel> getJieQiModels();
   Future<void> saveJieQiModels(List<JieQiModel> models);
+
+  String localMemoToJson();
+
+  Future<void> replaceWithJson(String json);
 }

@@ -6,6 +6,7 @@ import 'model/event_model.dart';
 class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _calendarKey = "CALENDAR_KEY";
   static const String _googleCalendarApiUpdatedYear = "GOOGLE_CALENDAR_API_UPDATED_YEAR";
+  static const String _hasRunBefore = "HAS_RUN_BEFORE";
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
     EventType.japan,
@@ -43,5 +44,15 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   @override
   Future<bool> updatedGoogleCalendarYear(int year) {
     return _sharedPreferences.setInt(_googleCalendarApiUpdatedYear, year);
+  }
+
+  @override
+  bool getHasRunBefore() {
+    return _sharedPreferences.getBool(_hasRunBefore) ?? false;
+  }
+
+  @override
+  Future<bool> setHasRunBefore(bool hasRunBefore) {
+    return _sharedPreferences.setBool(_hasRunBefore, hasRunBefore);
   }
 }

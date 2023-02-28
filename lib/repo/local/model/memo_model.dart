@@ -16,4 +16,13 @@ class MemoModel extends HiveObject {
   String toString() {
     return 'MemoModel{key:$key, memo: $memo, dateTime: $dateTime}';
   }
+
+  static Map<String, dynamic> toJson(MemoModel value) =>
+         {'memo': value.memo, 'dateTime': value.dateTime.millisecondsSinceEpoch};
+
+  static MemoModel fromJson(Map<String, dynamic> json) {
+    return MemoModel()
+      ..memo = json['memo'] ?? ''
+      ..dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime'] as int);
+  }
 }
