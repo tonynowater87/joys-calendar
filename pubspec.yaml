@@ -34,7 +34,10 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.2
-  cell_calendar: ^0.6.0
+  cell_calendar:
+    git:
+      url: https://github.com/tonynowater87/cell_calendar.git
+      ref: master
   flutter_bloc: ^8.1.1
   retrofit: ^3.0.1+1
   logger: ^1.1.0

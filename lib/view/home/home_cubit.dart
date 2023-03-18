@@ -4,6 +4,7 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
+import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:lunar/lunar.dart';
@@ -35,7 +36,8 @@ class HomeCubit extends Cubit<HomeState> {
         combinedCalendarEvents.addAll(customEvents.map((e) => CalendarEvent(
             eventName: e.eventName,
             eventDate: e.date,
-            eventBackgroundColor: e.eventType.toEventColor())));
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
 
       if (calendarEventRepository
@@ -46,7 +48,8 @@ class HomeCubit extends Cubit<HomeState> {
         combinedCalendarEvents.addAll(lunarEvents.map((e) => CalendarEvent(
             eventName: e.eventName,
             eventDate: e.date,
-            eventBackgroundColor: e.eventType.toEventColor())));
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
 
       if (calendarEventRepository
@@ -57,7 +60,8 @@ class HomeCubit extends Cubit<HomeState> {
         combinedCalendarEvents.addAll(solarEvents.map((e) => CalendarEvent(
             eventName: e.eventName,
             eventDate: e.date,
-            eventBackgroundColor: e.eventType.toEventColor())));
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
 
       Future<List<EventModel>> getTaiwanEvents;
@@ -128,7 +132,8 @@ class HomeCubit extends Cubit<HomeState> {
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             eventName: e.eventName,
             eventDate: e.date,
-            eventBackgroundColor: e.eventType.toEventColor())));
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
 
       emit(HomeState.success(combinedCalendarEvents));

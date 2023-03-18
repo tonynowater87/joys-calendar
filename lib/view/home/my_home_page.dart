@@ -1,16 +1,13 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
-import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
-import 'package:lunar/lunar.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 import '../../common/constants.dart';
@@ -118,7 +115,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 class HomeCalendarPage extends StatefulWidget {
-
   HomeCalendarPage({Key? key}) : super(key: key);
 
   @override
@@ -188,44 +184,49 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                   curve: Curves.linear,
                                   duration: const Duration(milliseconds: 300));
                             }),
-                        currentDate.year == DateTime.now().year && currentDate.month == DateTime.now().month ? IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.edit_calendar),
-                          onPressed: () async {
-                            final pickedDate = await showMonthYearPicker(
-                                context: context,
-                                initialMonthYearPickerMode: MonthYearPickerMode.month,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2100));
-                            if (!mounted) {
-                              return;
-                            }
-                            if (pickedDate != null) {
-                              setState(() {
-                                currentDate = pickedDate;
-                              });
-                              cellCalendarPageController.animateToDate(
-                                currentDate,
-                                curve: Curves.linear,
-                                duration: const Duration(milliseconds: 300),
-                              );
-                            }
-                          },
-                        ) : IconButton(
-                          padding: EdgeInsets.zero,
-                          icon: const Icon(Icons.calendar_today),
-                          onPressed: () {
-                            setState(() {
-                              currentDate = DateTime.now();
-                            });
-                            cellCalendarPageController.animateToDate(
-                              currentDate,
-                              curve: Curves.linear,
-                              duration: const Duration(milliseconds: 300),
-                            );
-                          },
-                        ),
+                        currentDate.year == DateTime.now().year &&
+                                currentDate.month == DateTime.now().month
+                            ? IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(Icons.edit_calendar),
+                                onPressed: () async {
+                                  final pickedDate = await showMonthYearPicker(
+                                      context: context,
+                                      initialMonthYearPickerMode:
+                                          MonthYearPickerMode.month,
+                                      initialDate: DateTime.now(),
+                                      firstDate: DateTime(1900),
+                                      lastDate: DateTime(2100));
+                                  if (!mounted) {
+                                    return;
+                                  }
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      currentDate = pickedDate;
+                                    });
+                                    cellCalendarPageController.animateToDate(
+                                      currentDate,
+                                      curve: Curves.linear,
+                                      duration:
+                                          const Duration(milliseconds: 300),
+                                    );
+                                  }
+                                },
+                              )
+                            : IconButton(
+                                padding: EdgeInsets.zero,
+                                icon: const Icon(Icons.calendar_today),
+                                onPressed: () {
+                                  setState(() {
+                                    currentDate = DateTime.now();
+                                  });
+                                  cellCalendarPageController.animateToDate(
+                                    currentDate,
+                                    curve: Curves.linear,
+                                    duration: const Duration(milliseconds: 300),
+                                  );
+                                },
+                              ),
                         IconButton(
                             padding: EdgeInsets.zero,
                             icon: const Icon(Icons.navigate_next),
@@ -271,7 +272,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       child: Text(
                                         event.eventName,
                                         style: TextStyle(
-                                            color: event.eventTextColor),
+                                            color: event.eventTextStyle.color),
                                       ),
                                     ),
                                   )
@@ -281,8 +282,10 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                 },
                 onPageChanged: (firstDate, lastDate) {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
-                  final diff = firstDate.difference(lastDate).inMilliseconds ~/ 2;
-                  final midDate = DateTime.fromMillisecondsSinceEpoch(lastDate.millisecondsSinceEpoch + diff);
+                  final diff =
+                      firstDate.difference(lastDate).inMilliseconds ~/ 2;
+                  final midDate = DateTime.fromMillisecondsSinceEpoch(
+                      lastDate.millisecondsSinceEpoch + diff);
                   setState(() {
                     currentDate = midDate;
                   });

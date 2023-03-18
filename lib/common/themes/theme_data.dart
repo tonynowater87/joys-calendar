@@ -67,7 +67,7 @@ class JoysCalendarThemeData {
     caption: lightText.copyWith(fontWeight: _semiBold, fontSize: 16.0),
     headline5: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
     subtitle1: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
-    overline: lightText.copyWith(fontWeight: _medium, fontSize: 12.0),
+    overline: lightText.copyWith(fontWeight: _regular, fontSize: 10.0),
     bodyText1: lightText.copyWith(fontWeight: _regular, fontSize: 14.0),
     subtitle2: lightText.copyWith(fontWeight: _medium, fontSize: 14.0),
     bodyText2: lightText.copyWith(fontWeight: _regular, fontSize: 16.0),
