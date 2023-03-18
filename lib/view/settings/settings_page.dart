@@ -1,12 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/repo/app_info_provider.dart';
-import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/settings/login/login_view.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_event.dart';
+import 'package:joys_calendar/view/settings/settings_grid_list_view.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
-import 'package:joys_calendar/view/settings/settings_state.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -54,55 +53,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                       title: Text(
                                           item.headerValue.toLocalization()));
                                 },
-                                body: Padding(
-                                  padding: const EdgeInsets.symmetric(
+                                body: const Padding(
+                                  padding: EdgeInsets.symmetric(
                                       horizontal: 8.0),
-                                  child:
-                                      BlocBuilder<SettingsBloc, SettingsState>(
-                                    builder: (context, state) {
-                                      final children = state.settingEventItems
-                                          .map(
-                                            (e) => Row(
-                                              children: [
-                                                Text(e.eventType
-                                                    .toSettingName()),
-                                                Checkbox(
-                                                  value: e.isSelected,
-                                                  onChanged: (bool? isChecked) {
-                                                    if (isChecked == true) {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(AddFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    } else if (isChecked ==
-                                                        false) {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(RemoveFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    } else {
-                                                      context
-                                                          .read<SettingsBloc>()
-                                                          .add(AddFilterEvent(
-                                                              eventType:
-                                                                  e.eventType));
-                                                    }
-                                                  },
-                                                ),
-                                              ],
-                                            ),
-                                          )
-                                          .toList();
-                                      return GridView.count(
-                                          primary: false,
-                                          padding: const EdgeInsets.all(5),
-                                          crossAxisCount: 3,
-                                          shrinkWrap: true,
-                                          children: children);
-                                    },
-                                  ),
+                                  child: SettingsGridListView(),
                                 ),
                                 isExpanded: item.isExpanded);
                           case SettingType.locale:
@@ -116,7 +70,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                 isExpanded: item.isExpanded);
                         }
                       }).toList()),
-                  SizedBox(
+                  const SizedBox(
                     height: 200,
                     width: 400,
                     child: Card(

@@ -142,7 +142,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> convertDateTitle(DateTime? datetime) async {
-    print('[Tony] convert datetime=$datetime');
+    //print('[Tony] convert datetime=$datetime');
     final dateString =
     DateFormat('y MMMM', AppConstants.defaultLocale)
         .format(datetime!);
@@ -150,7 +150,7 @@ class HomeCubit extends Cubit<HomeState> {
     final ganZhi = await _convert(lunar.getYearInGanZhi());
     final shenXiao = await _convert(lunar.getYearShengXiao());
     final currentEvent = state.events;
-    emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
+    // emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
   }
 
 
@@ -162,7 +162,7 @@ class HomeCubit extends Cubit<HomeState> {
     } on PlatformException catch (e) {
       output = "轉換失敗";
     }
-    print('[Tony] convert input=$input, output=$output');
+    //print('[Tony] convert input=$input, output=$output');
     return output;
   }
 }

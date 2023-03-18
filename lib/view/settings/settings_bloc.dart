@@ -17,47 +17,38 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   _initSettingEventItems(SettingsEvent event, Emitter<SettingsState> emitter) {
     List<EventType> currentEventTypes =
-    calendarEventRepository.getDisplayEventType();
+        calendarEventRepository.getDisplayEventType();
 
     settingsEventItems = List.generate(
         EventType.values.length,
-            (index) =>
-            SettingsEventItem(
-                EventType.values[index],
-                currentEventTypes
-                    .any((element) => EventType.values[index] == element)));
-    emitter.call(
-        state.copyWith(settingsEventItems.toList(), SettingsStateStatus.ready));
+        (index) => SettingsEventItem(
+            EventType.values[index],
+            currentEventTypes
+                .any((element) => EventType.values[index] == element)));
+    emitter.call(state.copyWith(settingsEventItems.toList()));
   }
 
-  _addSettingEventItems(AddFilterEvent event, Emitter<SettingsState> emitter) {
-    settingsEventItems[settingsEventItems.indexWhere((element) =>
-    element.eventType == event.eventType)] =
+  _addSettingEventItems(AddFilterEvent event, Emitter<SettingsState> emitter) async {
+    settingsEventItems[settingsEventItems
+            .indexWhere((element) => element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, true);
-    _update();
-    emitter.call(
-        state.copyWith(settingsEventItems.toList(), SettingsStateStatus.add));
+    await _update();
+    emitter.call(state.copyWith(settingsEventItems.toList()));
   }
 
-  _removeSettingEventItems(RemoveFilterEvent event,
-      Emitter<SettingsState> emitter) {
-    if (state.settingEventItems
-        .where((element) =>
-    element.isSelected)
-        .length ==
-        1) {
-      return;
-    }
-
-    settingsEventItems[settingsEventItems.indexWhere((element) =>
-    element.eventType == event.eventType)] =
+  _removeSettingEventItems(
+      RemoveFilterEvent event, Emitter<SettingsState> emitter) async {
+    settingsEventItems[settingsEventItems
+            .indexWhere((element) => element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, false);
-    _update();
-    emitter.call(state.copyWith(
-        settingsEventItems.toList(), SettingsStateStatus.remove));
+    await _update();
+    emitter.call(state.copyWith(settingsEventItems.toList()));
   }
 
-  void _update() {
-    calendarEventRepository.setDisplayEventType(settingsEventItems.where((element) => element.isSelected).map((e) => e.eventType).toList());
+  Future<void> _update() async {
+    await calendarEventRepository.setDisplayEventType(settingsEventItems
+        .where((element) => element.isSelected)
+        .map((e) => e.eventType)
+        .toList());
   }
 }
