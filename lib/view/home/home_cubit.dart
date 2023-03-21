@@ -155,7 +155,7 @@ class HomeCubit extends Cubit<HomeState> {
     final ganZhi = await _convert(lunar.getYearInGanZhi());
     final shenXiao = await _convert(lunar.getYearShengXiao());
     final currentEvent = state.events;
-    // emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
+    emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
   }
 
 
