@@ -49,7 +49,8 @@ class HomeCubit extends Cubit<HomeState> {
             eventName: e.eventName,
             eventDate: e.date,
             eventBackgroundColor: e.eventType.toEventColor(),
-            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!,
+            order: -1)));
       }
 
       if (calendarEventRepository
