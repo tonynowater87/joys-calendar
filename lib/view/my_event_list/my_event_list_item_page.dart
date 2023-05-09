@@ -21,7 +21,7 @@ class MyEventListItemPage extends StatelessWidget {
             .format(_model.dateTime);
     final memo = _model.memo;
     return Container(
-      margin: const EdgeInsets.fromLTRB(4, 0, 4, 4),
+      margin: const EdgeInsets.fromLTRB(4, 4, 4, 4),
       child: Column(
         children: [
           Row(
@@ -30,36 +30,42 @@ class MyEventListItemPage extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Container(
-                          padding: const EdgeInsets.all(4),
-                          margin: const EdgeInsets.only(left: 4),
-                          decoration: BoxDecoration(
-                              border: Border.all(
-                                  color: Theme.of(context).colorScheme.primary),
-                              borderRadius:
-                                  const BorderRadius.all(Radius.circular(8))),
-                          child: Text(
-                            date,
-                            style: Theme.of(context).textTheme.caption,
-                          ),
-                        )),
-                    const SizedBox(height: 4),
-                    Align(
-                        alignment: Alignment.bottomLeft,
-                        child: Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                            memo,
-                            style: Theme.of(context).textTheme.subtitle1,
-                          ),
-                        ))
+                    Visibility(
+                      visible: _model.memo.isEmpty,
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Container(
+                            padding: const EdgeInsets.all(4),
+                            margin: const EdgeInsets.only(left: 4),
+                            decoration: BoxDecoration(
+                                border: Border.all(
+                                    color:
+                                        Theme.of(context).colorScheme.primary),
+                                borderRadius:
+                                    const BorderRadius.all(Radius.circular(8))),
+                            child: Text(
+                              date,
+                              style: Theme.of(context).textTheme.caption,
+                            ),
+                          )),
+                    ),
+                    Visibility(
+                      visible: _model.memo.isNotEmpty,
+                      child: Align(
+                          alignment: Alignment.centerLeft,
+                          child: Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              memo,
+                              style: Theme.of(context).textTheme.subtitle1,
+                            ),
+                          )),
+                    )
                   ],
                 ),
               ),
               Visibility(
-                visible: isDeleting,
+                visible: isDeleting && _model.memo.isNotEmpty,
                 /* below settings are for invisible  */
                 maintainSize: !isDeleting,
                 maintainAnimation: !isDeleting,
@@ -69,7 +75,7 @@ class MyEventListItemPage extends StatelessWidget {
                     onChanged: (isChecked) {
                       onCheckCallback.call(index, isChecked ?? false);
                     }),
-              )
+              ),
             ],
           ),
           const Divider()

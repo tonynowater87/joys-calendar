@@ -35,15 +35,20 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
     });
   }
 
-  Future<void> saveEvent() async {
+  Future<bool> saveEvent() async {
+    if (updatedMemo.isEmpty) {
+      return false;
+    }
     var updatedMemoModel = state.memoModel..memo = updatedMemo;
     if (key != null) {
       final memoModel = localMemoRepository.getMemo(key);
       await localMemoRepository.saveMemo(memoModel
         ..memo = updatedMemoModel.memo
         ..dateTime = updatedMemoModel.dateTime);
+      return true;
     } else {
       await localMemoRepository.saveMemo(updatedMemoModel);
+      return true;
     }
   }
 }

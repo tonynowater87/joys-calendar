@@ -163,10 +163,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                               borderRadius: BorderRadius.zero,
                                               side: BorderSide()))),
                                   onPressed: () async {
-                                    await context
+                                    final result = await context
                                         .read<AddEventBloc>()
                                         .saveEvent();
-                                    if (!mounted) {
+                                    if (!mounted || !result) {
                                       return;
                                     }
                                     Navigator.pop(context, true);

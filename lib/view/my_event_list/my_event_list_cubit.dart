@@ -11,15 +11,23 @@ class MyEventListCubit extends Cubit<MyEventListState> {
       : super(const MyEventListState.loading());
 
   List<MyEventUIModel> _getMyEventList() {
+
+    DateTime? dateTime;
     var allMemos = localDatasource.getAllMemos();
     var myEventList = <MyEventUIModel>[];
     allMemos.asMap().forEach((key, value) {
+      if (dateTime?.day != value.dateTime.day) {
+        myEventList.add(MyEventUIModel(key: -1, memo: "", dateTime: value.dateTime, isChecked: false));
+      }
       myEventList.add(MyEventUIModel(
           key: value.key,
           memo: value.memo,
           dateTime: value.dateTime,
           isChecked: false));
+
+      dateTime = value.dateTime;
     });
+
     return myEventList;
   }
 
