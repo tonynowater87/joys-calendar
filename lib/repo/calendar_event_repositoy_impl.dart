@@ -19,48 +19,50 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       this._sharedPreferenceProvider, this.localDatasource, this.apiKey);
 
   @override
-  Future<List<EventModel>> getEvents(String country) async {
-    final currentYear = DateTime.now().year;
-    var updatedGoogleCalendarYear =
-        _sharedPreferenceProvider.getUpdatedGoogleCalendarYear();
-    var hasSavedCountry = localDatasource.getCalendarModels(country).isNotEmpty;
+  Future<List<EventModel>> getEventsFromLocalDB(String country) async {
     List<EventModel> result = [];
-    if (updatedGoogleCalendarYear != null &&
-        updatedGoogleCalendarYear == currentYear &&
-        hasSavedCountry) {
-      localDatasource.getCalendarModels(country).forEach((element) {
+    print('[Tony] getEventsFromLocalDB start ($country)');
+    localDatasource.getCalendarModels(country).forEach((element) {
+      EventModel eventModel = EventModel(
+          date: element.dateTime,
+          eventType: fromCreatorEmail(element.country)!,
+          eventName: element.displayName);
+      result.add(eventModel);
+    });
+    print('[Tony] getEventsFromLocalDB end ($country)');
+    return result;
+  }
+
+  @override
+  Future<List<EventModel>> getEvents(String country) async {
+    List<EventModel> result = [];
+    String format = "$country%23holiday%40group.v.calendar.google.com/events";
+    try {
+      print('[Tony] api call start ($country)');
+      EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
+      print('[Tony] api call end ($country)');
+      print('[Tony] api items mapping start (${eventDto.items?.length})');
+      eventDto.items?.takeWhile((element) {
+        return fromCreatorEmail(element.creator?.email) != null;
+      }).forEach((element) {
         EventModel eventModel = EventModel(
-            date: element.dateTime,
-            eventType: fromCreatorEmail(element.country)!,
-            eventName: element.displayName);
+            date: DateTime.parse(element.start!.date!),
+            eventType: fromCreatorEmail(element.creator!.email!)!,
+            eventName: element.summary!);
         result.add(eventModel);
       });
+      print('[Tony] api items mapping end (${eventDto.items?.length})');
+      print('[Tony] api save db start');
+      await localDatasource.saveCalendarModels(result
+          .map((e) => CalendarModel()
+            ..displayName = e.eventName
+            ..dateTime = e.date
+            ..country = e.eventType.toCountryCode())
+          .toList());
+      print('[Tony] api save db end');
       return result;
-    } else {
-      String format = "$country%23holiday%40group.v.calendar.google.com/events";
-      try {
-        EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
-        eventDto.items?.takeWhile((element) {
-          return fromCreatorEmail(element.creator?.email) != null;
-        }).forEach((element) {
-          EventModel eventModel = EventModel(
-              date: DateTime.parse(element.start!.date!),
-              eventType: fromCreatorEmail(element.creator!.email!)!,
-              eventName: element.summary!);
-          result.add(eventModel);
-        });
-
-        await localDatasource.saveCalendarModels(result
-            .map((e) => CalendarModel()
-              ..displayName = e.eventName
-              ..dateTime = e.date
-              ..country = e.eventType.toCountryCode())
-            .toList());
-        await _sharedPreferenceProvider.updatedGoogleCalendarYear(currentYear);
-        return result;
-      } on Exception catch (e) {
-        return result;
-      }
+    } on Exception catch (e) {
+      return result;
     }
   }
 
