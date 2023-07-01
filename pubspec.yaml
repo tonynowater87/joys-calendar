@@ -35,7 +35,7 @@ dependencies:
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: 1.0.2
   cell_calendar:
-#    path:  ../../../../third-party/flutter/cell_calendar
+    #    path:  ../../../../third-party/flutter/cell_calendar
     git:
       url: https://github.com/tonynowater87/cell_calendar.git
       ref: master
@@ -51,7 +51,6 @@ dependencies:
   hive: 2.2.3
   flutter_speed_dial: 6.0.0
   fluttertoast: 8.2.1
-  intl: 0.17.0
   package_info_plus: 3.0.1
   anim_search_bar: 2.0.3
   animated_button: 0.2.0
@@ -60,9 +59,17 @@ dependencies:
   firebase_core: 2.7.0
   firebase_auth: 4.2.5
   path_provider: 2.0.12
-  month_year_picker: 0.2.0+2
+  month_year_picker:
+    git:
+      url: https://github.com/tonynowater87/month-year-picker.git
+      ref: tony-calendar
   google_sign_in: 6.0.1
-  firebase_crashlytics: 3.0.15
+  flutter_localizations:
+    sdk: flutter
+  intl: 0.18.1
+
+dependency_overrides:
+  intl: any
 
 dev_dependencies:
   flutter_test:

@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -61,12 +63,14 @@ class _AddEventPageState extends State<AddEventPage> {
                   final addEventState = state;
                   if (addEventState.status == AddEventStatus.edit) {
                     if (_textEditingController.text.isEmpty) {
-                      _textEditingController.text = addEventState.memoModel.memo;
+                      _textEditingController.text =
+                          addEventState.memoModel.memo;
                     } else {
                       _textEditingController.text = _textEditingController.text;
                     }
-                    _textEditingController.selection = TextSelection.fromPosition(
-                        TextPosition(offset: _textEditingController.text.length));
+                    _textEditingController.selection =
+                        TextSelection.fromPosition(TextPosition(
+                            offset: _textEditingController.text.length));
                   } else if (addEventState.status == AddEventStatus.add &&
                       _textEditingController.text.isEmpty) {
                     _textEditingController.text = "";
@@ -84,8 +88,8 @@ class _AddEventPageState extends State<AddEventPage> {
                         alignment: Alignment.centerLeft,
                         child: OutlinedButton.icon(
                           onPressed: () async {
-                            // TODO locale for DatePicker
                             final pickedDate = await showDatePicker(
+                                locale: window.locale,
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(1900),
@@ -171,9 +175,10 @@ class _AddEventPageState extends State<AddEventPage> {
                                     }
                                     Navigator.pop(context, true);
                                   },
-                                  child: addEventState.status == AddEventStatus.add
-                                      ? Text('新增')
-                                      : Text('更新')),
+                                  child:
+                                      addEventState.status == AddEventStatus.add
+                                          ? Text('新增')
+                                          : Text('更新')),
                             )
                           ],
                         ),

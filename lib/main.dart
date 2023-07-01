@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -6,7 +8,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/date_symbol_data_local.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
@@ -35,10 +37,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 Future<void> main() async {
   await LocalDatasourceImpl.init();
-  await initializeDateFormatting();
 
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(name: "Joys-Calendar",options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+      name: "Joys-Calendar", options: DefaultFirebaseOptions.currentPlatform);
 
   print('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
@@ -113,8 +115,15 @@ class MyApp extends StatelessWidget {
           title: 'Joy\' Calendar',
           theme: JoysCalendarThemeData.lightThemeData,
           initialRoute: AppConstants.routeHome,
+          locale: window.locale,
           localizationsDelegates: const [
-            MonthYearPickerLocalizations.delegate
+            MonthYearPickerLocalizations.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: const [
+            Locale('zh', '')
           ],
           routes: <String, WidgetBuilder>{
             AppConstants.routeHome: (context) =>

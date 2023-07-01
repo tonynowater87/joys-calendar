@@ -28,8 +28,8 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext rootContext) {
     return BlocProvider(
-      create: (context) =>
-          HomeCubit(context.read<CalendarEventRepository>())..getEventFirstTime(),
+      create: (context) => HomeCubit(context.read<CalendarEventRepository>())
+        ..getEventFirstTime(),
       child: Builder(builder: (scaffoldContext) {
         return Scaffold(
           resizeToAvoidBottomInset: false,
