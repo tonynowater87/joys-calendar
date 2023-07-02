@@ -19,7 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit(this.calendarEventRepository) : super(const HomeState.loading());
 
   Future<void> getEventFirstTime() async {
-    debugPrint('[Tony] getEventFirstTime()');
+    debugPrint('[Tony] getEventFirstTime');
     final List<CalendarEvent> combinedCalendarEvents = [];
     Future<List<EventModel>> getTaiwanEvents;
     if (calendarEventRepository
@@ -72,20 +72,42 @@ class HomeCubit extends Cubit<HomeState> {
       getUsEvents = Future.value(List.empty());
     }
 
+    Future<List<EventModel>> getLunarEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.lunar)) {
+      getLunarEvents = calendarEventRepository.getLunarEvents(_currentYear, 1);
+    } else {
+      getLunarEvents = Future.value(List.empty());
+    }
+
+    Future<List<EventModel>> getSolarEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.solar)) {
+      getSolarEvents = calendarEventRepository.getSolarEventsFromLocalDB(_currentYear);
+    } else {
+      getSolarEvents = Future.value(List.empty());
+    }
+
     Future.wait([
       getTaiwanEvents,
       getChinaEvents,
       getHongKongEvents,
       getJapanEvents,
       getUkEvents,
-      getUsEvents
+      getUsEvents,
+      getLunarEvents,
+      getSolarEvents
     ]).then((allCountryEvents) {
       for (var events in allCountryEvents) {
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
             eventBackgroundColor: e.eventType.toEventColor(),
-            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+            eventTextStyle:
+                JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
       debugPrint('[Tony] update all event ${DateTime.now()}');
       emit(HomeState.success(combinedCalendarEvents));
@@ -94,12 +116,13 @@ class HomeCubit extends Cubit<HomeState> {
     getEvents();
   }
 
+  // refresh data
   Future<void> getEvents() async {
     try {
       final List<CalendarEvent> combinedCalendarEvents = [];
 
       await getCustomEvents(combinedCalendarEvents);
-      await getLunarEvents(combinedCalendarEvents);
+      await getLunarEvents(combinedCalendarEvents, 5);
       await getSolarEvents(combinedCalendarEvents);
 
       Future<List<EventModel>> getTaiwanEvents;
@@ -188,7 +211,7 @@ class HomeCubit extends Cubit<HomeState> {
         .getDisplayEventType()
         .contains(EventType.solar)) {
       var solarEvents =
-          await calendarEventRepository.getSolarEvents(_currentYear);
+          await calendarEventRepository.getSolarEvents(_currentYear, 5);
       combinedCalendarEvents.addAll(solarEvents.map((e) => CalendarEvent(
           eventName: e.eventName,
           eventDate: e.date,
@@ -198,12 +221,12 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<void> getLunarEvents(
-      List<CalendarEvent> combinedCalendarEvents) async {
+      List<CalendarEvent> combinedCalendarEvents, int range) async {
     if (calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.lunar)) {
       var lunarEvents =
-          await calendarEventRepository.getLunarEvents(_currentYear);
+          await calendarEventRepository.getLunarEvents(_currentYear, range);
       combinedCalendarEvents.addAll(lunarEvents.map((e) => CalendarEvent(
           eventName: e.eventName,
           eventDate: e.date,

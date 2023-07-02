@@ -38,10 +38,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     List<EventModel> result = [];
     String format = "$country%23holiday%40group.v.calendar.google.com/events";
     try {
-      print('[Tony] api call start ($country)');
       EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
-      print('[Tony] api call end ($country)');
-      print('[Tony] api items mapping start (${eventDto.items?.length})');
       eventDto.items?.takeWhile((element) {
         return fromCreatorEmail(element.creator?.email) != null;
       }).forEach((element) {
@@ -51,15 +48,12 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             eventName: element.summary!);
         result.add(eventModel);
       });
-      print('[Tony] api items mapping end (${eventDto.items?.length})');
-      print('[Tony] api save db start');
       await localDatasource.saveCalendarModels(result
           .map((e) => CalendarModel()
             ..displayName = e.eventName
             ..dateTime = e.date
             ..country = e.eventType.toCountryCode())
           .toList());
-      print('[Tony] api save db end');
       return result;
     } on Exception catch (e) {
       return result;
@@ -67,37 +61,38 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
-  Future<List<EventModel>> getLunarEvents(int year) {
-    return compute(getLunarEventTask, year);
+  Future<List<EventModel>> getLunarEvents(int year, int range) {
+    Map<String, int> arguments = {};
+    arguments['year'] = year;
+    arguments['range'] = range;
+    return compute(getLunarEventTask, arguments);
   }
 
   @override
-  Future<List<EventModel>> getSolarEvents(int year) async {
-    final hasJieQi = localDatasource
-        .getJieQiModels()
-        .where((element) => element.dateTime.year == year)
-        .isNotEmpty;
+  Future<List<EventModel>> getSolarEvents(int year, int range) async {
     List<EventModel> solarEvents;
     Map<String, int> arguments = {};
-    if (hasJieQi) {
-      var solarEvents = localDatasource
-          .getJieQiModels()
-          .map((e) => EventModel(
-              date: e.dateTime,
-              eventType: EventType.solar,
-              eventName: e.displayName))
-          .toList();
-      return Future.value(solarEvents);
-    } else {
-      arguments['year'] = year;
-      arguments['range'] = 3;
-      solarEvents = await compute(getSolarEventTask, arguments);
-    }
+    arguments['year'] = year;
+    arguments['range'] = range;
+    solarEvents = await compute(getSolarEventTask, arguments);
     await localDatasource.saveJieQiModels(solarEvents
         .map((e) => JieQiModel()
           ..displayName = e.eventName
           ..dateTime = e.date)
         .toList());
+    return Future.value(solarEvents);
+  }
+
+  @override
+  Future<List<EventModel>> getSolarEventsFromLocalDB(int year) {
+    var solarEvents = localDatasource
+        .getJieQiModels()
+        .where((element) => element.dateTime.year == year)
+        .map((e) => EventModel(
+            date: e.dateTime,
+            eventType: EventType.solar,
+            eventName: e.displayName))
+        .toList();
     return Future.value(solarEvents);
   }
 
@@ -178,9 +173,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
 // TODO performance issue 20 years cost 519 milliseconds
 // task on the other thread
-List<EventModel> getLunarEventTask(int year) {
-  int startYear = year - 1;
-  int endYear = year + 1;
+List<EventModel> getLunarEventTask(dynamic map) {
+  int startYear = map['year'] - map['range'];
+  int endYear = map['year'] + map['range'];
   List<EventModel> result = [];
   for (var year = startYear; year <= endYear; year++) {
     var dateTime = DateTime(year);
