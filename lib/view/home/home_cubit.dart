@@ -2,12 +2,10 @@ import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
-import 'package:intl/intl.dart';
-import 'package:joys_calendar/common/constants.dart';
+import 'package:flutter/widgets.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
-import 'package:lunar/lunar.dart';
 
 part 'home_state.dart';
 
@@ -21,6 +19,7 @@ class HomeCubit extends Cubit<HomeState> {
   HomeCubit(this.calendarEventRepository) : super(const HomeState.loading());
 
   Future<void> getEventFirstTime() async {
+    debugPrint('[Tony] getEventFirstTime()');
     final List<CalendarEvent> combinedCalendarEvents = [];
     Future<List<EventModel>> getTaiwanEvents;
     if (calendarEventRepository
@@ -73,24 +72,24 @@ class HomeCubit extends Cubit<HomeState> {
       getUsEvents = Future.value(List.empty());
     }
 
-    final allCountryEvents = await Future.wait([
+    Future.wait([
       getTaiwanEvents,
       getChinaEvents,
       getHongKongEvents,
       getJapanEvents,
       getUkEvents,
       getUsEvents
-    ]);
-
-    for (var events in allCountryEvents) {
-      combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
-          eventName: e.eventName,
-          eventDate: e.date,
-          eventBackgroundColor: e.eventType.toEventColor(),
-          eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
-    }
-
-    emit(HomeState.success(combinedCalendarEvents));
+    ]).then((allCountryEvents) {
+      for (var events in allCountryEvents) {
+        combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            eventName: e.eventName,
+            eventDate: e.date,
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+      }
+      debugPrint('[Tony] update all event ${DateTime.now()}');
+      emit(HomeState.success(combinedCalendarEvents));
+    });
 
     getEvents();
   }
@@ -176,6 +175,7 @@ class HomeCubit extends Cubit<HomeState> {
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
 
+      debugPrint('[Tony] get all event ${DateTime.now()}');
       emit(HomeState.success(combinedCalendarEvents));
     } on Exception {
       emit(const HomeState.failure());
@@ -230,28 +230,5 @@ class HomeCubit extends Cubit<HomeState> {
 
   void refreshFromSettings() {
     // TODO
-  }
-
-  Future<void> convertDateTitle(DateTime? datetime) async {
-    //print('[Tony] convert datetime=$datetime');
-    final dateString =
-        DateFormat('y MMMM', AppConstants.defaultLocale).format(datetime!);
-    Lunar lunar = Lunar.fromDate(datetime);
-    final ganZhi = await _convert(lunar.getYearInGanZhi());
-    final shenXiao = await _convert(lunar.getYearShengXiao());
-    final currentEvent = state.events;
-    emit(HomeState.title(currentEvent, "$dateString $ganZhi $shenXiao"));
-  }
-
-  Future<String> _convert(String input) async {
-    String output;
-    try {
-      output = await platformOpenCC.invokeMethod(
-          "convertToTraditionalChinese", <String, String>{"input": input});
-    } on PlatformException catch (e) {
-      output = "轉換失敗";
-    }
-    //print('[Tony] convert input=$input, output=$output');
-    return output;
   }
 }

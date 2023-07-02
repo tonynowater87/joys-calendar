@@ -3,11 +3,13 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
+import 'package:lunar/calendar/Lunar.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 import '../../common/constants.dart';
@@ -158,13 +160,18 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
-                  cubit.convertDateTitle(datetime);
+                  final dateString =
+                      DateFormat('y MMMM', AppConstants.defaultLocale)
+                          .format(datetime!);
+                  Lunar lunar = Lunar.fromDate(datetime);
+                  final ganZhi = lunar.getYearInGanZhi();
+                  final shenXiao = lunar.getYearShengXiao();
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
-                        Text(state.title),
+                        Text("$dateString $ganZhi $shenXiao"),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,

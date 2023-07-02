@@ -44,7 +44,6 @@ dependencies:
   logger: 1.1.0
   dio: 4.0.6
   equatable: 2.0.5
-  lunar: 1.2.21
   google_fonts: 3.0.1
   shared_preferences: 2.0.15
   hive_flutter: 1.1.0
@@ -67,6 +66,10 @@ dependencies:
   flutter_localizations:
     sdk: flutter
   intl: 0.18.1
+  lunar:
+    git:
+      url: https://github.com/tonynowater87/lunar-flutter.git
+      ref: master
 
 dependency_overrides:
   intl: any
