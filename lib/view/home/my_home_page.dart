@@ -263,10 +263,11 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                         eventDate.month == date.month &&
                         eventDate.day == date.day;
                   }).toList();
+                  final dateFormat = DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, AppConstants.defaultLocale);
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text("${date.month.monthName} ${date.day}"),
+                            title: Text(dateFormat.format(date), style: Theme.of(context).textTheme.headline4,),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: eventsOnTheDate
