@@ -89,7 +89,6 @@ class _AddEventPageState extends State<AddEventPage> {
                         child: OutlinedButton.icon(
                           onPressed: () async {
                             final pickedDate = await showDatePicker(
-                                locale: window.locale,
                                 context: context,
                                 initialDate: DateTime.now(),
                                 firstDate: DateTime(1900),

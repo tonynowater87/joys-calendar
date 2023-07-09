@@ -123,7 +123,7 @@ class MyApp extends StatelessWidget {
             GlobalCupertinoLocalizations.delegate,
           ],
           supportedLocales: const [
-            Locale('zh', '')
+            Locale.fromSubtags(languageCode: "zh", scriptCode: "Hant")
           ],
           routes: <String, WidgetBuilder>{
             AppConstants.routeHome: (context) =>
