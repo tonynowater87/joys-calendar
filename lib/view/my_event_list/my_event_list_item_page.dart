@@ -71,6 +71,8 @@ class MyEventListItemPage extends StatelessWidget {
                 maintainAnimation: !isDeleting,
                 maintainState: !isDeleting,
                 child: Checkbox(
+                    checkColor: Colors.white,
+                    activeColor: Colors.green,
                     value: _model.isChecked,
                     onChanged: (isChecked) {
                       onCheckCallback.call(index, isChecked ?? false);

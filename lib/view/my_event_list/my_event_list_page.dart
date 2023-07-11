@@ -52,7 +52,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
               child: InkWell(
                   child: isDeleting
                       ? Icon(Icons.delete,
-                          color: hasDeleteCount ? Colors.green : Colors.black12)
+                          color: hasDeleteCount ? Colors.green : Colors.black26)
                       : const Icon(Icons.edit),
                   onTap: () async {
                     if (!isDeleting) {
