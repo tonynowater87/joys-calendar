@@ -42,9 +42,10 @@ Future<void> main() async {
   await Firebase.initializeApp(
       name: "Joys-Calendar", options: DefaultFirebaseOptions.currentPlatform);
 
-  print('[Tony] App Launched, kDebugMode=$kDebugMode');
+  debugPrint('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
     // https://firebase.google.com/docs/emulator-suite/install_and_configure?authuser=0
+    // fixme, currently can't connect emulator via real device
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
     await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
     LoggingInterceptor.debug = false;

@@ -27,7 +27,7 @@ class LoginCubit extends Cubit<LoginState> {
     if (backupRepository.isLogin()) {
       final localFileSize =
           await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
-      print('[Tony] init, localFileSize=$localFileSize');
+      debugPrint('[Tony] init, localFileSize=$localFileSize');
       emit(Login(
           user: backupRepository.getUser(),
           fileSize: backupRepository.getFileSize(),

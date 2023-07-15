@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
@@ -118,7 +119,7 @@ class LocalDatasourceImpl extends LocalDatasource {
     // clear
     var box = Hive.box<MemoModel>(MemoModel.boxKey);
     final i = await box.clear();
-    print('[Tony] clear done, $i');
+    debugPrint('[Tony] clear done, $i');
 
     // convert to model
     Map<String, dynamic> jsonDecoded = jsonDecode(json);
@@ -126,7 +127,7 @@ class LocalDatasourceImpl extends LocalDatasource {
     jsonDecoded.forEach((key, value) {
       MemoModel memoModel = MemoModel.fromJson(value);
       downloadMemos.add(memoModel);
-      print('[Tony] recover memo=$memoModel');
+      debugPrint('[Tony] recover memo=$memoModel');
     });
 
     // add to hive

@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:joys_calendar/common/extentions/NumberExtentions.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
@@ -13,6 +14,7 @@ import 'package:path_provider/path_provider.dart';
 class FirebaseBackUpRepository implements BackUpRepository {
   static const String backupFileName = "memo.json";
 
+  final googleSignIn = GoogleSignIn(scopes: ['email']);
   LocalDatasource localDatasource;
   FirebaseAuth firebaseAuth;
   FirebaseStorage firebaseStorage;
@@ -33,8 +35,8 @@ class FirebaseBackUpRepository implements BackUpRepository {
       loginType = LoginType.google;
     }
     var hasRunBefore = sharedPreferenceProvider.getHasRunBefore();
-    print('[Tony] currentUser=$currentUser');
-    print('[Tony] hasRunBefore=$hasRunBefore');
+    debugPrint('[Tony] FirebaseBackUpRepository init, currentUser=$currentUser');
+    debugPrint('[Tony] FirebaseBackUpRepository init, hasRunBefore=$hasRunBefore');
     if (!hasRunBefore) {
       try {
         logout();
@@ -58,7 +60,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
           "gs://joy-calendar-358617.appspot.com/${currentUser!.uid}");
       final metaData = await selfFile.getMetadata();
       _readMetaDataField(metaData);
-      print('[Tony] lastUpdatedTime=$lastUpdatedTime, fileSize=$fileSize');
+      debugPrint('[Tony] lastUpdatedTime=$lastUpdatedTime, fileSize=$fileSize');
       return BackUpStatus.success;
     } on Exception catch (e) {
       return BackUpStatus.fail;
@@ -70,7 +72,8 @@ class FirebaseBackUpRepository implements BackUpRepository {
     try {
       switch (loginType) {
         case LoginType.google:
-          final googleSignIn = GoogleSignIn(scopes: ['email']);
+          final signOutUser = await googleSignIn.signOut();
+          debugPrint('[Tony] signOut success, user=${signOutUser?.displayName}');
           final user = await googleSignIn.signIn();
           // Obtain the auth details from the request
           final GoogleSignInAuthentication? googleAuth =
@@ -82,23 +85,24 @@ class FirebaseBackUpRepository implements BackUpRepository {
           );
           // Once signed in, return the UserCredential
           currentUser =
-              (await FirebaseAuth.instance.signInWithCredential(credential))
-                  .user;
+              (await FirebaseAuth.instance.signInWithCredential(credential)).user;
           break;
         case LoginType.anonymous:
           currentUser = (await firebaseAuth.signInAnonymously()).user;
           break;
       }
-      print('[Tony] login success, user=${currentUser?.uid}');
+      debugPrint('[Tony] login success, user=${currentUser?.uid}');
       this.loginType = loginType;
       return BackUpStatus.success;
     } on Exception catch(e) {
+      debugPrint('[Tony] login failure, e=$e');
       return BackUpStatus.fail;
     }
   }
 
   @override
   Future<BackUpStatus> logout() async {
+    await googleSignIn.signOut();
     await firebaseAuth.signOut();
     currentUser = null;
     fileSize = null;
@@ -115,20 +119,20 @@ class FirebaseBackUpRepository implements BackUpRepository {
       var uuid = currentUser!.uid;
       var existData =
           allRefs.items.where((element) => element.name == uuid).toList();
-      print('[Tony] currentUser=$uuid');
+      debugPrint('[Tony] currentUser=$uuid');
       Reference dataRef;
       if (existData.isNotEmpty) {
-        print('[Tony] existData');
+        debugPrint('[Tony] existData');
         dataRef = existData.first;
       } else {
-        print('[Tony] newData');
+        debugPrint('[Tony] newData');
         dataRef = reference.child(uuid);
       }
 
       // db to json
       String json = localDatasource.localMemoToJson();
       if (json.isEmpty) {
-        print('[Tony] no data');
+        debugPrint('[Tony] no data');
         return BackUpStatus.notChanged;
       }
 
@@ -144,12 +148,12 @@ class FirebaseBackUpRepository implements BackUpRepository {
         if (fullMetadata.customMetadata != null) {
           String previousHash = fullMetadata.customMetadata!['hash']!;
           if (json.hashCode.toString() == previousHash) {
-            print('[Tony] not change, upload return');
+            debugPrint('[Tony] not change, upload return');
             return BackUpStatus.notChanged;
           }
         }
       } on FirebaseException catch (e) {
-        print("[Tony] 沒上傳過檔案=$e");
+        debugPrint("[Tony] 沒上傳過檔案=$e");
       }
       final metaData =
           SettableMetadata(customMetadata: {'hash': json.hashCode.toString()});
@@ -158,13 +162,13 @@ class FirebaseBackUpRepository implements BackUpRepository {
       await dataRef.putFile(file);
       final updatedMetaData = await dataRef.updateMetadata(metaData);
       _readMetaDataField(updatedMetaData);
-      print('[Tony] 上傳成功, ${uuid}');
+      debugPrint('[Tony] 上傳成功, ${uuid}');
       return BackUpStatus.success;
     } on FirebaseException catch (e) {
-      print("[Tony] 上傳失敗，FirebaseException=$e");
+      debugPrint("[Tony] 上傳失敗，FirebaseException=$e");
       return BackUpStatus.fail;
     } on Exception catch (e) {
-      print("[Tony] 上傳失敗，Exception=$e");
+      debugPrint("[Tony] 上傳失敗，Exception=$e");
       return BackUpStatus.fail;
     }
   }
@@ -182,12 +186,12 @@ class FirebaseBackUpRepository implements BackUpRepository {
       if (fullMetadata.customMetadata != null) {
         String previousHash = fullMetadata.customMetadata!['hash']!;
         if (jsonNow.hashCode.toString() == previousHash) {
-          print('[Tony] not change, download return');
+          debugPrint('[Tony] download, not change, download return');
           return BackUpStatus.notChanged;
         }
       }
     } on FirebaseException catch (e) {
-      print('[Tony] 找不到檔案=$e');
+      debugPrint('[Tony] download, 找不到檔案=$e');
       return BackUpStatus.fail;
     }
 
@@ -197,7 +201,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
     File file = File(filePath);
     await dataRef.writeToFile(file);
     final json = await file.readAsString();
-    print('[Tony] uid=$uuid, download=$json');
+    debugPrint('[Tony] download, uid=$uuid, download=$json');
     await localDatasource.replaceWithJson(json);
     _readMetaDataField(fullMetadata);
     return BackUpStatus.success;

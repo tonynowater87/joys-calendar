@@ -21,7 +21,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   @override
   Future<List<EventModel>> getEventsFromLocalDB(String country) async {
     List<EventModel> result = [];
-    print('[Tony] getEventsFromLocalDB start ($country)');
+    debugPrint('[Tony] getEventsFromLocalDB start ($country)');
     localDatasource.getCalendarModels(country).forEach((element) {
       EventModel eventModel = EventModel(
           date: element.dateTime,
@@ -29,7 +29,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           eventName: element.displayName);
       result.add(eventModel);
     });
-    print('[Tony] getEventsFromLocalDB end ($country)');
+    debugPrint('[Tony] getEventsFromLocalDB end ($country)');
     return result;
   }
 
@@ -166,7 +166,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     allEvents.sort((a, b) => b.date.compareTo(a.date));
 
     final cost = DateTime.now().millisecondsSinceEpoch - start;
-    print('[Tony] searching($keyword) cost $cost');
+    debugPrint('[Tony] searching($keyword) cost $cost');
     return Future.value(allEvents);
   }
 }
