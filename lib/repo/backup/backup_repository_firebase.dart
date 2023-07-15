@@ -10,7 +10,6 @@ import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:path_provider/path_provider.dart';
 
-// TODO indicate progress with upload and download
 class FirebaseBackUpRepository implements BackUpRepository {
   static const String backupFileName = "memo.json";
 
@@ -124,26 +123,26 @@ class FirebaseBackUpRepository implements BackUpRepository {
   @override
   Future<BackUpStatus> upload() async {
     try {
+      // db to json
+      String json = localDatasource.localMemoToJson();
+      if (json.isEmpty) {
+        debugPrint('[Tony] 上傳, 本地無資料');
+        return BackUpStatus.notChanged;
+      }
+
       final reference = firebaseStorage.ref();
       final allRefs = await reference.listAll();
       var uuid = currentUser!.uid;
       var existData =
           allRefs.items.where((element) => element.name == uuid).toList();
-      debugPrint('[Tony] currentUser=$uuid');
+      debugPrint('[Tony] 上傳, currentUser=$uuid');
       Reference dataRef;
       if (existData.isNotEmpty) {
-        debugPrint('[Tony] existData');
+        debugPrint('[Tony] 上傳, 目前帳號在雲端有資料');
         dataRef = existData.first;
       } else {
-        debugPrint('[Tony] newData');
+        debugPrint('[Tony] 上傳, 目前帳號在雲端沒資料');
         dataRef = reference.child(uuid);
-      }
-
-      // db to json
-      String json = localDatasource.localMemoToJson();
-      if (json.isEmpty) {
-        debugPrint('[Tony] no data');
-        return BackUpStatus.notChanged;
       }
 
       // json to local file
@@ -153,12 +152,17 @@ class FirebaseBackUpRepository implements BackUpRepository {
       await file.writeAsString(json, flush: true);
 
       try {
-        FullMetadata fullMetadata = await dataRef.getMetadata();
+        FullMetadata? fullMetadata = await dataRef.getMetadata();
+
+        debugPrint(
+            '[Tony] 上傳, remote customMetadata=${fullMetadata.customMetadata}');
 
         if (fullMetadata.customMetadata != null) {
-          String previousHash = fullMetadata.customMetadata!['hash']!;
+          String? previousHash = fullMetadata.customMetadata!['hash'];
+          debugPrint('[Tony] 上傳, previousHash=$previousHash');
+
           if (json.hashCode.toString() == previousHash) {
-            debugPrint('[Tony] not change, upload return');
+            debugPrint('[Tony] 上傳, 資料未異動');
             return BackUpStatus.notChanged;
           }
         }
@@ -172,7 +176,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
       await dataRef.putFile(file);
       final updatedMetaData = await dataRef.updateMetadata(metaData);
       _readMetaDataField(updatedMetaData);
-      debugPrint('[Tony] 上傳成功, ${uuid}');
+      debugPrint('[Tony] 上傳成功, $uuid');
       return BackUpStatus.success;
     } on FirebaseException catch (e) {
       debugPrint("[Tony] 上傳失敗，FirebaseException=$e");
@@ -196,12 +200,12 @@ class FirebaseBackUpRepository implements BackUpRepository {
       if (fullMetadata.customMetadata != null) {
         String? previousHash = fullMetadata.customMetadata!['hash'];
         if (jsonNow.hashCode.toString() == previousHash) {
-          debugPrint('[Tony] download, not change, download return');
+          debugPrint('[Tony] 下載, 資料沒有異動');
           return BackUpStatus.notChanged;
         }
       }
     } on FirebaseException catch (e) {
-      debugPrint('[Tony] download, 找不到檔案=$e');
+      debugPrint('[Tony] 下載, 找不到檔案=$e');
       return BackUpStatus.fail;
     }
 
@@ -211,7 +215,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
     File file = File(filePath);
     await dataRef.writeToFile(file);
     final json = await file.readAsString();
-    debugPrint('[Tony] download, uid=$uuid, download=$json');
+    debugPrint('[Tony] 下載, 成功, uid=$uuid, download=$json');
     await localDatasource.replaceWithJson(json);
     _readMetaDataField(fullMetadata);
     return BackUpStatus.success;

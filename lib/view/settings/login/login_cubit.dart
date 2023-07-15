@@ -74,15 +74,25 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> upload() async {
+    emit((state as Login).copyWith(isLoading: true));
     final status = await backupRepository.upload();
     if (status == BackUpStatus.fail) {
       Fluttertoast.showToast(msg: "上傳備份資料失敗！");
-      return Future.value();
+      emit((state as Login).copyWith(isLoading: false));
+      return;
     }
+
+    if (status == BackUpStatus.notChanged) {
+      Fluttertoast.showToast(msg: "資料沒有異動！");
+      emit((state as Login).copyWith(isLoading: false));
+      return;
+    }
+
     final localFileSize =
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
     Fluttertoast.showToast(msg: "上傳備份資料成功！");
     emit(Login(
+        isLoading: false,
         user: backupRepository.getUser(),
         fileSize: backupRepository.getFileSize(),
         localFileSize: localFileSize,
@@ -91,15 +101,25 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> download() async {
+    emit((state as Login).copyWith(isLoading: true));
     final status = await backupRepository.download();
     if (status == BackUpStatus.fail) {
       Fluttertoast.showToast(msg: "下載還原資料失敗！");
-      return Future.value();
+      emit((state as Login).copyWith(isLoading: false));
+      return;
     }
+
+    if (status == BackUpStatus.notChanged) {
+      Fluttertoast.showToast(msg: "資料沒有異動！");
+      emit((state as Login).copyWith(isLoading: false));
+      return;
+    }
+
     final localFileSize =
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
     Fluttertoast.showToast(msg: "下載還原資料成功！");
     emit(Login(
+        isLoading: false,
         user: backupRepository.getUser(),
         fileSize: backupRepository.getFileSize(),
         localFileSize: localFileSize,

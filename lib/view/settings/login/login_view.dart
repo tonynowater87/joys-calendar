@@ -24,51 +24,55 @@ class _LoginViewState extends State<LoginView> {
               context.read<BackUpRepository>(), context.read<LocalDatasource>())
             ..init();
         },
-        child: BlocListener<LoginCubit, LoginState>(
-          listener: (context, state) {
-            debugPrint('[Tony] login state = $state');
-            // TODO show error toast
-          },
-          child: BlocBuilder<LoginCubit, LoginState>(
-            builder: (context, state) {
-              final loginCubit = context.read<LoginCubit>();
-              if (state is NotLogin) {
-                return Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    Visibility(
-                      visible: !state.isLoading,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          ElevatedButton(
-                              style: ButtonStyle(
-                                  shape: MaterialStateProperty.all<
-                                          RoundedRectangleBorder>(
-                                      const RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.zero,
-                                          side: BorderSide()))),
-                              onPressed: () {
-                                loginCubit.login();
-                              },
-                              child: const Text('登入')),
-                          const Text('即可備份／復原記錄'),
-                        ],
-                      ),
+        child: BlocBuilder<LoginCubit, LoginState>(
+          builder: (context, state) {
+            final loginCubit = context.read<LoginCubit>();
+            if (state is NotLogin) {
+              return Stack(
+                alignment: Alignment.center,
+                children: [
+                  Visibility(
+                    visible: !state.isLoading,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        ElevatedButton(
+                            style: ButtonStyle(
+                                shape: MaterialStateProperty.all<
+                                        RoundedRectangleBorder>(
+                                    const RoundedRectangleBorder(
+                                        borderRadius: BorderRadius.zero,
+                                        side: BorderSide()))),
+                            onPressed: () {
+                              loginCubit.login();
+                            },
+                            child: const Text('登入')),
+                        const Text('即可備份／復原記錄'),
+                      ],
                     ),
-                    Visibility(
-                      visible: state.isLoading,
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
-                          CircularProgressIndicator(),
-                          Text('登入中'),
-                        ],
-                      ),
-                    )
-                  ],
-                );
-              } else if (state is Login) {
+                  ),
+                  Visibility(
+                    visible: state.isLoading,
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: const [
+                        CircularProgressIndicator(),
+                        Text('登入中'),
+                      ],
+                    ),
+                  )
+                ],
+              );
+            } else if (state is Login) {
+              if (state.isLoading) {
+                return Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: const [
+                      Text('處理中...'),
+                      SizedBox(height: 10,),
+                      CircularProgressIndicator()
+                    ]);
+              } else {
                 final fileSize = state.fileSize ?? "無";
                 final localFileSize = state.localFileSize ?? "無";
                 var dateFormat = DateFormat('yyyy-MM-dd hh:mm:ss');
@@ -175,11 +179,11 @@ class _LoginViewState extends State<LoginView> {
                     )
                   ],
                 );
-              } else {
-                throw Exception("not expected state=$state");
               }
-            },
-          ),
+            } else {
+              throw Exception("not expected state=$state");
+            }
+          },
         ));
   }
 }

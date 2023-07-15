@@ -28,7 +28,7 @@ class Login extends LoginState {
     this.loginType,
     this.isLoading = false});
 
-  Login copyWith(bool isLoading) {
+  Login copyWith({required bool isLoading}) {
     return Login(
         user: user,
         fileSize: fileSize,

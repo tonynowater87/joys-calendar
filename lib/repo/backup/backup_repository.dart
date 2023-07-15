@@ -2,12 +2,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 
 enum LoginType {
   google,
-  anonymous;
+  appleId, //TODO
+  anonymous; //TODO
 }
 
-enum BackUpStatus {
-  success, notChanged, fail, cancel
-}
+enum BackUpStatus { success, notChanged, fail, cancel }
 
 class LoginModel {
   LoginType loginType;
@@ -17,7 +16,6 @@ class LoginModel {
 }
 
 abstract class BackUpRepository {
-
   bool isLogin();
 
   LoginType? getLoginType();
