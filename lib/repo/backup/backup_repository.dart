@@ -6,7 +6,7 @@ enum LoginType {
 }
 
 enum BackUpStatus {
-  success, notChanged, fail
+  success, notChanged, fail, cancel
 }
 
 class LoginModel {

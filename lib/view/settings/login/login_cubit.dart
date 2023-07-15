@@ -38,13 +38,25 @@ class LoginCubit extends Cubit<LoginState> {
   }
 
   Future<void> login() async {
-    var loginStatus = await backupRepository.login(LoginType.google);
-    await backupRepository.fetch();
+    emit(NotLogin(isLoading: true));
+    BackUpStatus? loginStatus;
+    loginStatus = await backupRepository.login(LoginType.google);
+
+    if (loginStatus == BackUpStatus.fail ||
+        loginStatus == BackUpStatus.cancel) {
+      emit(NotLogin(isLoading: false));
+      return;
+    }
+
     if (loginStatus == BackUpStatus.fail) {
       await backupRepository.logout();
       Fluttertoast.showToast(msg: "登入發生異常！");
-      return Future.value();
+      emit(NotLogin(isLoading: false));
+      return;
     }
+
+    loginStatus = await backupRepository.fetch();
+
     final localFileSize =
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
     emit(Login(

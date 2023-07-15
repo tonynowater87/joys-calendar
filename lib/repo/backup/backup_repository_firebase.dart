@@ -35,8 +35,10 @@ class FirebaseBackUpRepository implements BackUpRepository {
       loginType = LoginType.google;
     }
     var hasRunBefore = sharedPreferenceProvider.getHasRunBefore();
-    debugPrint('[Tony] FirebaseBackUpRepository init, currentUser=$currentUser');
-    debugPrint('[Tony] FirebaseBackUpRepository init, hasRunBefore=$hasRunBefore');
+    debugPrint(
+        '[Tony] FirebaseBackUpRepository init, currentUser=$currentUser');
+    debugPrint(
+        '[Tony] FirebaseBackUpRepository init, hasRunBefore=$hasRunBefore');
     if (!hasRunBefore) {
       try {
         logout();
@@ -73,19 +75,27 @@ class FirebaseBackUpRepository implements BackUpRepository {
       switch (loginType) {
         case LoginType.google:
           final signOutUser = await googleSignIn.signOut();
-          debugPrint('[Tony] signOut success, user=${signOutUser?.displayName}');
+          debugPrint(
+              '[Tony] signOut success, user=${signOutUser?.displayName}');
           final user = await googleSignIn.signIn();
+
+          if (user == null) {
+            debugPrint('[Tony] login cancel, $user');
+            return BackUpStatus.cancel;
+          }
+
           // Obtain the auth details from the request
-          final GoogleSignInAuthentication? googleAuth =
-          await user?.authentication;
+          final GoogleSignInAuthentication googleAuth =
+              await user.authentication;
           // Create a new credential
           final credential = GoogleAuthProvider.credential(
-            accessToken: googleAuth?.accessToken,
-            idToken: googleAuth?.idToken,
+            accessToken: googleAuth.accessToken,
+            idToken: googleAuth.idToken,
           );
           // Once signed in, return the UserCredential
           currentUser =
-              (await FirebaseAuth.instance.signInWithCredential(credential)).user;
+              (await FirebaseAuth.instance.signInWithCredential(credential))
+                  .user;
           break;
         case LoginType.anonymous:
           currentUser = (await firebaseAuth.signInAnonymously()).user;
@@ -94,7 +104,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
       debugPrint('[Tony] login success, user=${currentUser?.uid}');
       this.loginType = loginType;
       return BackUpStatus.success;
-    } on Exception catch(e) {
+    } on Exception catch (e) {
       debugPrint('[Tony] login failure, e=$e');
       return BackUpStatus.fail;
     }
