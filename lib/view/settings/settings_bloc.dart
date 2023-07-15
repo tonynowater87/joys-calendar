@@ -9,7 +9,7 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   late List<SettingsEventItem> settingsEventItems;
   late CalendarEventRepository calendarEventRepository;
 
-  SettingsBloc(this.calendarEventRepository) : super(SettingsState.initial()) {
+  SettingsBloc(this.calendarEventRepository) : super(const SettingsState.initial()) {
     on<LoadStarted>(_initSettingEventItems);
     on<AddFilterEvent>(_addSettingEventItems);
     on<RemoveFilterEvent>(_removeSettingEventItems);

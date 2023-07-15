@@ -14,17 +14,7 @@ class EventModel {
   });
 }
 
-enum EventType {
-  taiwan,
-  china,
-  hongKong,
-  japan,
-  uk,
-  usa,
-  lunar,
-  solar,
-  custom
-}
+enum EventType { taiwan, china, hongKong, japan, uk, usa, lunar, solar, custom }
 
 EventType? fromCreatorEmail(String? email) {
   if (email == null) return null;
@@ -62,7 +52,7 @@ extension EventTypeExtensions on EventType {
         return "zh-tw.taiwan";
       case EventType.china:
         return "zh-tw.china";
-        case EventType.hongKong:
+      case EventType.hongKong:
         return "zh-tw.hong_kong";
       case EventType.japan:
         return "ja.japanese";
@@ -82,21 +72,21 @@ extension EventTypeExtensions on EventType {
   String toSettingName() {
     switch (this) {
       case EventType.taiwan:
-        return "台灣";
+        return "台灣節日";
       case EventType.china:
-        return "中國";
+        return "中國節日";
       case EventType.hongKong:
-        return "香港";
+        return "香港節日";
       case EventType.japan:
-        return "日本";
+        return "日本節日";
       case EventType.uk:
-        return "英國";
+        return "英國節日";
       case EventType.usa:
-        return "美國";
+        return "美國節日";
       case EventType.lunar:
-        return "農曆";
+        return "農曆日期";
       case EventType.solar:
-        return "節氣";
+        return "24節氣";
       case EventType.custom:
         return "自訂";
     }

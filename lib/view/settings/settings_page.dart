@@ -17,8 +17,8 @@ class SettingsPage extends StatefulWidget {
 
 class _SettingsPageState extends State<SettingsPage> {
   List<SettingsTitleItem> settingsItem = [
-    SettingsTitleItem(SettingType.eventType, false),
-    SettingsTitleItem(SettingType.locale, false)
+    SettingsTitleItem(SettingType.eventType, true),
+    /*SettingsTitleItem(SettingType.locale, false)*/ // TODO future feature
   ];
 
   @override
