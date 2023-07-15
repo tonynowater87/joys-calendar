@@ -36,16 +36,25 @@ class SettingsGridListView extends StatelessWidget {
                     }
                   },
                   child: Container(
-                      padding: const EdgeInsets.all(8),
-                      decoration: BoxDecoration(
-                        color: item.isSelected
-                            ? item.eventType.toEventColor()
-                            : Colors.white,
-                        borderRadius: BorderRadius.circular(5.0),
-                        border: Border.all(
-                            width: 2, color: item.eventType.toEventColor()),
-                      ),
-                      child: Text(item.eventType.toSettingName())),
+                    padding: const EdgeInsets.all(8),
+                    decoration: BoxDecoration(
+                      color: item.isSelected
+                          ? item.eventType.toEventColor()
+                          : Colors.white,
+                      borderRadius: BorderRadius.circular(5.0),
+                      border: Border.all(
+                          width: 2, color: item.eventType.toEventColor()),
+                    ),
+                    child: Text(
+                      item.eventType.toSettingName(),
+                      style: Theme.of(context).textTheme.button!.copyWith(
+                          fontWeight: item.isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color:
+                              item.isSelected ? Colors.white : Colors.black38),
+                    ),
+                  ),
                 );
               });
         },
