@@ -184,7 +184,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
     try {
       fullMetadata = await dataRef.getMetadata();
       if (fullMetadata.customMetadata != null) {
-        String previousHash = fullMetadata.customMetadata!['hash']!;
+        String? previousHash = fullMetadata.customMetadata!['hash'];
         if (jsonNow.hashCode.toString() == previousHash) {
           debugPrint('[Tony] download, not change, download return');
           return BackUpStatus.notChanged;
