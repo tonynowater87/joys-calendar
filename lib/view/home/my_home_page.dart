@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           return;
                         }
                         if (isAdded == true) {
-                          scaffoldContext.read<HomeCubit>().getEvents();
+                          scaffoldContext.read<HomeCubit>().getEvents(); // todo refresh custom event only
                         }
                       })),
               SpeedDialChild(
@@ -253,7 +253,19 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   );
                 },
                 onCellTapped: (date) {
-                  final eventsOnTheDate = state.events.where((event) {
+                  var newList = state.events.toList();
+                  newList.sort((a, b) {
+                    var aOrder = a.order ?? 0;
+                    var bOrder = b.order ?? 0;
+                    if (aOrder > bOrder) {
+                      return 1;
+                    } else if(aOrder < bOrder) {
+                      return -1;
+                    } else {
+                      return 0;
+                    }
+                  });
+                  final dayEvents = newList.where((event) {
                     final eventDate = event.eventDate;
                     return eventDate.year == date.year &&
                         eventDate.month == date.month &&
@@ -266,7 +278,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                             title: Text(dateFormat.format(date), style: Theme.of(context).textTheme.headline4,),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
-                              children: eventsOnTheDate
+                              children: dayEvents
                                   .map(
                                     (event) => Container(
                                       width: double.infinity,

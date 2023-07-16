@@ -215,6 +215,7 @@ class HomeCubit extends Cubit<HomeState> {
 
         // add new event-type data
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            order: e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
             eventID: e.eventType.name,
@@ -235,6 +236,7 @@ class HomeCubit extends Cubit<HomeState> {
       var solarEvents =
           await calendarEventRepository.getSolarEvents(_currentYear, 5);
       combinedCalendarEvents.addAll(solarEvents.map((e) => CalendarEvent(
+          order: e.eventType.index,
           eventName: e.eventName,
           eventDate: e.date,
           eventBackgroundColor: e.eventType.toEventColor(),
@@ -266,6 +268,7 @@ class HomeCubit extends Cubit<HomeState> {
       var customEvents =
           await calendarEventRepository.getCustomEvents(_currentYear);
       combinedCalendarEvents.addAll(customEvents.map((e) => CalendarEvent(
+          order: e.eventType.index,
           eventName: e.eventName,
           eventDate: e.date,
           eventBackgroundColor: e.eventType.toEventColor(),
