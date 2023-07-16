@@ -108,8 +108,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   Future<List<EventModel>> getCustomEvents(int year) async {
-    int startYear = year - 30;
-    int endYear = year + 30;
+    // var start = DateTime.now().millisecondsSinceEpoch;
+    int startYear = year - 100;
+    int endYear = year + 100;
     List<EventModel> result = [];
     for (var year = startYear; year <= endYear; year++) {
       var dateTime = DateTime(year);
@@ -124,6 +125,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         }
       }
     }
+    // var cost = DateTime.now().millisecondsSinceEpoch - start;
+    // around 1000 milliseconds
     return Future.value(result);
   }
 

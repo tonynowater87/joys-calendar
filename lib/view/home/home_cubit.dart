@@ -3,6 +3,7 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -65,7 +66,7 @@ class HomeCubit extends Cubit<HomeState> {
       getUkEvents = Future.value(List.empty());
     }
     Future<List<EventModel>> getUsEvents;
-    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
+    if (calendarEventRepository.getDisplayEventType().contains(EventType.usa)) {
       getUsEvents = calendarEventRepository
           .getEventsFromLocalDB(EventType.usa.toCountryCode());
     } else {
@@ -85,9 +86,20 @@ class HomeCubit extends Cubit<HomeState> {
     if (calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.solar)) {
-      getSolarEvents = calendarEventRepository.getSolarEventsFromLocalDB(_currentYear);
+      getSolarEvents =
+          calendarEventRepository.getSolarEventsFromLocalDB(_currentYear);
     } else {
       getSolarEvents = Future.value(List.empty());
+    }
+
+    Future<List<EventModel>> getCustomEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.custom)) {
+      getCustomEvents =
+          calendarEventRepository.getCustomEvents(_currentYear);
+    } else {
+      getCustomEvents = Future.value(List.empty());
     }
 
     Future.wait([
@@ -98,13 +110,15 @@ class HomeCubit extends Cubit<HomeState> {
       getUkEvents,
       getUsEvents,
       getLunarEvents,
-      getSolarEvents
+      getSolarEvents,
+      getCustomEvents
     ]).then((allCountryEvents) {
       for (var events in allCountryEvents) {
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
+            eventID: e.eventType.name,
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -118,91 +132,99 @@ class HomeCubit extends Cubit<HomeState> {
 
   // refresh data
   Future<void> getEvents() async {
-    try {
-      final List<CalendarEvent> combinedCalendarEvents = [];
+    final List<CalendarEvent> combinedCalendarEvents = [];
 
-      await getCustomEvents(combinedCalendarEvents);
-      await getLunarEvents(combinedCalendarEvents, 5);
-      await getSolarEvents(combinedCalendarEvents);
+    await getCustomEvents(combinedCalendarEvents);
+    await getLunarEvents(combinedCalendarEvents, 5);
+    await getSolarEvents(combinedCalendarEvents);
 
-      Future<List<EventModel>> getTaiwanEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.taiwan)) {
-        getTaiwanEvents =
-            calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
-      } else {
-        getTaiwanEvents = Future.value(List.empty());
-      }
-      Future<List<EventModel>> getChinaEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.china)) {
-        getChinaEvents =
-            calendarEventRepository.getEvents(EventType.china.toCountryCode());
-      } else {
-        getChinaEvents = Future.value(List.empty());
-      }
-      Future<List<EventModel>> getHongKongEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.hongKong)) {
-        getHongKongEvents = calendarEventRepository
-            .getEvents(EventType.hongKong.toCountryCode());
-      } else {
-        getHongKongEvents = Future.value(List.empty());
-      }
-      Future<List<EventModel>> getJapanEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.japan)) {
-        getJapanEvents =
-            calendarEventRepository.getEvents(EventType.japan.toCountryCode());
-      } else {
-        getJapanEvents = Future.value(List.empty());
-      }
-      Future<List<EventModel>> getUkEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.uk)) {
-        getUkEvents =
-            calendarEventRepository.getEvents(EventType.uk.toCountryCode());
-      } else {
-        getUkEvents = Future.value(List.empty());
-      }
-      Future<List<EventModel>> getUsEvents;
-      if (calendarEventRepository
-          .getDisplayEventType()
-          .contains(EventType.uk)) {
-        getUsEvents =
-            calendarEventRepository.getEvents(EventType.usa.toCountryCode());
-      } else {
-        getUsEvents = Future.value(List.empty());
-      }
+    Future<List<EventModel>> getTaiwanEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.taiwan)) {
+      getTaiwanEvents =
+          calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
+    } else {
+      getTaiwanEvents = Future.value(List.empty());
+    }
+    Future<List<EventModel>> getChinaEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.china)) {
+      getChinaEvents =
+          calendarEventRepository.getEvents(EventType.china.toCountryCode());
+    } else {
+      getChinaEvents = Future.value(List.empty());
+    }
+    Future<List<EventModel>> getHongKongEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.hongKong)) {
+      getHongKongEvents =
+          calendarEventRepository.getEvents(EventType.hongKong.toCountryCode());
+    } else {
+      getHongKongEvents = Future.value(List.empty());
+    }
+    Future<List<EventModel>> getJapanEvents;
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.japan)) {
+      getJapanEvents =
+          calendarEventRepository.getEvents(EventType.japan.toCountryCode());
+    } else {
+      getJapanEvents = Future.value(List.empty());
+    }
+    Future<List<EventModel>> getUkEvents;
+    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
+      getUkEvents =
+          calendarEventRepository.getEvents(EventType.uk.toCountryCode());
+    } else {
+      getUkEvents = Future.value(List.empty());
+    }
+    Future<List<EventModel>> getUsEvents;
+    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
+      getUsEvents =
+          calendarEventRepository.getEvents(EventType.usa.toCountryCode());
+    } else {
+      getUsEvents = Future.value(List.empty());
+    }
 
-      final allCountryEvents = await Future.wait([
-        getTaiwanEvents,
-        getChinaEvents,
-        getHongKongEvents,
-        getJapanEvents,
-        getUkEvents,
-        getUsEvents
-      ]);
+    final allCountryEvents = await Future.wait([
+      getTaiwanEvents,
+      getChinaEvents,
+      getHongKongEvents,
+      getJapanEvents,
+      getUkEvents,
+      getUsEvents
+    ]);
 
-      for (var events in allCountryEvents) {
+    // add origin google calendar type database data first
+    var originGoogleCalendarData =
+        state.events.where((element) => element.isGoogleCalendarEvent());
+    debugPrint(
+        '[Tony] originGoogleCalendarData=${originGoogleCalendarData.length}');
+    combinedCalendarEvents.addAll(originGoogleCalendarData);
+
+    for (var events in allCountryEvents) {
+      if (events.isNotEmpty) {
+        debugPrint('[Tony] getEvents, ${events.first.eventType.name} updated');
+
+        // remove old event-type data
+        combinedCalendarEvents.removeWhere(
+            (element) => element.eventID == events.first.eventType.name);
+
+        // add new event-type data
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             eventName: e.eventName,
             eventDate: e.date,
+            eventID: e.eventType.name,
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
-
-      debugPrint('[Tony] get all event ${DateTime.now()}');
-      emit(HomeState.success(combinedCalendarEvents));
-    } on Exception {
-      emit(const HomeState.failure());
     }
+    debugPrint('[Tony] getEvents, allCountryEvents updated');
+    emit(HomeState.success(combinedCalendarEvents));
   }
 
   Future<void> getSolarEvents(

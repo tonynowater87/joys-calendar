@@ -136,10 +136,6 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
     switch (state.status) {
       case HomeStatus.loading:
         return const Center(child: CircularProgressIndicator());
-      case HomeStatus.failure:
-        return const Center(
-          child: Text('Oops something went wrong!'),
-        );
       case HomeStatus.success:
       case HomeStatus.title:
         return Column(

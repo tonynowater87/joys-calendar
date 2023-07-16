@@ -1,6 +1,6 @@
 part of 'home_cubit.dart';
 
-enum HomeStatus { loading, success, title, failure }
+enum HomeStatus { loading, success, title }
 
 class HomeState extends Equatable {
   final List<CalendarEvent> events;
@@ -13,8 +13,6 @@ class HomeState extends Equatable {
 
   const HomeState.success(List<CalendarEvent> events)
       : this._(status: HomeStatus.success, events: events);
-
-  const HomeState.failure() : this._(status: HomeStatus.failure);
 
   @override
   List<Object?> get props => [status, events];
