@@ -98,11 +98,14 @@ class _LoginViewState extends State<LoginView> {
                           Visibility(
                             visible: loginType == LoginType.google,
                             child: SizedBox(
-                              width: 30,
-                              height: 30,
-                              child: Image.network(
-                                  'http://pngimg.com/uploads/google/google_PNG19635.png',
-                                  fit: BoxFit.cover),
+                              width: 24,
+                              height: 24,
+                              child: Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Image.asset(
+                                    state.loginType?.getFileName() ?? "",
+                                    fit: BoxFit.scaleDown),
+                              ),
                             ),
                           ),
                           Text(user),

@@ -6,6 +6,21 @@ enum LoginType {
   anonymous; //TODO
 }
 
+extension LoginTypeExtension on LoginType {
+  String getFileName() {
+    switch (this) {
+      case LoginType.google:
+        return 'assets/icons/google-login.png';
+      case LoginType.appleId:
+        return 'assets/icons/apple-login.png';
+      case LoginType.anonymous:
+        return '';
+      default:
+        throw ArgumentError('Unknown enum value: $this');
+    }
+  }
+}
+
 enum BackUpStatus { success, notChanged, fail, cancel }
 
 class LoginModel {
