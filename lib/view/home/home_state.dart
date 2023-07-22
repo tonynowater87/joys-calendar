@@ -7,7 +7,8 @@ class HomeState extends Equatable {
   final HomeStatus status;
 
   const HomeState._(
-      {this.events = const <CalendarEvent>[], this.status = HomeStatus.loading});
+      {this.events = const <CalendarEvent>[],
+      this.status = HomeStatus.loading});
 
   const HomeState.loading() : this._();
 
@@ -16,4 +17,9 @@ class HomeState extends Equatable {
 
   @override
   List<Object?> get props => [status, events];
+
+  @override
+  String toString() {
+    return 'status=$status, events length=${events.length}';
+  }
 }

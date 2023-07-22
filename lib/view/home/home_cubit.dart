@@ -3,6 +3,7 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -20,57 +21,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> getEventFirstTime() async {
     debugPrint('[Tony] getEventFirstTime');
-    final List<CalendarEvent> combinedCalendarEvents = [];
-    Future<List<EventModel>> getTaiwanEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.taiwan)) {
-      getTaiwanEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.taiwan.toCountryCode());
-    } else {
-      getTaiwanEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getChinaEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.china)) {
-      getChinaEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.china.toCountryCode());
-    } else {
-      getChinaEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getHongKongEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.hongKong)) {
-      getHongKongEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.hongKong.toCountryCode());
-    } else {
-      getHongKongEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getJapanEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.japan)) {
-      getJapanEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.japan.toCountryCode());
-    } else {
-      getJapanEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getUkEvents;
-    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
-      getUkEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.uk.toCountryCode());
-    } else {
-      getUkEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getUsEvents;
-    if (calendarEventRepository.getDisplayEventType().contains(EventType.usa)) {
-      getUsEvents = calendarEventRepository
-          .getEventsFromLocalDB(EventType.usa.toCountryCode());
-    } else {
-      getUsEvents = Future.value(List.empty());
-    }
+
+    List<List<EventModel>> allCountryEvents =
+        await getAllSelectedCountryEvents(isFromLocal: true);
 
     Future<List<EventModel>> getLunarEvents;
     if (calendarEventRepository
@@ -100,18 +53,11 @@ class HomeCubit extends Cubit<HomeState> {
       getCustomEvents = Future.value(List.empty());
     }
 
-    Future.wait([
-      getTaiwanEvents,
-      getChinaEvents,
-      getHongKongEvents,
-      getJapanEvents,
-      getUkEvents,
-      getUsEvents,
-      getLunarEvents,
-      getSolarEvents,
-      getCustomEvents
-    ]).then((allCountryEvents) {
-      for (var events in allCountryEvents) {
+    Future.wait([getLunarEvents, getSolarEvents, getCustomEvents])
+        .then((localEvents) {
+      final List<CalendarEvent> combinedCalendarEvents = [];
+      localEvents.addAll(allCountryEvents);
+      for (var events in localEvents) {
         combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
@@ -127,79 +73,20 @@ class HomeCubit extends Cubit<HomeState> {
     });
   }
 
-  // refresh data
   Future<void> refreshGoogleCalendarHolidays() async {
     final List<CalendarEvent> originCombinedCalendarEvents =
         state.events.toList();
 
-    Future<List<EventModel>> getTaiwanEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.taiwan)) {
-      getTaiwanEvents =
-          calendarEventRepository.getEvents(EventType.taiwan.toCountryCode());
-    } else {
-      getTaiwanEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getChinaEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.china)) {
-      getChinaEvents =
-          calendarEventRepository.getEvents(EventType.china.toCountryCode());
-    } else {
-      getChinaEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getHongKongEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.hongKong)) {
-      getHongKongEvents =
-          calendarEventRepository.getEvents(EventType.hongKong.toCountryCode());
-    } else {
-      getHongKongEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getJapanEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.japan)) {
-      getJapanEvents =
-          calendarEventRepository.getEvents(EventType.japan.toCountryCode());
-    } else {
-      getJapanEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getUkEvents;
-    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
-      getUkEvents =
-          calendarEventRepository.getEvents(EventType.uk.toCountryCode());
-    } else {
-      getUkEvents = Future.value(List.empty());
-    }
-    Future<List<EventModel>> getUsEvents;
-    if (calendarEventRepository.getDisplayEventType().contains(EventType.uk)) {
-      getUsEvents =
-          calendarEventRepository.getEvents(EventType.usa.toCountryCode());
-    } else {
-      getUsEvents = Future.value(List.empty());
-    }
-
-    final allCountryEvents = await Future.wait([
-      getTaiwanEvents,
-      getChinaEvents,
-      getHongKongEvents,
-      getJapanEvents,
-      getUkEvents,
-      getUsEvents
-    ]);
+    List<List<EventModel>> allCountryEvents =
+        await getAllSelectedCountryEvents(isFromLocal: false);
 
     for (var events in allCountryEvents) {
       if (events.isNotEmpty) {
-        debugPrint('[Tony] getEvents, ${events.first.eventType.name} updated');
-        // remove old event-type data
+        // remove old event-type data from database
         originCombinedCalendarEvents.removeWhere(
             (element) => element.eventID == events.first.eventType.name);
 
-        // add new event-type data
+        // add new event-type data from api
         originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType.index,
             eventName: e.eventName,
@@ -210,8 +97,63 @@ class HomeCubit extends Cubit<HomeState> {
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
     }
-    debugPrint('[Tony] getEvents, allCountryEvents updated');
     emit(HomeState.success(originCombinedCalendarEvents));
+  }
+
+  Future<void> refreshGoogleCalendarHolidaysFromSettings() async {
+    final List<CalendarEvent> originCombinedCalendarEvents =
+        state.events.toList();
+
+    // remove all country
+    originCombinedCalendarEvents
+        .removeWhere((element) => element.isGoogleCalendarEvent());
+
+    List<List<EventModel>> allCountryEvents =
+        await getAllSelectedCountryEvents(isFromLocal: false);
+
+    // add country events back by settings
+    for (var events in allCountryEvents) {
+      if (events.isNotEmpty) {
+        originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            order: e.eventType.index,
+            eventName: e.eventName,
+            eventDate: e.date,
+            eventID: e.eventType.name,
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle:
+                JoysCalendarThemeData.calendarTextTheme.overline!)));
+      }
+    }
+    emit(HomeState.success(originCombinedCalendarEvents));
+  }
+
+  Future<List<List<EventModel>>> getAllSelectedCountryEvents(
+      {required bool isFromLocal}) async {
+    var eventTypes = EventType.values;
+    List<Future<List<EventModel>>> futures = [];
+
+    for (var eventType in eventTypes) {
+      try {
+        Future<List<EventModel>> future;
+        if (calendarEventRepository.getDisplayEventType().contains(eventType)) {
+          if (isFromLocal) {
+            future = calendarEventRepository
+                .getEventsFromLocalDB(eventType.toCountryCode());
+          } else {
+            future =
+                calendarEventRepository.getEvents(eventType.toCountryCode());
+          }
+          futures.add(future);
+        } else {
+          futures.add(Future.value(List.empty()));
+        }
+      } on Exception catch (e) {
+        // fixme toCountryCode Exception
+        debugPrint('[Tony] exception: $e');
+        continue;
+      }
+    }
+    return Future.wait(futures);
   }
 
   /*Future<void> getSolarEvents(
@@ -261,10 +203,6 @@ class HomeCubit extends Cubit<HomeState> {
           eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
     }
   }*/
-
-  void refreshFromSettings() async {
-    // TODO determine by custom tab diff
-  }
 
   void refreshFromAddOrUpdateCustomEvent() async {
     var newEventsList = state.events.toList();

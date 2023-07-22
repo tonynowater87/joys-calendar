@@ -100,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         await Navigator.of(rootContext)
                             .pushNamed(AppConstants.routeSettings);
                         if (!mounted) return;
-                        scaffoldContext.read<HomeCubit>().refreshGoogleCalendarHolidays();
+                        scaffoldContext.read<HomeCubit>().refreshGoogleCalendarHolidaysFromSettings();
                       })),
             ],
           ),
