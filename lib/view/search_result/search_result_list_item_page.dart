@@ -52,7 +52,7 @@ class SearchResultListItemPage extends StatelessWidget {
                                   borderRadius:
                                   const BorderRadius.all(Radius.circular(8))),
                               child: Text(
-                                _model.eventType.name,
+                                _model.eventType.toSettingName(),
                                 style: Theme.of(context).textTheme.caption,
                               ),
                             )

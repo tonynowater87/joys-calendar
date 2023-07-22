@@ -63,9 +63,9 @@ class _MyHomePageState extends State<MyHomePage> {
             spaceBetweenChildren: 4,
             children: [
               SpeedDialChild(
-                  label: "新增",
+                  label: "新增我的節日",
                   child: FloatingActionButton.small(
-                      child: const Icon(Icons.event_note),
+                      child: const Icon(Icons.add_box_outlined),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                       })),
               SpeedDialChild(
-                  label: "我的日曆列表",
+                  label: "我的節日列表",
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.list_alt_outlined),
                       onPressed: () async {
@@ -99,7 +99,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "設定",
                   child: FloatingActionButton.small(
-                      child: const Icon(Icons.settings),
+                      child: const Icon(Icons.settings_outlined),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.of(rootContext)

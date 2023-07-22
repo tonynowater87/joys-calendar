@@ -1,7 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
@@ -10,7 +9,6 @@ import 'package:joys_calendar/repo/model/event_model.dart';
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-  static const platformOpenCC = MethodChannel('joyscalendar.opencc');
 
   late CalendarEventRepository calendarEventRepository;
 
