@@ -29,7 +29,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           eventName: element.displayName);
       result.add(eventModel);
     });
-    debugPrint('[Tony] getEventsFromLocalDB end ($country)');
+    debugPrint('[Tony] getEventsFromLocalDB end ($country), length=${result.length}');
     return result;
   }
 
@@ -116,10 +116,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
 
   @override
   Future<List<EventModel>> getCustomEvents(int year) async {
-    // var start = DateTime.now().millisecondsSinceEpoch;
-    // TODO refactor
-    int startYear = year - 100;
-    int endYear = year + 100;
+    var start = DateTime.now().millisecondsSinceEpoch;
+    int startYear = year - 1;
+    int endYear = year + 1;
     List<EventModel> result = [];
     for (var year = startYear; year <= endYear; year++) {
       var dateTime = DateTime(year);
@@ -134,8 +133,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         }
       }
     }
-    // var cost = DateTime.now().millisecondsSinceEpoch - start;
+    var cost = DateTime.now().millisecondsSinceEpoch - start;
     // around 1000 milliseconds
+    debugPrint('[Tony] getCustomEvent cost=$cost');
     return Future.value(result);
   }
 
