@@ -1,5 +1,3 @@
-import 'dart:ui';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
@@ -80,8 +78,8 @@ class _AddEventPageState extends State<AddEventPage> {
                       Padding(
                         padding: EdgeInsets.all(8.0),
                         child: addEventState.status == AddEventStatus.add
-                            ? Text('新增')
-                            : Text('編輯'),
+                            ? const Text('新增')
+                            : const Text('編輯'),
                       ),
                       const Divider(),
                       Align(
@@ -176,8 +174,8 @@ class _AddEventPageState extends State<AddEventPage> {
                                   },
                                   child:
                                       addEventState.status == AddEventStatus.add
-                                          ? Text('新增')
-                                          : Text('更新')),
+                                          ? const Text('新增')
+                                          : const Text('更新')),
                             )
                           ],
                         ),
