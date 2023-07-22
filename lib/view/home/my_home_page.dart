@@ -183,7 +183,6 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       currentDate.year, currentDate.month - 1);
                                 }
                               });
-                              updateLunarAndSolar(cubit);
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
@@ -209,7 +208,6 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     setState(() {
                                       currentDate = pickedDate;
                                     });
-                                    updateLunarAndSolar(cubit);
                                     cellCalendarPageController.animateToDate(
                                       currentDate,
                                       curve: Curves.linear,
@@ -246,7 +244,6 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       currentDate.year, currentDate.month + 1);
                                 }
                               });
-                              updateLunarAndSolar(cubit);
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
@@ -313,6 +310,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                       lastDate.millisecondsSinceEpoch + diff);
                   setState(() {
                     currentDate = midDate;
+                    updateLunarAndSolar(cubit);
                   });
                 },
                 dateTextStyle:

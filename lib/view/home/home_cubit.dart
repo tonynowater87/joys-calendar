@@ -28,14 +28,7 @@ class HomeCubit extends Cubit<HomeState> {
 
     Future<List<EventModel>> solarEvents = _getSolarEvents(_currentYear);
 
-    Future<List<EventModel>> getCustomEvents;
-    if (calendarEventRepository
-        .getDisplayEventType()
-        .contains(EventType.custom)) {
-      getCustomEvents = calendarEventRepository.getCustomEvents(_currentYear);
-    } else {
-      getCustomEvents = Future.value(List.empty());
-    }
+    Future<List<EventModel>> getCustomEvents = _getCustomEvents();
 
     Future.wait([lunarEvents, solarEvents, getCustomEvents])
         .then((localEvents) {
@@ -92,7 +85,7 @@ class HomeCubit extends Cubit<HomeState> {
         await _getAllSelectedCountryEvents(isFromLocal: true);
 
     allEvents.addAll(await Future.wait(
-        [_getSolarEvents(_currentYear), _getLunarEvents(_currentYear)]));
+        [_getSolarEvents(_currentYear), _getLunarEvents(_currentYear), _getCustomEvents()]));
 
     // add all events back by settings
     for (var events in allEvents) {
@@ -140,6 +133,16 @@ class HomeCubit extends Cubit<HomeState> {
     return Future.wait(futures);
   }
 
+  Future<List<EventModel>> _getCustomEvents() {
+    if (calendarEventRepository
+        .getDisplayEventType()
+        .contains(EventType.custom)) {
+      return calendarEventRepository.getCustomEvents(_currentYear);
+    } else {
+      return Future.value(List.empty());
+    }
+  }
+
   Future<List<EventModel>> _getSolarEvents(int year) async {
     if (calendarEventRepository
         .getDisplayEventType()
@@ -167,19 +170,22 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   void refreshFromAddOrUpdateCustomEvent() async {
-    var newEventsList = state.events.toList();
-    var updatedCustomEvents =
-        await calendarEventRepository.getCustomEvents(_currentYear);
-    newEventsList
-        .removeWhere((element) => element.eventID == EventType.custom.name);
-    newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
-        order: e.eventType.index,
-        eventName: e.eventName,
-        eventDate: e.date,
-        eventID: e.eventType.name,
-        eventBackgroundColor: e.eventType.toEventColor(),
-        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
-    emit(HomeState.success(newEventsList));
+    var updatedCustomEvents = await _getCustomEvents();
+    if (updatedCustomEvents.isEmpty) {
+      return;
+    } else {
+      var newEventsList = state.events.toList();
+      newEventsList
+          .removeWhere((element) => element.eventID == EventType.custom.name);
+      newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
+          order: e.eventType.index,
+          eventName: e.eventName,
+          eventDate: e.date,
+          eventID: e.eventType.name,
+          eventBackgroundColor: e.eventType.toEventColor(),
+          eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+      emit(HomeState.success(newEventsList));
+    }
   }
 
   Future<void> refreshWhenYearChanged(int year) async {
