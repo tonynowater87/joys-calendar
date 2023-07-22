@@ -42,10 +42,6 @@ class FirebaseBackUpRepository implements BackUpRepository {
       try {
         logout();
       } on Exception catch (e) {}
-    } else {
-      if (currentUser != null) {
-        fetch();
-      }
     }
     sharedPreferenceProvider.setHasRunBefore(true);
   }
@@ -59,6 +55,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
       }
       final selfFile = firebaseStorage.refFromURL(
           "gs://joy-calendar-358617.appspot.com/${currentUser!.uid}");
+
       final metaData = await selfFile.getMetadata();
       _readMetaDataField(metaData);
       debugPrint('[Tony] lastUpdatedTime=$lastUpdatedTime, fileSize=$fileSize');

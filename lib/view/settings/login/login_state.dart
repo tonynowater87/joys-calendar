@@ -1,45 +1,41 @@
 part of 'login_cubit.dart';
 
-@immutable
-abstract class LoginState extends Equatable {}
-
-class NotLogin extends LoginState {
-
-  bool isLoading;
-
-  NotLogin({this.isLoading = false});
-
-  @override
-  List<Object?> get props => [isLoading];
+enum LoginStatus {
+  notLogin,
+  login,
+  loading,
+  error,
 }
 
-class Login extends LoginState {
+@immutable
+class LoginState extends Equatable {
   User? user;
   String? fileSize;
   String? localFileSize;
   DateTime? lastUpdatedTime;
   LoginType? loginType;
-  bool isLoading;
+  LoginStatus loginStatus;
 
-  Login({this.user,
-    this.fileSize,
-    this.localFileSize,
-    this.lastUpdatedTime,
-    this.loginType,
-    this.isLoading = false});
+  LoginState(
+      {this.user,
+      this.fileSize,
+      this.localFileSize,
+      this.lastUpdatedTime,
+      this.loginType,
+      required this.loginStatus});
 
-  Login copyWith({required bool isLoading}) {
-    return Login(
-        user: user,
-        fileSize: fileSize,
-        localFileSize: fileSize,
-        lastUpdatedTime: lastUpdatedTime,
-        loginType: loginType,
-        isLoading: isLoading
+  LoginState copyWith({required LoginStatus loginStatus}) {
+    return LoginState(
+      user: user,
+      fileSize: fileSize,
+      localFileSize: fileSize,
+      lastUpdatedTime: lastUpdatedTime,
+      loginType: loginType,
+      loginStatus: loginStatus,
     );
   }
 
   @override
   List<Object?> get props =>
-      [user, fileSize, localFileSize, lastUpdatedTime, loginType, isLoading];
+      [user, fileSize, localFileSize, lastUpdatedTime, loginType, loginStatus];
 }

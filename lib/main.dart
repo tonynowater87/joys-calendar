@@ -42,6 +42,11 @@ Future<void> main() async {
   await Firebase.initializeApp(
       name: "Joys-Calendar", options: DefaultFirebaseOptions.currentPlatform);
 
+  FirebaseStorage.instance
+    ..setMaxOperationRetryTime(const Duration(seconds: 10))
+    ..setMaxDownloadRetryTime(const Duration(seconds: 10))
+    ..setMaxDownloadRetryTime(const Duration(seconds: 10));
+
   debugPrint('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
     // https://firebase.google.com/docs/emulator-suite/install_and_configure?authuser=0
