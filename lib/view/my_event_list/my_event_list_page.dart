@@ -34,13 +34,13 @@ class _MyEventListPageState extends State<MyEventListPage> {
         appBar: AppBar(
           leading: InkWell(
               child: isDeleting
-                  ? Center(child: Text('取消'))
-                  : Icon(Icons.arrow_back),
+                  ? const Center(child: Text('取消'))
+                  : const Icon(Icons.arrow_back),
               onTap: () {
                 if (isDeleting) {
                   context.read<MyEventListCubit>().cancelDeleting();
                 } else {
-                  Navigator.of(context).pop(true);
+                  Navigator.of(context).pop();
                 }
               }),
           title: isDeleting

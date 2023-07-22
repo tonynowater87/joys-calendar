@@ -3,7 +3,6 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
-import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -15,7 +14,7 @@ class HomeCubit extends Cubit<HomeState> {
 
   late CalendarEventRepository calendarEventRepository;
 
-  int _currentYear = DateTime.now().year;
+  final int _currentYear = DateTime.now().year;
 
   HomeCubit(this.calendarEventRepository) : super(const HomeState.loading());
 
@@ -96,8 +95,7 @@ class HomeCubit extends Cubit<HomeState> {
     if (calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.custom)) {
-      getCustomEvents =
-          calendarEventRepository.getCustomEvents(_currentYear);
+      getCustomEvents = calendarEventRepository.getCustomEvents(_currentYear);
     } else {
       getCustomEvents = Future.value(List.empty());
     }
@@ -125,18 +123,14 @@ class HomeCubit extends Cubit<HomeState> {
       }
       debugPrint('[Tony] update all event ${DateTime.now()}');
       emit(HomeState.success(combinedCalendarEvents));
+      refreshGoogleCalendarHolidays();
     });
-
-    getEvents();
   }
 
   // refresh data
-  Future<void> getEvents() async {
-    final List<CalendarEvent> combinedCalendarEvents = [];
-
-    await getCustomEvents(combinedCalendarEvents);
-    await getLunarEvents(combinedCalendarEvents, 5);
-    await getSolarEvents(combinedCalendarEvents);
+  Future<void> refreshGoogleCalendarHolidays() async {
+    final List<CalendarEvent> originCombinedCalendarEvents =
+        state.events.toList();
 
     Future<List<EventModel>> getTaiwanEvents;
     if (calendarEventRepository
@@ -198,23 +192,15 @@ class HomeCubit extends Cubit<HomeState> {
       getUsEvents
     ]);
 
-    // add origin google calendar type database data first
-    var originGoogleCalendarData =
-        state.events.where((element) => element.isGoogleCalendarEvent());
-    debugPrint(
-        '[Tony] originGoogleCalendarData=${originGoogleCalendarData.length}');
-    combinedCalendarEvents.addAll(originGoogleCalendarData);
-
     for (var events in allCountryEvents) {
       if (events.isNotEmpty) {
         debugPrint('[Tony] getEvents, ${events.first.eventType.name} updated');
-
         // remove old event-type data
-        combinedCalendarEvents.removeWhere(
+        originCombinedCalendarEvents.removeWhere(
             (element) => element.eventID == events.first.eventType.name);
 
         // add new event-type data
-        combinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+        originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
@@ -225,10 +211,10 @@ class HomeCubit extends Cubit<HomeState> {
       }
     }
     debugPrint('[Tony] getEvents, allCountryEvents updated');
-    emit(HomeState.success(combinedCalendarEvents));
+    emit(HomeState.success(originCombinedCalendarEvents));
   }
 
-  Future<void> getSolarEvents(
+  /*Future<void> getSolarEvents(
       List<CalendarEvent> combinedCalendarEvents) async {
     if (calendarEventRepository
         .getDisplayEventType()
@@ -274,9 +260,25 @@ class HomeCubit extends Cubit<HomeState> {
           eventBackgroundColor: e.eventType.toEventColor(),
           eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
     }
+  }*/
+
+  void refreshFromSettings() async {
+    // TODO determine by custom tab diff
   }
 
-  void refreshFromSettings() {
-    // TODO
+  void refreshFromAddOrUpdateCustomEvent() async {
+    var newEventsList = state.events.toList();
+    var updatedCustomEvents =
+        await calendarEventRepository.getCustomEvents(_currentYear);
+    newEventsList
+        .removeWhere((element) => element.eventID == EventType.custom.name);
+    newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
+        order: e.eventType.index,
+        eventName: e.eventName,
+        eventDate: e.date,
+        eventID: e.eventType.name,
+        eventBackgroundColor: e.eventType.toEventColor(),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+    emit(HomeState.success(newEventsList));
   }
 }

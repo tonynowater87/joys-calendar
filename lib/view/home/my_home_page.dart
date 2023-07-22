@@ -68,7 +68,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Icon(Icons.event_note),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
-                        bool? isAdded = await showDialog(
+                        var isAdded = await showDialog(
                             context: context,
                             builder: (context) => AddEventPage());
 
@@ -76,7 +76,7 @@ class _MyHomePageState extends State<MyHomePage> {
                           return;
                         }
                         if (isAdded == true) {
-                          scaffoldContext.read<HomeCubit>().getEvents(); // todo refresh custom event only
+                          scaffoldContext.read<HomeCubit>().refreshFromAddOrUpdateCustomEvent();
                         }
                       })),
               SpeedDialChild(
@@ -85,17 +85,11 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Icon(Icons.list_alt_outlined),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
-
-                        var isUpdate = await Navigator.pushNamed(
-                            context, AppConstants.routeMyEvent);
-
+                        await Navigator.pushNamed(context, AppConstants.routeMyEvent);
                         if (!mounted) {
                           return;
                         }
-
-                        if (isUpdate == true) {
-                          scaffoldContext.read<HomeCubit>().getEvents();
-                        }
+                        scaffoldContext.read<HomeCubit>().refreshFromAddOrUpdateCustomEvent();
                       })),
               SpeedDialChild(
                   label: "設定",
@@ -106,7 +100,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         await Navigator.of(rootContext)
                             .pushNamed(AppConstants.routeSettings);
                         if (!mounted) return;
-                        scaffoldContext.read<HomeCubit>().getEvents();
+                        scaffoldContext.read<HomeCubit>().refreshGoogleCalendarHolidays();
                       })),
             ],
           ),
