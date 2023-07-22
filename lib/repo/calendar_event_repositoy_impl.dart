@@ -61,15 +61,21 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
-  Future<List<EventModel>> getLunarEvents(int year, int range) {
+  Future<List<EventModel>> getLunarEvents(int year, int range) async {
     Map<String, int> arguments = {};
     arguments['year'] = year;
     arguments['range'] = range;
-    return compute(getLunarEventTask, arguments);
+    List<EventModel> lunarEvents;
+    // var start = DateTime.now().millisecondsSinceEpoch;
+    lunarEvents = await compute(getLunarEventTask, arguments);
+    // var cost = DateTime.now().millisecondsSinceEpoch - start;
+    // debugPrint('[Tony] getLunarEvents($year, $range) cost $cost');
+    return lunarEvents;
   }
 
   @override
   Future<List<EventModel>> getSolarEvents(int year, int range) async {
+    // var start = DateTime.now().millisecondsSinceEpoch;
     List<EventModel> solarEvents;
     Map<String, int> arguments = {};
     arguments['year'] = year;
@@ -80,6 +86,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           ..displayName = e.eventName
           ..dateTime = e.date)
         .toList());
+    // var cost = DateTime.now().millisecondsSinceEpoch - start;
+    // debugPrint('[Tony] getSolarEvents($year, $range) cost $cost');
     return Future.value(solarEvents);
   }
 
@@ -109,6 +117,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   @override
   Future<List<EventModel>> getCustomEvents(int year) async {
     // var start = DateTime.now().millisecondsSinceEpoch;
+    // TODO refactor
     int startYear = year - 100;
     int endYear = year + 100;
     List<EventModel> result = [];

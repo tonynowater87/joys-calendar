@@ -31,7 +31,7 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext rootContext) {
     return BlocProvider(
       create: (context) => HomeCubit(context.read<CalendarEventRepository>())
-        ..getEventFirstTime(),
+        ..getEventWhenAppLaunch(),
       child: Builder(builder: (scaffoldContext) {
         return Scaffold(
           resizeToAvoidBottomInset: false,
@@ -76,7 +76,9 @@ class _MyHomePageState extends State<MyHomePage> {
                           return;
                         }
                         if (isAdded == true) {
-                          scaffoldContext.read<HomeCubit>().refreshFromAddOrUpdateCustomEvent();
+                          scaffoldContext
+                              .read<HomeCubit>()
+                              .refreshFromAddOrUpdateCustomEvent();
                         }
                       })),
               SpeedDialChild(
@@ -85,11 +87,14 @@ class _MyHomePageState extends State<MyHomePage> {
                       child: const Icon(Icons.list_alt_outlined),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
-                        await Navigator.pushNamed(context, AppConstants.routeMyEvent);
+                        await Navigator.pushNamed(
+                            context, AppConstants.routeMyEvent);
                         if (!mounted) {
                           return;
                         }
-                        scaffoldContext.read<HomeCubit>().refreshFromAddOrUpdateCustomEvent();
+                        scaffoldContext
+                            .read<HomeCubit>()
+                            .refreshFromAddOrUpdateCustomEvent();
                       })),
               SpeedDialChild(
                   label: "設定",
@@ -100,7 +105,9 @@ class _MyHomePageState extends State<MyHomePage> {
                         await Navigator.of(rootContext)
                             .pushNamed(AppConstants.routeSettings);
                         if (!mounted) return;
-                        scaffoldContext.read<HomeCubit>().refreshGoogleCalendarHolidaysFromSettings();
+                        scaffoldContext
+                            .read<HomeCubit>()
+                            .refreshAllEventsFromSettings();
                       })),
             ],
           ),
@@ -176,6 +183,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       currentDate.year, currentDate.month - 1);
                                 }
                               });
+                              updateLunarAndSolar(cubit);
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
@@ -201,6 +209,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     setState(() {
                                       currentDate = pickedDate;
                                     });
+                                    updateLunarAndSolar(cubit);
                                     cellCalendarPageController.animateToDate(
                                       currentDate,
                                       curve: Curves.linear,
@@ -237,6 +246,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       currentDate.year, currentDate.month + 1);
                                 }
                               });
+                              updateLunarAndSolar(cubit);
                               cellCalendarPageController.animateToDate(
                                   currentDate,
                                   curve: Curves.linear,
@@ -253,7 +263,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                     var bOrder = b.order ?? 0;
                     if (aOrder > bOrder) {
                       return 1;
-                    } else if(aOrder < bOrder) {
+                    } else if (aOrder < bOrder) {
                       return -1;
                     } else {
                       return 0;
@@ -265,11 +275,16 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                         eventDate.month == date.month &&
                         eventDate.day == date.day;
                   }).toList();
-                  final dateFormat = DateFormat(DateFormat.ABBR_MONTH_WEEKDAY_DAY, AppConstants.defaultLocale);
+                  final dateFormat = DateFormat(
+                      DateFormat.ABBR_MONTH_WEEKDAY_DAY,
+                      AppConstants.defaultLocale);
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text(dateFormat.format(date), style: Theme.of(context).textTheme.headline4,),
+                            title: Text(
+                              dateFormat.format(date),
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
                             content: Column(
                               mainAxisSize: MainAxisSize.min,
                               children: dayEvents
@@ -307,5 +322,9 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
           ],
         );
     }
+  }
+
+  void updateLunarAndSolar(HomeCubit cubit) {
+    cubit.refreshWhenYearChanged(currentDate.year);
   }
 }
