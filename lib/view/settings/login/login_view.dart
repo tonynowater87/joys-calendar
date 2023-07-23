@@ -120,7 +120,7 @@ class _LoginViewState extends State<LoginView> {
             lastUpdatedTime = dateFormat.format(state.lastUpdatedTime!);
           }
           final user = state.user?.email ?? "無";
-          final loginType = state.loginType;
+
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
@@ -134,17 +134,14 @@ class _LoginViewState extends State<LoginView> {
                           "備份帳號：",
                           textAlign: TextAlign.left,
                         ),
-                        Visibility(
-                          visible: loginType == LoginType.google,
-                          child: SizedBox(
-                            width: 24,
-                            height: 24,
-                            child: Padding(
-                              padding: const EdgeInsets.all(4.0),
-                              child: Image.asset(
-                                  state.loginType?.getFileName() ?? "",
-                                  fit: BoxFit.scaleDown),
-                            ),
+                        SizedBox(
+                          width: 24,
+                          height: 24,
+                          child: Padding(
+                            padding: const EdgeInsets.all(4.0),
+                            child: Image.asset(
+                                state.loginType?.getFileName() ?? "",
+                                fit: BoxFit.scaleDown),
                           ),
                         ),
                         Text(user),
@@ -156,7 +153,16 @@ class _LoginViewState extends State<LoginView> {
                 child: Align(
                     alignment: Alignment.centerLeft,
                     child: Text(
-                      "檔案大小：$fileSize(雲端)\t $localFileSize(本地)",
+                      "雲端檔案大小：$fileSize",
+                      textAlign: TextAlign.left,
+                    )),
+              ),
+              Padding(
+                padding: const EdgeInsets.only(left: 8),
+                child: Align(
+                    alignment: Alignment.centerLeft,
+                    child: Text(
+                      "本地檔案大小：$localFileSize",
                       textAlign: TextAlign.left,
                     )),
               ),
@@ -217,6 +223,24 @@ class _LoginViewState extends State<LoginView> {
                           },
                           child: Text('登出',
                               style: Theme.of(context).textTheme.bodyText1)),
+                    ),
+                    Center(
+                      child: AnimatedButton(
+                        width: 80,
+                        height: 40,
+                        color: AppColors.lightGreen,
+                        onPressed: () {
+                          DialogUtils.showAlertDialog(
+                              title: "刪除雲端資料",
+                              content: "注意：此動作會將雲端備份資料刪除，不會影響手機內的資料",
+                              context: context,
+                              onConfirmCallback: () async {
+                                await loginCubit.delete();
+                              });
+                        },
+                        child: Text('刪除',
+                            style: Theme.of(context).textTheme.bodyText1),
+                      ),
                     )
                   ],
                 ),
@@ -224,13 +248,17 @@ class _LoginViewState extends State<LoginView> {
             ],
           );
         case LoginStatus.loading:
+        case LoginStatus.deleting:
           var isLogin = state.user != null;
           var isInit = state.localFileSize == null;
+          var isDeleting = state.loginStatus == LoginStatus.deleting;
           String loadingText;
 
           if (isLogin) {
-            if (isInit) {
-              loadingText = '獲取雲端備份資訊...';
+            if (isDeleting) {
+              loadingText = '刪除雲端備份資料中...';
+            } else if (isInit) {
+              loadingText = '獲取雲端備份資訊中...';
             } else {
               loadingText = '處理中...';
             }

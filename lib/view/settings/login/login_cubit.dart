@@ -31,6 +31,14 @@ class LoginCubit extends Cubit<LoginState> {
       emit(state.copyWith(loginStatus: LoginStatus.loading));
       final fetchState = await backupRepository.fetch();
       debugPrint('[Tony] init, state=$fetchState');
+      if (fetchState == BackUpStatus.notChanged) {
+        emit(LoginState(
+            localFileSize: localFileSize,
+            user: backupRepository.getUser(),
+            loginType: backupRepository.getLoginType(),
+            loginStatus: LoginStatus.login));
+        return;
+      }
       if (fetchState == BackUpStatus.fail) {
         emit(LoginState(
             user: backupRepository.getUser(),
@@ -140,5 +148,26 @@ class LoginCubit extends Cubit<LoginState> {
         localFileSize: localFileSize,
         lastUpdatedTime: backupRepository.getLastUpdatedTime(),
         loginType: backupRepository.getLoginType()));
+  }
+
+  Future<void> delete() async {
+    emit(state.copyWith(loginStatus: LoginStatus.deleting));
+    var result = await backupRepository.delete();
+    switch (result) {
+      case BackUpStatus.success:
+        Fluttertoast.showToast(msg: "成功刪除雲端備份資料！");
+        emit(LoginState(
+            user: backupRepository.getUser(),
+            loginStatus: LoginStatus.login,
+            loginType: backupRepository.getLoginType(),
+            localFileSize: state.localFileSize));
+        break;
+      case BackUpStatus.notChanged:
+      case BackUpStatus.cancel:
+      case BackUpStatus.fail:
+        emit(state.copyWith(loginStatus: LoginStatus.login));
+        Fluttertoast.showToast(msg: "刪除雲端資料失敗，請再重試一次！");
+        break;
+    }
   }
 }

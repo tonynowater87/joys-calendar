@@ -20,7 +20,6 @@ class FirebaseBackUpRepository implements BackUpRepository {
   FirebaseStorage firebaseStorage;
   SharedPreferenceProvider sharedPreferenceProvider;
 
-  LoginType? loginType;
   User? currentUser;
   DateTime? lastUpdatedTime;
   String? fileSize;
@@ -31,9 +30,6 @@ class FirebaseBackUpRepository implements BackUpRepository {
       required this.firebaseStorage,
       required this.sharedPreferenceProvider}) {
     currentUser = firebaseAuth.currentUser;
-    if (currentUser != null) {
-      loginType = LoginType.google;
-    }
     var hasRunBefore = sharedPreferenceProvider.getHasRunBefore();
     debugPrint(
         '[Tony] FirebaseBackUpRepository init, currentUser=$currentUser');
@@ -62,7 +58,14 @@ class FirebaseBackUpRepository implements BackUpRepository {
       debugPrint('[Tony] lastUpdatedTime=$lastUpdatedTime, fileSize=$fileSize');
       return BackUpStatus.success;
     } on Exception catch (e) {
-      return BackUpStatus.fail;
+      // No object exists at the desired reference
+      if (e.toString().contains('No object exists at the desired reference')) {
+        debugPrint('[Tony] fetch remote not exist, error=$e');
+        return BackUpStatus.notChanged;
+      } else {
+        debugPrint('[Tony] fetch remote error=$e');
+        return BackUpStatus.fail;
+      }
     }
   }
 
@@ -125,7 +128,6 @@ class FirebaseBackUpRepository implements BackUpRepository {
               return BackUpStatus.fail;
           }
       }
-      this.loginType = loginType;
       return BackUpStatus.success;
     } on Exception catch (e) {
       debugPrint('[Tony] login failure, e=$e');
@@ -140,7 +142,6 @@ class FirebaseBackUpRepository implements BackUpRepository {
     currentUser = null;
     fileSize = null;
     lastUpdatedTime = null;
-    loginType = null;
     return BackUpStatus.success;
   }
 
@@ -272,6 +273,33 @@ class FirebaseBackUpRepository implements BackUpRepository {
 
   @override
   LoginType? getLoginType() {
-    return loginType;
+    var providerId = currentUser?.providerData.first.providerId;
+    debugPrint('[Tony] providerData=$providerId');
+    if (providerId == "google.com") {
+      return LoginType.google;
+    } else if (providerId == "apple.com") {
+      return LoginType.appleId;
+    } else {
+      return null;
+    }
+  }
+
+  @override
+  Future<BackUpStatus> delete() async {
+    final uuid = currentUser?.uid;
+    if (uuid == null) {
+      return BackUpStatus.fail;
+    }
+    try {
+      final reference = FirebaseStorage.instance.ref();
+      final dataRef = reference.child(uuid);
+      await dataRef.delete();
+      lastUpdatedTime = null;
+      fileSize = null;
+      return BackUpStatus.success;
+    } on Exception catch (e) {
+      debugPrint('[Tony] delete error=$e');
+      return BackUpStatus.fail;
+    }
   }
 }

@@ -4,6 +4,7 @@ enum LoginStatus {
   notLogin,
   login,
   loading,
+  deleting,
   error,
 }
 

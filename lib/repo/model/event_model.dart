@@ -86,7 +86,7 @@ extension EventTypeExtensions on EventType {
       case EventType.lunar:
         return "農曆日期";
       case EventType.solar:
-        return "24節氣";
+        return "２４節氣";
       case EventType.custom:
         return "我的節日";
     }

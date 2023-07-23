@@ -50,4 +50,7 @@ abstract class BackUpRepository {
   Future<BackUpStatus> upload();
 
   Future<BackUpStatus> download({String? token});
+
+  Future<BackUpStatus> delete();
+
 }
