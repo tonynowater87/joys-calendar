@@ -51,10 +51,10 @@ class LoginCubit extends Cubit<LoginState> {
     }
   }
 
-  Future<void> login() async {
+  Future<void> login(LoginType loginType) async {
     emit(LoginState(loginStatus: LoginStatus.loading));
     BackUpStatus? loginStatus;
-    loginStatus = await backupRepository.login(LoginType.google);
+    loginStatus = await backupRepository.login(loginType);
 
     if (loginStatus == BackUpStatus.fail) {
       await backupRepository.logout();

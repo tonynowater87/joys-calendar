@@ -9,11 +9,13 @@ import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class FirebaseBackUpRepository implements BackUpRepository {
   static const String backupFileName = "memo.json";
 
   final googleSignIn = GoogleSignIn(scopes: ['email']);
+  final appleSignIn = SignInWithApple();
   LocalDatasource localDatasource;
   FirebaseAuth firebaseAuth;
   FirebaseStorage firebaseStorage;
@@ -95,6 +97,20 @@ class FirebaseBackUpRepository implements BackUpRepository {
           break;
         case LoginType.anonymous:
           currentUser = (await firebaseAuth.signInAnonymously()).user;
+          break;
+        case LoginType.appleId:
+          final appleCredential =
+              await SignInWithApple.getAppleIDCredential(scopes: [
+            AppleIDAuthorizationScopes.email,
+            AppleIDAuthorizationScopes.fullName,
+          ]);
+          debugPrint('[Tony] appleCredential=$appleCredential');
+          final credential =
+              AppleAuthProvider.credential(appleCredential.identityToken!);
+          // Once signed in, return the UserCredential
+          currentUser =
+              (await FirebaseAuth.instance.signInWithCredential(credential))
+                  .user;
           break;
       }
       debugPrint('[Tony] login success, user=${currentUser?.uid}');

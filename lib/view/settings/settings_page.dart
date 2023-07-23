@@ -71,7 +71,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         }
                       }).toList()),
                   const SizedBox(
-                    height: 200,
+                    height: 300,
                     width: 400,
                     child: Card(
                       margin: EdgeInsets.symmetric(vertical: 16),

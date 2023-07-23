@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:animated_button/animated_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -26,26 +28,77 @@ class _LoginViewState extends State<LoginView> {
       final loginCubit = context.read<LoginCubit>();
       switch (state.loginStatus) {
         case LoginStatus.notLogin:
+          List<Widget> loginRows = [];
+          Widget googleLoginButton = AnimatedButton(
+              width: 160,
+              height: 40,
+              color: AppColors.lightGreen,
+              onPressed: () {
+                loginCubit.login(LoginType.google);
+              },
+              child: Row(
+                children: [
+                  IconButton(
+                      onPressed: null,
+                      icon: Image.asset(LoginType.google.getFileName(),
+                          fit: BoxFit.scaleDown)),
+                  Text('Google 登入',
+                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold)),
+                ],
+              ));
+
+          Widget appleLoginButton = AnimatedButton(
+              width: 160,
+              height: 40,
+              color: AppColors.lightGreen,
+              onPressed: () {
+                loginCubit.login(LoginType.appleId);
+              },
+              child: Row(
+                children: [
+                  IconButton(
+                    onPressed: null,
+                    icon: Image.asset(LoginType.appleId.getFileName(),
+                        fit: BoxFit.scaleDown),
+                  ),
+                  Text('Apple ID 登入',
+                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                          color: Colors.white, fontWeight: FontWeight.bold))
+                ],
+              ));
+
+          if (Platform.isAndroid) {
+            loginRows = [
+              googleLoginButton,
+              const SizedBox(
+                height: 10,
+              ),
+              appleLoginButton
+            ];
+          } else if (Platform.isIOS) {
+            loginRows = [
+              appleLoginButton,
+              const SizedBox(
+                height: 10,
+              ),
+              googleLoginButton
+            ];
+          }
+
+          loginRows.addAll([
+            const SizedBox(
+              height: 10,
+            ),
+            const Text('登入後可進行 備份／復原 我的節日')
+          ]);
+
           return Stack(
             alignment: Alignment.center,
             children: [
               Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  AnimatedButton(
-                      width: 80,
-                      height: 40,
-                      color: AppColors.lightGreen,
-                      onPressed: () {
-                        loginCubit.login();
-                      },
-                      child: Text('登入',
-                          style: Theme.of(context).textTheme.bodyText1)),
-                  const SizedBox(
-                    height: 10,
-                  ),
-                  const Text('登入後可進行 備份／復原 我的節日'),
-                ],
+                children: loginRows,
               )
             ],
           );
