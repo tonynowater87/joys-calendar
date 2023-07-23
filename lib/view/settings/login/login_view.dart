@@ -9,6 +9,7 @@ import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/settings/login/login_cubit.dart';
+import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -26,47 +27,56 @@ class _LoginViewState extends State<LoginView> {
         ..init();
     }, child: BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       final loginCubit = context.read<LoginCubit>();
+      var fontSize = 44 * 0.43;
       switch (state.loginStatus) {
         case LoginStatus.notLogin:
           List<Widget> loginRows = [];
-          Widget googleLoginButton = AnimatedButton(
-              width: 160,
-              height: 40,
-              color: AppColors.lightGreen,
-              onPressed: () {
+          Widget googleLoginButton = Container(
+            height: 40,
+            width: 300,
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(width: 1, color: Colors.black),
+              borderRadius: const BorderRadius.all(Radius.circular(8)),
+            ),
+            child: InkWell(
+              onTap: () {
                 loginCubit.login(LoginType.google);
               },
               child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  IconButton(
-                      onPressed: null,
-                      icon: Image.asset(LoginType.google.getFileName(),
-                          fit: BoxFit.scaleDown)),
+                  SizedBox(
+                      width: fontSize * (25 / 31),
+                      height: fontSize,
+                      child: Image.asset(
+                        LoginType.google.getFileName(),
+                        fit: BoxFit.cover,
+                      )),
+                  const SizedBox(
+                    width: 6,
+                  ),
                   Text('Google 登入',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.bold)),
+                      style: Theme.of(context)
+                          .textTheme
+                          .bodyText1
+                          ?.copyWith(fontSize: fontSize)),
                 ],
-              ));
+              ),
+            ),
+          );
 
-          Widget appleLoginButton = AnimatedButton(
-              width: 160,
-              height: 40,
-              color: AppColors.lightGreen,
+          Widget appleLoginButton = SizedBox(
+            width: 300,
+            height: 40,
+            child: SignInWithAppleButton(
+              text: 'Apple ID 登入',
               onPressed: () {
                 loginCubit.login(LoginType.appleId);
               },
-              child: Row(
-                children: [
-                  IconButton(
-                    onPressed: null,
-                    icon: Image.asset(LoginType.appleId.getFileName(),
-                        fit: BoxFit.scaleDown),
-                  ),
-                  Text('Apple ID 登入',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
-                          color: Colors.white, fontWeight: FontWeight.bold))
-                ],
-              ));
+              style: SignInWithAppleButtonStyle.whiteOutlined,
+            ),
+          );
 
           if (Platform.isAndroid) {
             loginRows = [
