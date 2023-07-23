@@ -10,11 +10,11 @@ part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
 
-  late CalendarEventRepository calendarEventRepository;
+  final CalendarEventRepository _calendarEventRepository;
 
   int _currentYear = DateTime.now().year;
 
-  HomeCubit(this.calendarEventRepository) : super(const HomeState.loading());
+  HomeCubit(this._calendarEventRepository) : super(const HomeState.loading());
 
   Future<void> getEventWhenAppLaunch() async {
     var start = DateTime.now().millisecondsSinceEpoch;
@@ -58,7 +58,10 @@ class HomeCubit extends Cubit<HomeState> {
     debugPrint('[Tony] refreshGoogleCalendarHolidays done');
 
     for (var events in allCountryEvents) {
-      if (events.isNotEmpty) {
+      if (events.isNotEmpty &&
+          _calendarEventRepository
+              .getDisplayEventType()
+              .contains(events.first.eventType)) {
         // remove old event-type data from database
         originCombinedCalendarEvents.removeWhere(
             (element) => element.eventID == events.first.eventType.name);
@@ -115,16 +118,16 @@ class HomeCubit extends Cubit<HomeState> {
       try {
         Future<List<EventModel>> future;
         if (isFromLocal) {
-          if (calendarEventRepository
+          if (_calendarEventRepository
               .getDisplayEventType()
               .contains(eventType)) {
-            future = calendarEventRepository
+            future = _calendarEventRepository
                 .getEventsFromLocalDB(eventType.toCountryCode());
           } else {
             future = Future.value(List.empty());
           }
         } else {
-          future = calendarEventRepository.getEvents(eventType.toCountryCode());
+          future = _calendarEventRepository.getEvents(eventType.toCountryCode());
         }
         futures.add(future);
       } on Exception catch (e) {
@@ -137,23 +140,23 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<List<EventModel>> _getCustomEvents() {
-    if (calendarEventRepository
+    if (_calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.custom)) {
-      return calendarEventRepository.getCustomEvents(_currentYear);
+      return _calendarEventRepository.getCustomEvents(_currentYear);
     } else {
       return Future.value(List.empty());
     }
   }
 
   Future<List<EventModel>> _getSolarEvents(int year) async {
-    if (calendarEventRepository
+    if (_calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.solar)) {
       var events =
-          await calendarEventRepository.getSolarEventsFromLocalDB(year);
+          await _calendarEventRepository.getSolarEventsFromLocalDB(year);
       if (events.isEmpty) {
-        return calendarEventRepository.getSolarEvents(year, 0);
+        return _calendarEventRepository.getSolarEvents(year, 0);
       } else {
         return Future.value(events);
       }
@@ -163,10 +166,10 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<List<EventModel>> _getLunarEvents(int year) async {
-    if (calendarEventRepository
+    if (_calendarEventRepository
         .getDisplayEventType()
         .contains(EventType.lunar)) {
-      return calendarEventRepository.getLunarEvents(year, 0);
+      return _calendarEventRepository.getLunarEvents(year, 0);
     } else {
       return Future(List.empty);
     }
