@@ -29,7 +29,7 @@ class LoginState extends Equatable {
     return LoginState(
       user: user,
       fileSize: fileSize,
-      localFileSize: fileSize,
+      localFileSize: localFileSize,
       lastUpdatedTime: lastUpdatedTime,
       loginType: loginType,
       loginStatus: loginStatus,

@@ -107,7 +107,13 @@ class LoginCubit extends Cubit<LoginState> {
 
     if (status == BackUpStatus.notChanged) {
       Fluttertoast.showToast(msg: "資料沒有異動！");
-      emit(state.copyWith(loginStatus: LoginStatus.login));
+      emit(LoginState(
+          user: state.user,
+          localFileSize: state.localFileSize,
+          fileSize: state.localFileSize,
+          loginType: state.loginType,
+          lastUpdatedTime: backupRepository.getLastUpdatedTime(),
+          loginStatus: LoginStatus.login));
       return;
     }
 
@@ -134,7 +140,13 @@ class LoginCubit extends Cubit<LoginState> {
 
     if (status == BackUpStatus.notChanged) {
       Fluttertoast.showToast(msg: "資料沒有異動！");
-      emit(state.copyWith(loginStatus: LoginStatus.login));
+      emit(LoginState(
+          user: state.user,
+          localFileSize: state.localFileSize,
+          fileSize: state.localFileSize,
+          loginType: state.loginType,
+          lastUpdatedTime: backupRepository.getLastUpdatedTime(),
+          loginStatus: LoginStatus.login));
       return;
     }
 

@@ -188,6 +188,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
 
           if (json.hashCode.toString() == previousHash) {
             debugPrint('[Tony] 上傳, 資料未異動');
+            lastUpdatedTime = fullMetadata.updated;
             return BackUpStatus.notChanged;
           }
         }
@@ -226,6 +227,7 @@ class FirebaseBackUpRepository implements BackUpRepository {
         String? previousHash = fullMetadata.customMetadata!['hash'];
         if (jsonNow.hashCode.toString() == previousHash) {
           debugPrint('[Tony] 下載, 資料沒有異動');
+          lastUpdatedTime = fullMetadata.updated;
           return BackUpStatus.notChanged;
         }
       }
