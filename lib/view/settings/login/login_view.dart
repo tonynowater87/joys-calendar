@@ -9,7 +9,7 @@ import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/settings/login/login_cubit.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:the_apple_sign_in/apple_sign_in_button.dart' as AppleButton;
 
 class LoginView extends StatefulWidget {
   const LoginView({Key? key}) : super(key: key);
@@ -27,7 +27,7 @@ class _LoginViewState extends State<LoginView> {
         ..init();
     }, child: BlocBuilder<LoginCubit, LoginState>(builder: (context, state) {
       final loginCubit = context.read<LoginCubit>();
-      var fontSize = 44 * 0.43;
+      var fontSize = 20.0;
       switch (state.loginStatus) {
         case LoginStatus.notLogin:
           List<Widget> loginRows = [];
@@ -37,7 +37,7 @@ class _LoginViewState extends State<LoginView> {
             decoration: BoxDecoration(
               color: Colors.white,
               border: Border.all(width: 1, color: Colors.black),
-              borderRadius: const BorderRadius.all(Radius.circular(8)),
+              borderRadius: const BorderRadius.all(Radius.circular(6)),
             ),
             child: InkWell(
               onTap: () {
@@ -57,10 +57,8 @@ class _LoginViewState extends State<LoginView> {
                     width: 6,
                   ),
                   Text('Google 登入',
-                      style: Theme.of(context)
-                          .textTheme
-                          .bodyText1
-                          ?.copyWith(fontSize: fontSize)),
+                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                          fontSize: fontSize, fontWeight: FontWeight.w500)),
                 ],
               ),
             ),
@@ -69,12 +67,12 @@ class _LoginViewState extends State<LoginView> {
           Widget appleLoginButton = SizedBox(
             width: 300,
             height: 40,
-            child: SignInWithAppleButton(
-              text: 'Apple ID 登入',
+            child: AppleButton.AppleSignInButton(
+              buttonText: 'Apple ID 登入',
+              style: AppleButton.ButtonStyle.whiteOutline,
               onPressed: () {
                 loginCubit.login(LoginType.appleId);
               },
-              style: SignInWithAppleButtonStyle.whiteOutlined,
             ),
           );
 
@@ -83,8 +81,7 @@ class _LoginViewState extends State<LoginView> {
               googleLoginButton,
               const SizedBox(
                 height: 10,
-              ),
-              appleLoginButton
+              )
             ];
           } else if (Platform.isIOS) {
             loginRows = [

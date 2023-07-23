@@ -63,7 +63,7 @@ dependencies:
       url: https://github.com/tonynowater87/month-year-picker.git
       ref: tony-calendar
   google_sign_in: 6.0.1
-  sign_in_with_apple: 4.3.0
+  the_apple_sign_in: 1.1.1
   flutter_localizations:
     sdk: flutter
   intl: 0.18.1

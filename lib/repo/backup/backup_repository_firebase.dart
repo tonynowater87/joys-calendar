@@ -9,13 +9,12 @@ import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:sign_in_with_apple/sign_in_with_apple.dart';
+import 'package:the_apple_sign_in/the_apple_sign_in.dart';
 
 class FirebaseBackUpRepository implements BackUpRepository {
   static const String backupFileName = "memo.json";
 
   final googleSignIn = GoogleSignIn(scopes: ['email']);
-  final appleSignIn = SignInWithApple();
   LocalDatasource localDatasource;
   FirebaseAuth firebaseAuth;
   FirebaseStorage firebaseStorage;
@@ -99,21 +98,33 @@ class FirebaseBackUpRepository implements BackUpRepository {
           currentUser = (await firebaseAuth.signInAnonymously()).user;
           break;
         case LoginType.appleId:
-          final appleCredential =
-              await SignInWithApple.getAppleIDCredential(scopes: [
-            AppleIDAuthorizationScopes.email,
-            AppleIDAuthorizationScopes.fullName,
+          final result = await TheAppleSignIn.performRequests([
+            const AppleIdRequest(requestedScopes: [Scope.email])
           ]);
-          debugPrint('[Tony] appleCredential=$appleCredential');
-          final credential =
-              AppleAuthProvider.credential(appleCredential.identityToken!);
-          // Once signed in, return the UserCredential
-          currentUser =
-              (await FirebaseAuth.instance.signInWithCredential(credential))
-                  .user;
-          break;
+
+          debugPrint('[Tony] TheAppleSignIn result=${result.status}');
+
+          switch (result.status) {
+            case AuthorizationStatus.authorized:
+              final appleIdCredential = result.credential!;
+              debugPrint('[Tony] appleCredential=$appleIdCredential');
+              final oAuthProvider = OAuthProvider('apple.com');
+              final credential = oAuthProvider.credential(
+                idToken: String.fromCharCodes(appleIdCredential.identityToken!),
+                accessToken:
+                    String.fromCharCodes(appleIdCredential.authorizationCode!),
+              );
+              currentUser =
+                  (await FirebaseAuth.instance.signInWithCredential(credential))
+                      .user;
+              break;
+            case AuthorizationStatus.cancelled:
+              return BackUpStatus.cancel;
+            case AuthorizationStatus.error:
+              debugPrint('[Tony] error=${result.error.toString()}');
+              return BackUpStatus.fail;
+          }
       }
-      debugPrint('[Tony] login success, user=${currentUser?.uid}');
       this.loginType = loginType;
       return BackUpStatus.success;
     } on Exception catch (e) {
