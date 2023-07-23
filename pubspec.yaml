@@ -71,6 +71,7 @@ dependencies:
     git:
       url: https://github.com/tonynowater87/lunar-flutter.git
       ref: master
+  google_mobile_ads: 3.0.0
 
 dependency_overrides:
   intl: any

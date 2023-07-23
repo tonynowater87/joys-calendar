@@ -1,8 +1,13 @@
+import 'dart:io';
+
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/foundation.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/utils/file.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
@@ -12,6 +17,8 @@ part 'login_state.dart';
 class LoginCubit extends Cubit<LoginState> {
   BackUpRepository backupRepository;
   LocalDatasource localDatasource;
+  String? _adUnitId;
+  InterstitialAd? _interstitialAd;
 
   LoginCubit(this.backupRepository, this.localDatasource)
       : super(backupRepository.isLogin()
@@ -22,9 +29,16 @@ class LoginCubit extends Cubit<LoginState> {
                 lastUpdatedTime: null,
                 loginType: backupRepository.getLoginType(),
                 loginStatus: LoginStatus.login)
-            : LoginState(loginStatus: LoginStatus.notLogin));
+            : LoginState(loginStatus: LoginStatus.notLogin)) {
+    if (Platform.isAndroid) {
+      _adUnitId = AppConstants.INTERSTITIAL_ANDROID_ID;
+    } else if (Platform.isIOS) {
+      _adUnitId = AppConstants.INTERSTITIAL_IOS_ID;
+    }
+  }
 
   Future<void> init() async {
+    _loadInterstitialAd();
     if (backupRepository.isLogin()) {
       final localFileSize =
           await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
@@ -119,6 +133,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     final localFileSize =
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
+    _showAd();
     Fluttertoast.showToast(msg: "上傳備份資料成功！");
     emit(LoginState(
         loginStatus: LoginStatus.login,
@@ -152,6 +167,7 @@ class LoginCubit extends Cubit<LoginState> {
 
     final localFileSize =
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
+    _showAd();
     Fluttertoast.showToast(msg: "下載還原資料成功！");
     emit(LoginState(
         loginStatus: LoginStatus.login,
@@ -181,5 +197,50 @@ class LoginCubit extends Cubit<LoginState> {
         Fluttertoast.showToast(msg: "刪除雲端資料失敗，請再重試一次！");
         break;
     }
+  }
+
+  void _showAd() async {
+    if (_interstitialAd == null) {
+      _loadInterstitialAd();
+      return;
+    }
+    _interstitialAd!.fullScreenContentCallback = FullScreenContentCallback(
+      onAdDismissedFullScreenContent: (ad) {
+        ad.dispose();
+        _loadInterstitialAd();
+      },
+      onAdFailedToShowFullScreenContent: (ad, err) {
+        ad.dispose();
+        _loadInterstitialAd();
+      },
+    );
+    _interstitialAd!.show();
+  }
+
+  Future<void> _loadInterstitialAd() async {
+    if (_adUnitId == null) {
+      return;
+    }
+
+    final stopwatch = Stopwatch()..start();
+    await InterstitialAd.load(
+      adUnitId: _adUnitId!,
+      request: const AdRequest(),
+      adLoadCallback: InterstitialAdLoadCallback(
+        onAdLoaded: (ad) {
+          stopwatch.stop();
+          final duration = stopwatch.elapsedMilliseconds;
+          debugPrint('[Tony] onAdLoaded, duration=$duration');
+          // almost 1~2 seconds
+          _interstitialAd = ad;
+        },
+        onAdFailedToLoad: (err) {
+          _interstitialAd?.dispose();
+          _interstitialAd = null;
+          // stopwatch.reset();
+          debugPrint('[Tony] onAdFailedToLoad, err=$err');
+        },
+      ),
+    );
   }
 }

@@ -9,6 +9,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
@@ -50,7 +51,7 @@ Future<void> main() async {
   debugPrint('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
     // https://firebase.google.com/docs/emulator-suite/install_and_configure?authuser=0
-    // fixme, currently can't connect emulator via real device
+    // fixme, currently can't connect emulator via real device (Android)
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
     await FirebaseStorage.instance.useStorageEmulator('localhost', 9199);
     LoggingInterceptor.debug = false;
@@ -68,6 +69,7 @@ Future<void> main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
+  MobileAds.instance.initialize();
   runApp(MyApp(prefs));
 }
 
