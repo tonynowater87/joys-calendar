@@ -74,37 +74,28 @@ class _AddEventPageState extends State<AddEventPage> {
                     _textEditingController.text = "";
                   }
                   return SingleChildScrollView(
-                    child: Column(children: <Widget>[
-                      Padding(
-                        padding: EdgeInsets.all(8.0),
-                        child: addEventState.status == AddEventStatus.add
-                            ? const Text('新增')
-                            : const Text('編輯'),
-                      ),
-                      const Divider(),
-                      Align(
-                        alignment: Alignment.centerLeft,
-                        child: OutlinedButton.icon(
-                          onPressed: () async {
-                            final pickedDate = await showDatePicker(
-                                context: context,
-                                initialDate: DateTime.now(),
-                                firstDate: DateTime(1900),
-                                lastDate: DateTime(2100));
-                            if (!mounted) {
-                              return;
-                            }
-                            if (pickedDate != null) {
-                              context
-                                  .read<AddEventBloc>()
-                                  .add(UpdateDateTimeEvent(pickedDate));
-                            }
-                          },
-                          icon: const Icon(Icons.edit_calendar_outlined),
-                          label: Text(DateFormat(DateFormat.YEAR_MONTH_DAY,
-                                  AppConstants.defaultLocale)
-                              .format(state.memoModel.dateTime)), // Locale
-                        ),
+                    child: Column(mainAxisSize: MainAxisSize.min, children: <
+                        Widget>[
+                      OutlinedButton.icon(
+                        onPressed: () async {
+                          final pickedDate = await showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(1900),
+                              lastDate: DateTime(2100));
+                          if (!mounted) {
+                            return;
+                          }
+                          if (pickedDate != null) {
+                            context
+                                .read<AddEventBloc>()
+                                .add(UpdateDateTimeEvent(pickedDate));
+                          }
+                        },
+                        icon: const Icon(Icons.edit_calendar_outlined),
+                        label: Text(DateFormat(DateFormat.YEAR_MONTH_DAY,
+                                AppConstants.defaultLocale)
+                            .format(state.memoModel.dateTime)), // Locale
                       ),
                       const SizedBox(
                         height: 10,
@@ -117,18 +108,22 @@ class _AddEventPageState extends State<AddEventPage> {
                           child: TextField(
                             controller: _textEditingController,
                             cursorColor: Theme.of(context).focusColor,
-                            minLines: 1,
-                            maxLines: 4,
+                            minLines: 8,
+                            maxLines: 8,
                             scrollController: _scrollController,
                             keyboardType: TextInputType.multiline,
                             onChanged: (text) {
                               context.read<AddEventBloc>().add(
                                   UpdateMemoEvent(_textEditingController.text));
                             },
-                            decoration: const InputDecoration(
-                              icon: Icon(Icons.event_note),
-                              labelText: '事件',
-                              enabledBorder: OutlineInputBorder(
+                            decoration: InputDecoration(
+                              hintText: '這天要記錄點什麼呢...？',
+                              labelText: '我的記事',
+                              focusedBorder: OutlineInputBorder(
+                                borderSide: BorderSide(
+                                    color: Theme.of(context).primaryColor),
+                              ),
+                              enabledBorder: const OutlineInputBorder(
                                 borderSide: BorderSide(),
                               ),
                             ),
@@ -140,43 +135,31 @@ class _AddEventPageState extends State<AddEventPage> {
                         child: Row(
                           children: <Widget>[
                             Expanded(
-                                child: ElevatedButton(
-                                    style: ButtonStyle(
-                                        backgroundColor:
-                                            MaterialStateProperty.all<Color>(
-                                                Colors.transparent),
-                                        shape: MaterialStateProperty.all<
-                                                RoundedRectangleBorder>(
-                                            const RoundedRectangleBorder(
-                                                borderRadius: BorderRadius.zero,
-                                                side: BorderSide()))),
+                                child: OutlinedButton.icon(
+                                    icon: const Icon(Icons.cancel_outlined),
+                                    label: const Text('取消'),
                                     onPressed: () {
                                       Navigator.pop(context);
-                                    },
-                                    child: const Text('取消'))),
+                                    })),
                             const SizedBox(width: 20),
                             Expanded(
-                              child: ElevatedButton(
-                                  style: ButtonStyle(
-                                      shape: MaterialStateProperty.all<
-                                              RoundedRectangleBorder>(
-                                          const RoundedRectangleBorder(
-                                              borderRadius: BorderRadius.zero,
-                                              side: BorderSide()))),
-                                  onPressed: () async {
-                                    final result = await context
-                                        .read<AddEventBloc>()
-                                        .saveEvent();
-                                    if (!mounted || !result) {
-                                      return;
-                                    }
-                                    Navigator.pop(context, true);
-                                  },
-                                  child:
-                                      addEventState.status == AddEventStatus.add
-                                          ? const Text('新增')
-                                          : const Text('更新')),
-                            )
+                                child: OutlinedButton.icon(
+                              icon: addEventState.status == AddEventStatus.add
+                                  ? const Icon(Icons.add_box_outlined)
+                                  : const Icon(Icons.check_outlined),
+                              label: addEventState.status == AddEventStatus.add
+                                  ? const Text('新增')
+                                  : const Text('更新'),
+                              onPressed: () async {
+                                final result = await context
+                                    .read<AddEventBloc>()
+                                    .saveEvent();
+                                if (!mounted || !result) {
+                                  return;
+                                }
+                                Navigator.pop(context, true);
+                              },
+                            ))
                           ],
                         ),
                       ),

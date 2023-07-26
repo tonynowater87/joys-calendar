@@ -97,7 +97,7 @@ class _LoginViewState extends State<LoginView> {
             const SizedBox(
               height: 10,
             ),
-            const Text('登入後可進行 備份／復原 我的節日')
+            const Text('登入後可進行 備份／復原 我的記事')
           ]);
 
           return Stack(

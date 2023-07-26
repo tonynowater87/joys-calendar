@@ -63,7 +63,7 @@ class _MyHomePageState extends State<MyHomePage> {
             spaceBetweenChildren: 4,
             children: [
               SpeedDialChild(
-                  label: "新增我的節日",
+                  label: "新增我的記事",
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.add_box_outlined),
                       onPressed: () async {
@@ -82,7 +82,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         }
                       })),
               SpeedDialChild(
-                  label: "我的節日列表",
+                  label: "我的記事列表",
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.list_alt_outlined),
                       onPressed: () async {

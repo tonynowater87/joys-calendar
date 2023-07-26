@@ -45,7 +45,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
               }),
           title: isDeleting
               ? Text('刪除(${myEventState.checkedCount})')
-              : const Text('我的節日列表'),
+              : const Text('我的記事列表'),
           actions: [
             Padding(
               padding: const EdgeInsets.all(8.0),

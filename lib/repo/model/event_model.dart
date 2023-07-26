@@ -88,7 +88,7 @@ extension EventTypeExtensions on EventType {
       case EventType.solar:
         return "２４節氣";
       case EventType.custom:
-        return "我的節日";
+        return "我的記事";
     }
   }
 
