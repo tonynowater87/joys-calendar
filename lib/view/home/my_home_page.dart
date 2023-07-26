@@ -26,6 +26,22 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var isDialOpen = ValueNotifier<bool>(false);
   TextEditingController textEditingController = TextEditingController();
+  final GlobalKey _titleKey = GlobalKey();
+  var _titleTextWidth = 0.0;
+
+  @override
+  void initState() {
+    super.initState();
+    // get the width of _titleKey
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final keyContext = _titleKey.currentContext;
+      if (keyContext != null) {
+        final box = keyContext.findRenderObject() as RenderBox;
+        setState(() => _titleTextWidth = box.size.width);
+        debugPrint('[Tony] _titleTextWidth: $_titleTextWidth');
+      }
+    });
+  }
 
   @override
   Widget build(BuildContext rootContext) {
@@ -36,13 +52,13 @@ class _MyHomePageState extends State<MyHomePage> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: Text(widget.title),
+            title: Text(key: _titleKey, widget.title),
             actions: [
               AnimSearchBar(
                 boxShadow: false,
-                autoFocus: true,
-                width: MediaQuery.of(context).size.width,
+                width: MediaQuery.of(context).size.width - _titleTextWidth - 45,
                 textController: textEditingController,
+                helpText: '搜尋關鍵字',
                 onSuffixTap: () {},
                 onSubmitted: (text) {
                   Navigator.of(rootContext).pushNamed(

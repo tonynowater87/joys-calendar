@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
@@ -67,29 +68,36 @@ class _AddEventPageState extends State<AddEventPage> {
                   .format(state.memoModel.dateTime));
 
           return AlertDialog(
+            shape: const RoundedRectangleBorder(
+                borderRadius: BorderRadius.all(Radius.circular(20.0))),
+            insetPadding: const EdgeInsets.all(16.0),
+            actionsAlignment: MainAxisAlignment.center,
             title: Row(
-              children: [Text(titleText), const Spacer(), dateText],
+              children: [
+                Text(titleText),
+                const Spacer(),
+                dateText,
+                const Spacer(),
+                InkWell(
+                    onTap: () async {
+                      final pickedDate = await showDatePicker(
+                          context: context,
+                          initialDate: addEventState.memoModel.dateTime,
+                          firstDate: DateTime(1900),
+                          lastDate: DateTime(2100));
+                      if (!mounted) {
+                        return;
+                      }
+                      if (pickedDate != null) {
+                        context
+                            .read<AddEventBloc>()
+                            .add(UpdateDateTimeEvent(pickedDate));
+                      }
+                    },
+                    child: const Icon(Icons.edit_calendar_outlined))
+              ],
             ),
             actions: [
-              OutlinedButton.icon(
-                onPressed: () async {
-                  final pickedDate = await showDatePicker(
-                      context: context,
-                      initialDate: addEventState.memoModel.dateTime,
-                      firstDate: DateTime(1900),
-                      lastDate: DateTime(2100));
-                  if (!mounted) {
-                    return;
-                  }
-                  if (pickedDate != null) {
-                    context
-                        .read<AddEventBloc>()
-                        .add(UpdateDateTimeEvent(pickedDate));
-                  }
-                },
-                icon: const Icon(Icons.edit_calendar),
-                label: const Text('日期'),
-              ),
               OutlinedButton.icon(
                   icon: const Icon(Icons.cancel),
                   label: const Text('取消'),
@@ -114,33 +122,33 @@ class _AddEventPageState extends State<AddEventPage> {
             ],
             content: SingleChildScrollView(
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Scrollbar(
-                    controller: _scrollController,
-                    isAlwaysShown: true,
-                    child: TextField(
-                      controller: _textEditingController,
-                      cursorColor: Theme.of(context).focusColor,
-                      minLines: 1,
-                      maxLines: 8,
-                      scrollController: _scrollController,
-                      keyboardType: TextInputType.multiline,
-                      onChanged: (text) {
-                        context
-                            .read<AddEventBloc>()
-                            .add(UpdateMemoEvent(_textEditingController.text));
-                      },
-                      decoration: InputDecoration(
-                        hintText: '這天要記錄點什麼呢...？',
-                        labelText: '我的記事',
-                        focusedBorder: OutlineInputBorder(
-                          borderSide:
-                              BorderSide(color: Theme.of(context).primaryColor),
-                        ),
-                        enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(),
-                        ),
+                SizedBox(height: 8),
+                Scrollbar(
+                  controller: _scrollController,
+                  isAlwaysShown: true,
+                  child: TextField(
+                    controller: _textEditingController,
+                    cursorColor: Theme.of(context).focusColor,
+                    minLines: 1,
+                    maxLines: 8,
+                    scrollController: _scrollController,
+                    keyboardType: TextInputType.multiline,
+                    onChanged: (text) {
+                      context
+                          .read<AddEventBloc>()
+                          .add(UpdateMemoEvent(_textEditingController.text));
+                    },
+                    maxLength: 1000,
+                    maxLengthEnforcement: MaxLengthEnforcement.enforced,
+                    decoration: InputDecoration(
+                      hintText: '這天要記錄點什麼呢...？',
+                      labelText: '我的記事',
+                      focusedBorder: OutlineInputBorder(
+                        borderSide:
+                            BorderSide(color: Theme.of(context).primaryColor),
+                      ),
+                      enabledBorder: const OutlineInputBorder(
+                        borderSide: BorderSide(),
                       ),
                     ),
                   ),
