@@ -71,7 +71,6 @@ class _MyHomePageState extends State<MyHomePage> {
                         var isAdded = await showDialog(
                             context: context,
                             builder: (context) => AddEventPage());
-
                         if (!mounted) {
                           return;
                         }
