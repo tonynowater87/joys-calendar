@@ -302,26 +302,57 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                           actionsAlignment: MainAxisAlignment.center,
                           contentPadding:
                               const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
-                          title: Text(
-                            dateFormat.format(date),
-                            style: Theme.of(context).textTheme.headline4,
-                          ),
+                          title: Row(children: [
+                            Text(
+                              dateFormat.format(date),
+                              style: Theme.of(context).textTheme.headline4,
+                            ),
+                            const Spacer(),
+                            OutlinedButton.icon(
+                                style: OutlinedButton.styleFrom(
+                                    padding: const EdgeInsets.symmetric(
+                                        horizontal: 8.0, vertical: 8.0),
+                                    shape: RoundedRectangleBorder(
+                                        borderRadius:
+                                            BorderRadius.circular(20.0))),
+                                onPressed: () async {
+                                  Navigator.pop(context);
+                                  var isAdded = await showDialog(
+                                      context: context,
+                                      builder: (context) =>
+                                          AddEventPage(dateTime: date));
+                                  if (!mounted) {
+                                    return;
+                                  }
+                                  if (isAdded == true) {
+                                    context
+                                        .read<HomeCubit>()
+                                        .refreshFromAddOrUpdateCustomEvent();
+                                  }
+                                },
+                                icon: const Icon(Icons.add),
+                                label: Text("新增記事",
+                                    style: Theme.of(context).textTheme.button!))
+                          ]),
                           content: SizedBox.fromSize(
                             size: const Size(300, 300),
                             child: ListView.separated(
                                 itemBuilder: (context, index) {
                                   final event = dayEvents[index];
                                   return Padding(
-                                    padding: const EdgeInsets.only(bottom: 16.0),
+                                    padding:
+                                        const EdgeInsets.only(bottom: 16.0),
                                     child: ListTile(
                                       leading: EventChipView(
                                           eventName: event
                                               .getEventType()
                                               .toInfoDialogName(),
-                                          eventColor: event.eventBackgroundColor),
+                                          eventColor:
+                                              event.eventBackgroundColor),
                                       title: Text(event.eventName,
                                           style: TextStyle(
-                                              color: event.eventTextStyle.color)),
+                                              color:
+                                                  event.eventTextStyle.color)),
                                       onTap: () {},
                                     ),
                                   );

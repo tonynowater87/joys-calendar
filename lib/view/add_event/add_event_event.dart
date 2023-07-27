@@ -12,10 +12,10 @@ class EditDateTimeEvent extends AddEventEvent {
   EditDateTimeEvent(this.key);
 }
 
-class UpdateDateTimeEvent extends AddEventEvent {
+class ChangeDateTimeEvent extends AddEventEvent {
   DateTime memoDateTime;
 
-  UpdateDateTimeEvent(this.memoDateTime);
+  ChangeDateTimeEvent(this.memoDateTime);
 }
 
 class UpdateMemoEvent extends AddEventEvent {

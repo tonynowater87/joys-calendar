@@ -13,7 +13,7 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
   String updatedMemo = "";
 
   AddEventBloc(this.localMemoRepository) : super(AddEventState.add()) {
-    on<UpdateDateTimeEvent>((event, emit) {
+    on<ChangeDateTimeEvent>((event, emit) {
       emit.call(state.copyWith(dateTime: event.memoDateTime));
     });
 

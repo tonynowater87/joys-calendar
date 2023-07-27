@@ -8,8 +8,8 @@ import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 
 class AddEventPage extends StatefulWidget {
   dynamic? memoModelKey;
-
-  AddEventPage({Key? key, this.memoModelKey}) : super(key: key);
+  DateTime? dateTime;
+  AddEventPage({Key? key, this.memoModelKey, this.dateTime}) : super(key: key);
 
   @override
   State<AddEventPage> createState() => _AddEventPageState();
@@ -40,7 +40,12 @@ class _AddEventPageState extends State<AddEventPage> {
         if (widget.memoModelKey != null) {
           addEventBloc.add(EditDateTimeEvent(widget.memoModelKey));
         } else {
-          addEventBloc.add(AddDateTimeEvent());
+          if (widget.dateTime == null) {
+            addEventBloc.add(AddDateTimeEvent());
+          } else {
+            addEventBloc.add(AddDateTimeEvent());
+            addEventBloc.add(ChangeDateTimeEvent(widget.dateTime!));
+          }
         }
         return addEventBloc;
       },
@@ -91,7 +96,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       if (pickedDate != null) {
                         context
                             .read<AddEventBloc>()
-                            .add(UpdateDateTimeEvent(pickedDate));
+                            .add(ChangeDateTimeEvent(pickedDate));
                       }
                     },
                     child: const Icon(Icons.edit_calendar_outlined))
