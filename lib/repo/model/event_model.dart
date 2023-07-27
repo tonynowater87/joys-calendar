@@ -92,6 +92,29 @@ extension EventTypeExtensions on EventType {
     }
   }
 
+  String toInfoDialogName() {
+    switch (this) {
+      case EventType.taiwan:
+        return "台灣";
+      case EventType.china:
+        return "中國";
+      case EventType.hongKong:
+        return "香港";
+      case EventType.japan:
+        return "日本";
+      case EventType.uk:
+        return "英國";
+      case EventType.usa:
+        return "美國";
+      case EventType.lunar:
+        return "農曆";
+      case EventType.solar:
+        return "節氣";
+      case EventType.custom:
+        return "記事";
+    }
+  }
+
   Color toEventColor() {
     switch (this) {
       case EventType.taiwan:

@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
+import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 import 'package:lunar/calendar/Lunar.dart';
@@ -293,29 +296,40 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   showDialog(
                       context: context,
                       builder: (_) => AlertDialog(
-                            title: Text(
-                              dateFormat.format(date),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                            content: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: dayEvents
-                                  .map(
-                                    (event) => Container(
-                                      width: double.infinity,
-                                      padding: const EdgeInsets.all(4),
-                                      margin: const EdgeInsets.only(bottom: 12),
-                                      color: event.eventBackgroundColor,
-                                      child: Text(
-                                        event.eventName,
-                                        style: TextStyle(
-                                            color: event.eventTextStyle.color),
-                                      ),
+                          shape: const RoundedRectangleBorder(
+                              borderRadius:
+                                  BorderRadius.all(Radius.circular(20.0))),
+                          actionsAlignment: MainAxisAlignment.center,
+                          contentPadding:
+                              const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
+                          title: Text(
+                            dateFormat.format(date),
+                            style: Theme.of(context).textTheme.headline4,
+                          ),
+                          content: SizedBox.fromSize(
+                            size: const Size(300, 300),
+                            child: ListView.separated(
+                                itemBuilder: (context, index) {
+                                  final event = dayEvents[index];
+                                  return Padding(
+                                    padding: const EdgeInsets.only(bottom: 16.0),
+                                    child: ListTile(
+                                      leading: EventChipView(
+                                          eventName: event
+                                              .getEventType()
+                                              .toInfoDialogName(),
+                                          eventColor: event.eventBackgroundColor),
+                                      title: Text(event.eventName,
+                                          style: TextStyle(
+                                              color: event.eventTextStyle.color)),
+                                      onTap: () {},
                                     ),
-                                  )
-                                  .toList(),
-                            ),
-                          ));
+                                  );
+                                },
+                                separatorBuilder: (context, index) =>
+                                    const Divider(),
+                                itemCount: dayEvents.length),
+                          )));
                 },
                 onPageChanged: (firstDate, lastDate) {
                   /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want

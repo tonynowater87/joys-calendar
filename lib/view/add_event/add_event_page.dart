@@ -70,8 +70,8 @@ class _AddEventPageState extends State<AddEventPage> {
           return AlertDialog(
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            insetPadding: const EdgeInsets.all(16.0),
             actionsAlignment: MainAxisAlignment.center,
+            contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0.0),
             title: Row(
               children: [
                 Text(titleText),
@@ -122,7 +122,7 @@ class _AddEventPageState extends State<AddEventPage> {
             ],
             content: SingleChildScrollView(
               child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                SizedBox(height: 8),
+                const SizedBox(height: 8),
                 Scrollbar(
                   controller: _scrollController,
                   isAlwaysShown: true,

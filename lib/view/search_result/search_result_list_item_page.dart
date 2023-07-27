@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/view/common/event_chip_view.dart';
 
 class SearchResultListItemPage extends StatelessWidget {
   EventModel _model;
@@ -36,25 +37,18 @@ class SearchResultListItemPage extends StatelessWidget {
                               decoration: BoxDecoration(
                                   border: Border.all(
                                       color: _model.eventType.toEventColor()),
-                                  borderRadius:
-                                      const BorderRadius.all(Radius.circular(8))),
+                                  borderRadius: const BorderRadius.all(
+                                      Radius.circular(8))),
                               child: Text(
                                 date,
                                 style: Theme.of(context).textTheme.caption,
                               ),
                             ),
-                            Container(
-                              padding: const EdgeInsets.all(4),
-                              margin: const EdgeInsets.only(left: 4),
-                              decoration: BoxDecoration(
-                                  border: Border.all(
-                                      color: _model.eventType.toEventColor()),
-                                  borderRadius:
-                                  const BorderRadius.all(Radius.circular(8))),
-                              child: Text(
-                                _model.eventType.toSettingName(),
-                                style: Theme.of(context).textTheme.caption,
-                              ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4.0),
+                              child: EventChipView(
+                                  eventName: _model.eventType.toSettingName(),
+                                  eventColor: _model.eventType.toEventColor()),
                             )
                           ],
                         )),
