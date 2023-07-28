@@ -35,13 +35,11 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   void initState() {
     super.initState();
-    // get the width of _titleKey
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final keyContext = _titleKey.currentContext;
       if (keyContext != null) {
         final box = keyContext.findRenderObject() as RenderBox;
         setState(() => _titleTextWidth = box.size.width);
-        debugPrint('[Tony] _titleTextWidth: $_titleTextWidth');
       }
     });
   }
@@ -181,12 +179,20 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   Lunar lunar = Lunar.fromDate(datetime);
                   final ganZhi = lunar.getYearInGanZhi();
                   final shenXiao = lunar.getYearShengXiao();
+                  String minkuoYearString = "";
+                  if (datetime.year - 1911 >= 0) {
+                    final minkuoYear = datetime.year - 1911;
+                    minkuoYearString = "民國$minkuoYear年";
+                  }
+
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
                       children: [
                         const SizedBox(width: 16),
-                        Text("$dateString $ganZhi $shenXiao"),
+                        Text(minkuoYearString.isEmpty
+                            ? "$dateString $ganZhi $shenXiao"
+                            : "$minkuoYearString $dateString $ganZhi $shenXiao"),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,
