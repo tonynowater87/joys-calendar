@@ -23,7 +23,7 @@ class LoginCubit extends Cubit<LoginState> {
   LoginCubit(this.backupRepository, this.localDatasource)
       : super(backupRepository.isLogin()
             ? LoginState(
-                user: backupRepository.getUser(),
+                userId: backupRepository.getUser()?.email,
                 fileSize: null,
                 localFileSize: null,
                 lastUpdatedTime: null,
@@ -48,14 +48,14 @@ class LoginCubit extends Cubit<LoginState> {
       if (fetchState == BackUpStatus.notChanged) {
         emit(LoginState(
             localFileSize: localFileSize,
-            user: backupRepository.getUser(),
+            userId: backupRepository.getUser()?.email,
             loginType: backupRepository.getLoginType(),
             loginStatus: LoginStatus.login));
         return;
       }
       if (fetchState == BackUpStatus.fail) {
         emit(LoginState(
-            user: backupRepository.getUser(),
+            userId: backupRepository.getUser()?.email,
             fileSize: null,
             localFileSize: null,
             lastUpdatedTime: null,
@@ -64,7 +64,7 @@ class LoginCubit extends Cubit<LoginState> {
         return;
       }
       emit(LoginState(
-          user: backupRepository.getUser(),
+          userId: backupRepository.getUser()?.email,
           fileSize: backupRepository.getFileSize(),
           localFileSize: localFileSize,
           lastUpdatedTime: backupRepository.getLastUpdatedTime(),
@@ -97,7 +97,7 @@ class LoginCubit extends Cubit<LoginState> {
         await FileUtils.calculateFileSize(localDatasource.localMemoToJson());
     emit(LoginState(
         loginStatus: LoginStatus.login,
-        user: backupRepository.getUser(),
+        userId: backupRepository.getUser()?.email,
         fileSize: backupRepository.getFileSize(),
         localFileSize: localFileSize,
         lastUpdatedTime: backupRepository.getLastUpdatedTime(),
@@ -122,7 +122,7 @@ class LoginCubit extends Cubit<LoginState> {
     if (status == BackUpStatus.notChanged) {
       Fluttertoast.showToast(msg: "資料沒有異動！");
       emit(LoginState(
-          user: state.user,
+          userId: state.userId,
           localFileSize: state.localFileSize,
           fileSize: state.localFileSize,
           loginType: state.loginType,
@@ -137,7 +137,7 @@ class LoginCubit extends Cubit<LoginState> {
     Fluttertoast.showToast(msg: "上傳備份資料成功！");
     emit(LoginState(
         loginStatus: LoginStatus.login,
-        user: backupRepository.getUser(),
+        userId: backupRepository.getUser()?.email,
         fileSize: backupRepository.getFileSize(),
         localFileSize: localFileSize,
         lastUpdatedTime: backupRepository.getLastUpdatedTime(),
@@ -156,7 +156,7 @@ class LoginCubit extends Cubit<LoginState> {
     if (status == BackUpStatus.notChanged) {
       Fluttertoast.showToast(msg: "資料沒有異動！");
       emit(LoginState(
-          user: state.user,
+          userId: state.userId,
           localFileSize: state.localFileSize,
           fileSize: state.localFileSize,
           loginType: state.loginType,
@@ -171,7 +171,7 @@ class LoginCubit extends Cubit<LoginState> {
     Fluttertoast.showToast(msg: "下載還原資料成功！");
     emit(LoginState(
         loginStatus: LoginStatus.login,
-        user: backupRepository.getUser(),
+        userId: backupRepository.getUser()?.email,
         fileSize: backupRepository.getFileSize(),
         localFileSize: localFileSize,
         lastUpdatedTime: backupRepository.getLastUpdatedTime(),
@@ -185,7 +185,7 @@ class LoginCubit extends Cubit<LoginState> {
       case BackUpStatus.success:
         Fluttertoast.showToast(msg: "成功刪除雲端備份資料！");
         emit(LoginState(
-            user: backupRepository.getUser(),
+            userId: backupRepository.getUser()?.email,
             loginStatus: LoginStatus.login,
             loginType: backupRepository.getLoginType(),
             localFileSize: state.localFileSize));

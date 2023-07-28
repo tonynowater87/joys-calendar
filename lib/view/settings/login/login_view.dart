@@ -119,7 +119,7 @@ class _LoginViewState extends State<LoginView> {
           } else {
             lastUpdatedTime = dateFormat.format(state.lastUpdatedTime!);
           }
-          final user = state.user?.email ?? "無";
+          final user = state.userId ?? "無";
 
           return Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -144,7 +144,13 @@ class _LoginViewState extends State<LoginView> {
                                 fit: BoxFit.scaleDown),
                           ),
                         ),
-                        Text(user),
+                        Expanded(
+                          child: FittedBox(
+                            fit: BoxFit.scaleDown,
+                            alignment: Alignment.centerLeft,
+                            child: Text(user),
+                          ),
+                        ),
                       ],
                     )),
               ),
@@ -249,7 +255,7 @@ class _LoginViewState extends State<LoginView> {
           );
         case LoginStatus.loading:
         case LoginStatus.deleting:
-          var isLogin = state.user != null;
+          var isLogin = state.userId != null;
           var isInit = state.localFileSize == null;
           var isDeleting = state.loginStatus == LoginStatus.deleting;
           String loadingText;

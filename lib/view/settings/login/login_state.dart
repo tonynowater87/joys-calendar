@@ -10,7 +10,7 @@ enum LoginStatus {
 
 @immutable
 class LoginState extends Equatable {
-  User? user;
+  String? userId; // email or apple id
   String? fileSize;
   String? localFileSize;
   DateTime? lastUpdatedTime;
@@ -18,7 +18,7 @@ class LoginState extends Equatable {
   LoginStatus loginStatus;
 
   LoginState(
-      {this.user,
+      {this.userId,
       this.fileSize,
       this.localFileSize,
       this.lastUpdatedTime,
@@ -27,7 +27,7 @@ class LoginState extends Equatable {
 
   LoginState copyWith({required LoginStatus loginStatus}) {
     return LoginState(
-      user: user,
+      userId: userId,
       fileSize: fileSize,
       localFileSize: localFileSize,
       lastUpdatedTime: lastUpdatedTime,
@@ -38,5 +38,5 @@ class LoginState extends Equatable {
 
   @override
   List<Object?> get props =>
-      [user, fileSize, localFileSize, lastUpdatedTime, loginType, loginStatus];
+      [userId, fileSize, localFileSize, lastUpdatedTime, loginType, loginStatus];
 }

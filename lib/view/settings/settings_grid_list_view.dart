@@ -37,6 +37,7 @@ class SettingsGridListView extends StatelessWidget {
                   },
                   child: Container(
                     padding: const EdgeInsets.all(8),
+                    alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: item.isSelected
                           ? item.eventType.toEventColor()
