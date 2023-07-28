@@ -345,22 +345,18 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                             child: ListView.separated(
                                 itemBuilder: (context, index) {
                                   final event = dayEvents[index];
-                                  return Padding(
-                                    padding:
-                                        const EdgeInsets.only(bottom: 16.0),
-                                    child: ListTile(
-                                      leading: EventChipView(
-                                          eventName: event
-                                              .getEventType()
-                                              .toInfoDialogName(),
-                                          eventColor:
-                                              event.eventBackgroundColor),
-                                      title: Text(event.eventName,
-                                          style: TextStyle(
-                                              color:
-                                                  event.eventTextStyle.color)),
-                                      onTap: () {},
-                                    ),
+                                  return ListTile(
+                                    leading: EventChipView(
+                                        eventName: event
+                                            .getEventType()
+                                            .toInfoDialogName(),
+                                        eventColor:
+                                            event.eventBackgroundColor),
+                                    title: Text(event.eventName,
+                                        style: TextStyle(
+                                            color:
+                                                event.eventTextStyle.color)),
+                                    onTap: () {},
                                   );
                                 },
                                 separatorBuilder: (context, index) =>

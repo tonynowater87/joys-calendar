@@ -125,17 +125,16 @@ class _AddEventPageState extends State<AddEventPage> {
                 },
               )
             ],
-            content: SingleChildScrollView(
-              child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-                const SizedBox(height: 8),
-                Scrollbar(
-                  controller: _scrollController,
-                  isAlwaysShown: true,
-                  child: TextField(
+            content: SizedBox(
+              width: 300,
+              child: SingleChildScrollView(
+                child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                  const SizedBox(height: 8),
+                  TextField(
                     controller: _textEditingController,
                     cursorColor: Theme.of(context).focusColor,
-                    minLines: 1,
-                    maxLines: 8,
+                    minLines: 3,
+                    maxLines: 10,
                     scrollController: _scrollController,
                     keyboardType: TextInputType.multiline,
                     onChanged: (text) {
@@ -156,9 +155,9 @@ class _AddEventPageState extends State<AddEventPage> {
                         borderSide: BorderSide(),
                       ),
                     ),
-                  ),
-                )
-              ]),
+                  )
+                ]),
+              ),
             ),
           );
         },
