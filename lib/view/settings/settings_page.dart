@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/repo/app_info_provider.dart';
@@ -96,17 +97,20 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
             ),
-            Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Align(
-                alignment: Alignment.bottomRight,
-                child: FutureBuilder<PackageInfo>(
-                    future: context.read<AppInfoProvider>().getVersionName(),
-                    builder: (BuildContext context,
-                        AsyncSnapshot<PackageInfo> snapshot) {
-                      return Text(
-                          '${snapshot.data?.version}-${snapshot.data?.buildNumber}');
-                    }),
+            Visibility(
+              visible: !kDebugMode,
+              child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Align(
+                  alignment: Alignment.bottomRight,
+                  child: FutureBuilder<PackageInfo>(
+                      future: context.read<AppInfoProvider>().getVersionName(),
+                      builder: (BuildContext context,
+                          AsyncSnapshot<PackageInfo> snapshot) {
+                        return Text(
+                            '${snapshot.data?.version}-${snapshot.data?.buildNumber}');
+                      }),
+                ),
               ),
             )
           ],
