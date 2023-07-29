@@ -1,7 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 
-enum SettingType { eventType, locale }
+enum SettingType { eventType, backup, locale }
 
 extension SettingTypeExtensions on SettingType {
   String toLocalization() {
@@ -10,6 +10,8 @@ extension SettingTypeExtensions on SettingType {
         return "選擇日曆要顯示的項目"; // TODO locale
       case SettingType.locale:
         return "其它"; // TODO locale
+      case SettingType.backup:
+        return "備份我的記事";
     }
   }
 }

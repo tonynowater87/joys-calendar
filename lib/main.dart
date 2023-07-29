@@ -132,6 +132,7 @@ class MyApp extends StatelessWidget {
           title: 'Joy\' Calendar',
           theme: JoysCalendarThemeData.lightThemeData,
           initialRoute: AppConstants.routeHome,
+          debugShowCheckedModeBanner: false,
           locale: window.locale,
           localizationsDelegates: const [
             MonthYearPickerLocalizations.delegate,

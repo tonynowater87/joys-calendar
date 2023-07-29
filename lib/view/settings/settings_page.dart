@@ -18,6 +18,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   List<SettingsTitleItem> settingsItem = [
     SettingsTitleItem(SettingType.eventType, true),
+    SettingsTitleItem(SettingType.backup, true),
     /*SettingsTitleItem(SettingType.locale, false)*/ // TODO future feature
   ];
 
@@ -51,11 +52,13 @@ class _SettingsPageState extends State<SettingsPage> {
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
-                                          item.headerValue.toLocalization()));
+                                    item.headerValue.toLocalization(),
+                                    style: Theme.of(context).textTheme.caption,
+                                  ));
                                 },
                                 body: const Padding(
-                                  padding: EdgeInsets.symmetric(
-                                      horizontal: 8.0),
+                                  padding:
+                                      EdgeInsets.symmetric(horizontal: 8.0),
                                   child: SettingsGridListView(),
                                 ),
                                 isExpanded: item.isExpanded);
@@ -64,20 +67,32 @@ class _SettingsPageState extends State<SettingsPage> {
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
-                                          item.headerValue.toLocalization()));
+                                    item.headerValue.toLocalization(),
+                                    style: Theme.of(context).textTheme.caption,
+                                  ));
                                 },
                                 body: const ListTile(title: Text('施工中...')),
                                 isExpanded: item.isExpanded);
+                          case SettingType.backup:
+                            return ExpansionPanel(
+                                headerBuilder: (context, bool isExpanded) {
+                                  return ListTile(
+                                      title: Text(
+                                    item.headerValue.toLocalization(),
+                                    style: Theme.of(context).textTheme.caption,
+                                  ));
+                                },
+                                body: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: SizedBox(
+                                    height: 200,
+                                    width: 400,
+                                    child: LoginView(),
+                                  ),
+                                ),
+                                isExpanded: item.isExpanded);
                         }
                       }).toList()),
-                  const SizedBox(
-                    height: 300,
-                    width: 400,
-                    child: Card(
-                      margin: EdgeInsets.symmetric(vertical: 16),
-                      child: LoginView(),
-                    ),
-                  )
                 ],
               ),
             ),
