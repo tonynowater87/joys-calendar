@@ -4,7 +4,7 @@
     <application
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher"
-        android:label="joys_calendar"
+        android:label="Joy\'s Calendar"
         android:allowBackup="false"
         android:networkSecurityConfig="@xml/network_security_config">
         <activity
