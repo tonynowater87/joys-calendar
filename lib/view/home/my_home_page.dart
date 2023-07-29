@@ -174,26 +174,34 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   );
                 },
                 monthYearLabelBuilder: (datetime) {
-                  final dateString =
-                      DateFormat('y MMMM', AppConstants.defaultLocale)
+                  final yearString =
+                      DateFormat('西元 y年', AppConstants.defaultLocale)
                           .format(datetime!);
+                  final monthString =
+                      DateFormat('MMMM', AppConstants.defaultLocale)
+                          .format(datetime);
                   Lunar lunar = Lunar.fromDate(datetime);
                   final ganZhi = lunar.getYearInGanZhi();
                   final shenXiao = lunar.getYearShengXiao();
                   String minkuoYearString = "";
                   if (datetime.year - 1911 >= 0) {
                     final minkuoYear = datetime.year - 1911;
-                    minkuoYearString = "民國$minkuoYear年";
+                    minkuoYearString = "民國 $minkuoYear年";
                   }
 
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const SizedBox(width: 16),
-                        Text(minkuoYearString.isEmpty
-                            ? "$dateString $ganZhi $shenXiao"
-                            : "$minkuoYearString $dateString $ganZhi $shenXiao"),
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            Text("$yearString $minkuoYearString"),
+                            Text("$monthString $ganZhi $shenXiao"),
+                          ],
+                        ),
                         const Spacer(),
                         IconButton(
                             padding: EdgeInsets.zero,
