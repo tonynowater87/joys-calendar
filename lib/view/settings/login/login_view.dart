@@ -214,7 +214,15 @@ class _LoginViewState extends State<LoginView> {
                     ),
                     OutlinedButton.icon(
                       style: appOutlineButtonStyle(),
-                      onPressed: () {},
+                      onPressed: () {
+                        DialogUtils.showAlertDialog(
+                            title: "刪除雲端資料",
+                            content: "注意：此動作會將雲端備份資料刪除，不會影響手機內的資料",
+                            context: context,
+                            onConfirmCallback: () async {
+                              await loginCubit.delete();
+                            });
+                      },
                       icon: const Icon(Icons.delete),
                       label: const Text('刪除'),
                     ),
