@@ -9,7 +9,6 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _hasRunBefore = "HAS_RUN_BEFORE";
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
-    EventType.japan,
     EventType.lunar,
     EventType.solar,
     EventType.custom,
