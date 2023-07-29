@@ -9,6 +9,7 @@ import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
+import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
@@ -82,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "新增我的記事",
                   child: FloatingActionButton.small(
-                      child: const Icon(Icons.add_box_outlined),
+                      child: const Icon(Icons.add),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
@@ -100,7 +101,7 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "我的記事列表",
                   child: FloatingActionButton.small(
-                      child: const Icon(Icons.list_alt_outlined),
+                      child: const Icon(Icons.list_alt),
                       onPressed: () async {
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.pushNamed(
@@ -315,12 +316,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                             ),
                             const Spacer(),
                             OutlinedButton.icon(
-                                style: OutlinedButton.styleFrom(
-                                    padding: const EdgeInsets.symmetric(
-                                        horizontal: 8.0, vertical: 8.0),
-                                    shape: RoundedRectangleBorder(
-                                        borderRadius:
-                                            BorderRadius.circular(20.0))),
+                                style: appTitleButtonStyle(),
                                 onPressed: () async {
                                   Navigator.pop(context);
                                   var isAdded = await showDialog(
@@ -350,12 +346,10 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                         eventName: event
                                             .getEventType()
                                             .toInfoDialogName(),
-                                        eventColor:
-                                            event.eventBackgroundColor),
+                                        eventColor: event.eventBackgroundColor),
                                     title: Text(event.eventName,
                                         style: TextStyle(
-                                            color:
-                                                event.eventTextStyle.color)),
+                                            color: event.eventTextStyle.color)),
                                     onTap: () {},
                                   );
                                 },

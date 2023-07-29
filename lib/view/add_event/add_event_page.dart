@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
+import 'package:joys_calendar/view/common/button_style.dart';
 
 class AddEventPage extends StatefulWidget {
   dynamic? memoModelKey;
@@ -75,7 +76,8 @@ class _AddEventPageState extends State<AddEventPage> {
           return AlertDialog(
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
-            actionsAlignment: MainAxisAlignment.center,
+            actionsAlignment: MainAxisAlignment.end,
+            actionsPadding: const EdgeInsets.fromLTRB(0.0, 10.0, 24.0, 20.0),
             contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0.0),
             title: Row(
               children: [
@@ -104,12 +106,14 @@ class _AddEventPageState extends State<AddEventPage> {
             ),
             actions: [
               OutlinedButton.icon(
+                  style: appOutlineButtonStyle(),
                   icon: const Icon(Icons.cancel),
                   label: const Text('取消'),
                   onPressed: () {
                     Navigator.pop(context);
                   }),
               OutlinedButton.icon(
+                style: appOutlineButtonStyle(),
                 icon: addEventState.status == AddEventStatus.add
                     ? const Icon(Icons.add)
                     : const Icon(Icons.check),

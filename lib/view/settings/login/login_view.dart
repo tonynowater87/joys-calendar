@@ -8,6 +8,7 @@ import 'package:joys_calendar/common/configs/colors.dart';
 import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/settings/login/login_cubit.dart';
 import 'package:the_apple_sign_in/apple_sign_in_button.dart' as AppleButton;
 
@@ -181,72 +182,49 @@ class _LoginViewState extends State<LoginView> {
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
                 child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  mainAxisAlignment: MainAxisAlignment.spaceAround,
                   children: [
-                    Center(
-                      child: AnimatedButton(
-                        width: 80,
-                        height: 40,
-                        color: AppColors.lightGreen,
-                        onPressed: () {
-                          DialogUtils.showAlertDialog(
-                              title: "上傳備份資料",
-                              content: "注意：此動作會上傳覆蓋雲端資料\n請再次確認本地資料是否為想要備份的資料",
-                              context: context,
-                              onConfirmCallback: () async {
-                                await loginCubit.upload();
-                              });
-                        },
-                        child: Text('上傳',
-                            style: Theme.of(context).textTheme.bodyText1),
-                      ),
+                    OutlinedButton.icon(
+                      style: appOutlineButtonStyle(),
+                      onPressed: () {
+                        DialogUtils.showAlertDialog(
+                            title: "上傳備份資料",
+                            content: "注意：此動作會上傳覆蓋雲端資料\n請再次確認本地資料是否為想要備份的資料",
+                            context: context,
+                            onConfirmCallback: () async {
+                              await loginCubit.upload();
+                            });
+                      },
+                      icon: const Icon(Icons.upload),
+                      label: const Text('上傳'),
                     ),
-                    Center(
-                      child: AnimatedButton(
-                        width: 80,
-                        height: 40,
-                        color: AppColors.lightGreen,
-                        onPressed: () {
-                          DialogUtils.showAlertDialog(
-                              title: "下載還原資料",
-                              content: "注意：此動作會將雲端資料覆蓋本地資料",
-                              context: context,
-                              onConfirmCallback: () async {
-                                await loginCubit.download();
-                              });
-                        },
-                        child: Text('下載',
-                            style: Theme.of(context).textTheme.bodyText1),
-                      ),
+                    OutlinedButton.icon(
+                      style: appOutlineButtonStyle(),
+                      onPressed: () {
+                        DialogUtils.showAlertDialog(
+                            title: "下載還原資料",
+                            content: "注意：此動作會將雲端資料覆蓋本地資料",
+                            context: context,
+                            onConfirmCallback: () async {
+                              await loginCubit.download();
+                            });
+                      },
+                      icon: const Icon(Icons.download),
+                      label: const Text('下載'),
                     ),
-                    Center(
-                      child: AnimatedButton(
-                          width: 80,
-                          height: 40,
-                          color: AppColors.lightGreen,
-                          onPressed: () async {
-                            await loginCubit.logout();
-                          },
-                          child: Text('登出',
-                              style: Theme.of(context).textTheme.bodyText1)),
+                    OutlinedButton.icon(
+                      style: appOutlineButtonStyle(),
+                      onPressed: () {},
+                      icon: const Icon(Icons.delete),
+                      label: const Text('刪除'),
                     ),
-                    Center(
-                      child: AnimatedButton(
-                        width: 80,
-                        height: 40,
-                        color: AppColors.lightGreen,
-                        onPressed: () {
-                          DialogUtils.showAlertDialog(
-                              title: "刪除雲端資料",
-                              content: "注意：此動作會將雲端備份資料刪除，不會影響手機內的資料",
-                              context: context,
-                              onConfirmCallback: () async {
-                                await loginCubit.delete();
-                              });
-                        },
-                        child: Text('刪除',
-                            style: Theme.of(context).textTheme.bodyText1),
-                      ),
+                    OutlinedButton.icon(
+                      style: appOutlineButtonStyle(),
+                      onPressed: () async {
+                        await loginCubit.logout();
+                      },
+                      icon: const Icon(Icons.logout),
+                      label: const Text('登出'),
                     )
                   ],
                 ),
