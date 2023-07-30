@@ -134,6 +134,13 @@ class MyApp extends StatelessWidget {
           initialRoute: AppConstants.routeHome,
           debugShowCheckedModeBanner: false,
           locale: window.locale,
+          builder: (context, child) {
+            final mediaQueryData = MediaQuery.of(context);
+            final scale = mediaQueryData.textScaleFactor.clamp(1.0, 1.2);
+            return MediaQuery(
+                data: MediaQuery.of(context).copyWith(textScaleFactor:scale),
+                child: child!);
+          },
           localizationsDelegates: const [
             MonthYearPickerLocalizations.delegate,
             GlobalMaterialLocalizations.delegate,

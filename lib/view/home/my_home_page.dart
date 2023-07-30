@@ -192,9 +192,9 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   return Padding(
                     padding: const EdgeInsets.symmetric(vertical: 4),
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
-                        const SizedBox(width: 16),
                         Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
@@ -202,11 +202,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                             Text("$monthString $ganZhi $shenXiao"),
                           ],
                         ),
-                        const Spacer(),
-                        IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.navigate_before),
-                            onPressed: () {
+                        InkWell(
+                            onTap: () {
                               setState(() {
                                 if (currentDate.month == 1) {
                                   currentDate = DateTime(
@@ -220,13 +217,13 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                   currentDate,
                                   curve: Curves.linear,
                                   duration: const Duration(milliseconds: 300));
-                            }),
+                            },
+                            child: const Icon(Icons.navigate_before)),
                         currentDate.year == DateTime.now().year &&
                                 currentDate.month == DateTime.now().month
-                            ? IconButton(
-                                padding: EdgeInsets.zero,
-                                icon: const Icon(Icons.edit_calendar),
-                                onPressed: () async {
+                            ? InkWell(
+                                child: const Icon(Icons.edit_calendar),
+                                onTap: () async {
                                   final pickedDate = await showMonthYearPicker(
                                       context: context,
                                       initialMonthYearPickerMode:
@@ -248,12 +245,9 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                           const Duration(milliseconds: 300),
                                     );
                                   }
-                                },
-                              )
-                            : IconButton(
-                                padding: EdgeInsets.zero,
-                                icon: const Icon(Icons.calendar_today),
-                                onPressed: () {
+                                })
+                            : InkWell(
+                                onTap: () {
                                   setState(() {
                                     currentDate = DateTime.now();
                                   });
@@ -263,11 +257,9 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     duration: const Duration(milliseconds: 300),
                                   );
                                 },
-                              ),
-                        IconButton(
-                            padding: EdgeInsets.zero,
-                            icon: const Icon(Icons.navigate_next),
-                            onPressed: () {
+                                child: const Icon(Icons.calendar_today)),
+                        InkWell(
+                            onTap: () {
                               setState(() {
                                 if (currentDate.month == 12) {
                                   currentDate = DateTime(
@@ -281,7 +273,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                   currentDate,
                                   curve: Curves.linear,
                                   duration: const Duration(milliseconds: 300));
-                            }),
+                            },
+                            child: const Icon(Icons.navigate_next)),
                       ],
                     ),
                   );
@@ -315,35 +308,61 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20.0))),
                           actionsAlignment: MainAxisAlignment.center,
+                          titlePadding:
+                              const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                           contentPadding:
                               const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
-                          title: Row(children: [
-                            Text(
-                              dateFormat.format(date),
-                              style: Theme.of(context).textTheme.headline4,
-                            ),
-                            const Spacer(),
-                            OutlinedButton.icon(
-                                style: appTitleButtonStyle(),
-                                onPressed: () async {
-                                  Navigator.pop(context);
-                                  var isAdded = await showDialog(
-                                      context: context,
-                                      builder: (context) =>
-                                          AddEventPage(dateTime: date));
-                                  if (!mounted) {
-                                    return;
-                                  }
-                                  if (isAdded == true) {
-                                    context
-                                        .read<HomeCubit>()
-                                        .refreshFromAddOrUpdateCustomEvent();
-                                  }
-                                },
-                                icon: const Icon(Icons.add),
-                                label: Text("新增記事",
-                                    style: Theme.of(context).textTheme.button!))
-                          ]),
+                          title: Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              children: [
+                                SizedBox(
+                                  width:
+                                      (MediaQuery.of(context).size.width - 80) *
+                                          0.6,
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: Text(
+                                      dateFormat.format(date),
+                                      style:
+                                          Theme.of(context).textTheme.headline4,
+                                    ),
+                                  ),
+                                ),
+                                SizedBox(
+                                  width:
+                                      (MediaQuery.of(context).size.width - 80) *
+                                          0.4,
+                                  child: Padding(
+                                    padding: const EdgeInsets.only(right: 8.0),
+                                    child: FittedBox(
+                                      fit: BoxFit.scaleDown,
+                                      child: OutlinedButton.icon(
+                                          style: appTitleButtonStyle(),
+                                          onPressed: () async {
+                                            Navigator.pop(context);
+                                            var isAdded = await showDialog(
+                                                context: context,
+                                                builder: (context) =>
+                                                    AddEventPage(
+                                                        dateTime: date));
+                                            if (!mounted) {
+                                              return;
+                                            }
+                                            if (isAdded == true) {
+                                              context
+                                                  .read<HomeCubit>()
+                                                  .refreshFromAddOrUpdateCustomEvent();
+                                            }
+                                          },
+                                          icon: const Icon(Icons.add),
+                                          label: Text("新增記事",
+                                              style: Theme.of(context)
+                                                  .textTheme
+                                                  .button!)),
+                                    ),
+                                  ),
+                                )
+                              ]),
                           content: SizedBox.fromSize(
                             size: const Size(300, 300),
                             child: ListView.separated(

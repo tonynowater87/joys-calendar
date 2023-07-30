@@ -18,8 +18,8 @@ class SettingsGridListView extends StatelessWidget {
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 4,
                   childAspectRatio: 2 / 1,
-                  mainAxisSpacing: 8,
-                  crossAxisSpacing: 8),
+                  mainAxisSpacing: 4,
+                  crossAxisSpacing: 4),
               itemCount: state.settingEventItems.length,
               itemBuilder: (BuildContext context, int index) {
                 final item = state.settingEventItems[index];
@@ -36,7 +36,6 @@ class SettingsGridListView extends StatelessWidget {
                     }
                   },
                   child: Container(
-                    padding: const EdgeInsets.all(8),
                     alignment: Alignment.center,
                     decoration: BoxDecoration(
                       color: item.isSelected

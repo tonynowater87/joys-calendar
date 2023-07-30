@@ -10,6 +10,7 @@ import 'package:joys_calendar/view/common/button_style.dart';
 class AddEventPage extends StatefulWidget {
   dynamic? memoModelKey;
   DateTime? dateTime;
+
   AddEventPage({Key? key, this.memoModelKey, this.dateTime}) : super(key: key);
 
   @override
@@ -71,7 +72,8 @@ class _AddEventPageState extends State<AddEventPage> {
 
           final dateText = Text(
               DateFormat(DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
-                  .format(state.memoModel.dateTime));
+                  .format(state.memoModel.dateTime),
+              style: Theme.of(context).textTheme.caption);
 
           return AlertDialog(
             shape: const RoundedRectangleBorder(
@@ -79,29 +81,35 @@ class _AddEventPageState extends State<AddEventPage> {
             actionsAlignment: MainAxisAlignment.end,
             actionsPadding: const EdgeInsets.fromLTRB(0.0, 10.0, 24.0, 20.0),
             contentPadding: const EdgeInsets.fromLTRB(24.0, 20.0, 24.0, 0.0),
-            title: Row(
+            title: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(titleText),
-                const Spacer(),
-                dateText,
-                const Spacer(),
+                Text(titleText, style: Theme.of(context).textTheme.headline4),
                 InkWell(
-                    onTap: () async {
-                      final pickedDate = await showDatePicker(
-                          context: context,
-                          initialDate: addEventState.memoModel.dateTime,
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime(2100));
-                      if (!mounted) {
-                        return;
-                      }
-                      if (pickedDate != null) {
-                        context
-                            .read<AddEventBloc>()
-                            .add(ChangeDateTimeEvent(pickedDate));
-                      }
-                    },
-                    child: const Icon(Icons.edit_calendar_outlined))
+                  onTap: () async {
+                    final pickedDate = await showDatePicker(
+                        context: context,
+                        initialDate: addEventState.memoModel.dateTime,
+                        firstDate: DateTime(1900),
+                        lastDate: DateTime(2100));
+                    if (!mounted) {
+                      return;
+                    }
+                    if (pickedDate != null) {
+                      context
+                          .read<AddEventBloc>()
+                          .add(ChangeDateTimeEvent(pickedDate));
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      dateText,
+                      const SizedBox(width: 5),
+                      const Icon(Icons.edit_calendar_outlined)
+                    ],
+                  ),
+                )
               ],
             ),
             actions: [
@@ -132,7 +140,8 @@ class _AddEventPageState extends State<AddEventPage> {
             content: SizedBox(
               width: 300,
               child: SingleChildScrollView(
-                child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+                child:
+                    Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
                   const SizedBox(height: 8),
                   TextField(
                     controller: _textEditingController,
