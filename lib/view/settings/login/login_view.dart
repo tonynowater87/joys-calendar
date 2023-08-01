@@ -177,7 +177,7 @@ class _LoginViewState extends State<LoginView> {
                 padding: const EdgeInsets.only(left: 8),
                 child: Align(
                     alignment: Alignment.centerLeft,
-                    child: Text('上次更新時間：$lastUpdatedTime')),
+                    child: Text('上次備份時間：$lastUpdatedTime')),
               ),
               Padding(
                 padding: const EdgeInsets.only(bottom: 8),
@@ -216,8 +216,8 @@ class _LoginViewState extends State<LoginView> {
                       style: appOutlineButtonStyle(),
                       onPressed: () {
                         DialogUtils.showAlertDialog(
-                            title: "刪除雲端資料",
-                            content: "注意：此動作會將雲端備份資料刪除，不會影響手機內的資料",
+                            title: "刪除帳號及雲端資料",
+                            content: "注意：此動作會將帳號及雲端備份資料刪除，但不會影響手機內的資料",
                             context: context,
                             onConfirmCallback: () async {
                               await loginCubit.delete();

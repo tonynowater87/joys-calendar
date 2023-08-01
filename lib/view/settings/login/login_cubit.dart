@@ -183,18 +183,20 @@ class LoginCubit extends Cubit<LoginState> {
     var result = await backupRepository.delete();
     switch (result) {
       case BackUpStatus.success:
-        Fluttertoast.showToast(msg: "成功刪除雲端備份資料！");
-        emit(LoginState(
-            userId: backupRepository.getUser()?.email,
-            loginStatus: LoginStatus.login,
-            loginType: backupRepository.getLoginType(),
-            localFileSize: state.localFileSize));
+        Fluttertoast.showToast(msg: "成功刪除帳號及雲端備份資料！");
+        emit(LoginState(loginStatus: LoginStatus.notLogin));
         break;
-      case BackUpStatus.notChanged:
-      case BackUpStatus.cancel:
       case BackUpStatus.fail:
         emit(state.copyWith(loginStatus: LoginStatus.login));
-        Fluttertoast.showToast(msg: "刪除雲端資料失敗，請再重試一次！");
+        Fluttertoast.showToast(msg: "刪除帳號及雲端備份資料失敗，請再重試一次！");
+        break;
+      case BackUpStatus.cancel:
+      case BackUpStatus.notChanged:
+        emit(LoginState(
+            localFileSize: state.localFileSize,
+            userId: backupRepository.getUser()?.email,
+            loginType: backupRepository.getLoginType(),
+            loginStatus: LoginStatus.login));
         break;
     }
   }

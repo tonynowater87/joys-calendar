@@ -293,15 +293,33 @@ class FirebaseBackUpRepository implements BackUpRepository {
       return BackUpStatus.fail;
     }
     try {
+
+      // delete data in firestore
       final reference = FirebaseStorage.instance.ref();
       final dataRef = reference.child(uuid);
-      await dataRef.delete();
+      Future deleteData = dataRef.delete();
+
+      // delete user in firebase auth
+      Future deleteUser = currentUser!.delete();
+
+
+      await Future.wait([deleteData, deleteUser]);
+
       lastUpdatedTime = null;
       fileSize = null;
+      currentUser = null;
+
       return BackUpStatus.success;
     } on Exception catch (e) {
       debugPrint('[Tony] delete error=$e');
-      return BackUpStatus.fail;
+      if (e.toString().contains('No object exists at the desired reference')) {
+        lastUpdatedTime = null;
+        fileSize = null;
+        currentUser = null;
+        return BackUpStatus.success;
+      } else {
+        return BackUpStatus.fail;
+      }
     }
   }
 }
