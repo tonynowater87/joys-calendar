@@ -190,91 +190,116 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                   }
 
                   return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    padding:
+                        const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
                         Column(
+                          mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
                             Text("$yearString $minkuoYearString"),
                             Text("$monthString $ganZhi $shenXiao"),
                           ],
                         ),
-                        InkWell(
-                            onTap: () {
-                              setState(() {
-                                if (currentDate.month == 1) {
-                                  currentDate = DateTime(
-                                      currentDate.year - 1, DateTime.december);
-                                } else {
-                                  currentDate = DateTime(
-                                      currentDate.year, currentDate.month - 1);
-                                }
-                              });
-                              cellCalendarPageController.animateToDate(
-                                  currentDate,
-                                  curve: Curves.linear,
-                                  duration: const Duration(milliseconds: 300));
-                            },
-                            child: const Icon(Icons.navigate_before)),
-                        currentDate.year == DateTime.now().year &&
-                                currentDate.month == DateTime.now().month
-                            ? InkWell(
-                                child: const Icon(Icons.edit_calendar),
-                                onTap: () async {
-                                  final pickedDate = await showMonthYearPicker(
-                                      context: context,
-                                      initialMonthYearPickerMode:
-                                          MonthYearPickerMode.month,
-                                      initialDate: DateTime.now(),
-                                      firstDate: DateTime(1900),
-                                      lastDate: DateTime(2100));
-                                  if (!mounted) {
-                                    return;
-                                  }
-                                  if (pickedDate != null) {
-                                    setState(() {
-                                      currentDate = pickedDate;
-                                    });
-                                    cellCalendarPageController.animateToDate(
+                        Row(
+                          children: <Widget>[
+                            InkWell(
+                                onTap: () {
+                                  setState(() {
+                                    if (currentDate.month == 1) {
+                                      currentDate = DateTime(
+                                          currentDate.year - 1,
+                                          DateTime.december);
+                                    } else {
+                                      currentDate = DateTime(currentDate.year,
+                                          currentDate.month - 1);
+                                    }
+                                  });
+                                  cellCalendarPageController.animateToDate(
                                       currentDate,
                                       curve: Curves.linear,
                                       duration:
-                                          const Duration(milliseconds: 300),
-                                    );
-                                  }
-                                })
-                            : InkWell(
+                                          const Duration(milliseconds: 300));
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.navigate_before),
+                                )),
+                            currentDate.year == DateTime.now().year &&
+                                    currentDate.month == DateTime.now().month
+                                ? InkWell(
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(Icons.edit_calendar),
+                                    ),
+                                    onTap: () async {
+                                      final pickedDate =
+                                          await showMonthYearPicker(
+                                              context: context,
+                                              initialMonthYearPickerMode:
+                                                  MonthYearPickerMode.month,
+                                              initialDate: DateTime.now(),
+                                              firstDate: DateTime(1900),
+                                              lastDate: DateTime(2100));
+                                      if (!mounted) {
+                                        return;
+                                      }
+                                      if (pickedDate != null) {
+                                        setState(() {
+                                          currentDate = pickedDate;
+                                        });
+                                        cellCalendarPageController
+                                            .animateToDate(
+                                          currentDate,
+                                          curve: Curves.linear,
+                                          duration:
+                                              const Duration(milliseconds: 300),
+                                        );
+                                      }
+                                    })
+                                : InkWell(
+                                    onTap: () {
+                                      setState(() {
+                                        currentDate = DateTime.now();
+                                      });
+                                      cellCalendarPageController.animateToDate(
+                                        currentDate,
+                                        curve: Curves.linear,
+                                        duration:
+                                            const Duration(milliseconds: 300),
+                                      );
+                                    },
+                                    child: const Padding(
+                                      padding: EdgeInsets.all(8.0),
+                                      child: Icon(Icons.calendar_today),
+                                    )),
+                            InkWell(
                                 onTap: () {
                                   setState(() {
-                                    currentDate = DateTime.now();
+                                    if (currentDate.month == 12) {
+                                      currentDate = DateTime(
+                                          currentDate.year + 1,
+                                          DateTime.january);
+                                    } else {
+                                      currentDate = DateTime(currentDate.year,
+                                          currentDate.month + 1);
+                                    }
                                   });
                                   cellCalendarPageController.animateToDate(
-                                    currentDate,
-                                    curve: Curves.linear,
-                                    duration: const Duration(milliseconds: 300),
-                                  );
+                                      currentDate,
+                                      curve: Curves.linear,
+                                      duration:
+                                          const Duration(milliseconds: 300));
                                 },
-                                child: const Icon(Icons.calendar_today)),
-                        InkWell(
-                            onTap: () {
-                              setState(() {
-                                if (currentDate.month == 12) {
-                                  currentDate = DateTime(
-                                      currentDate.year + 1, DateTime.january);
-                                } else {
-                                  currentDate = DateTime(
-                                      currentDate.year, currentDate.month + 1);
-                                }
-                              });
-                              cellCalendarPageController.animateToDate(
-                                  currentDate,
-                                  curve: Curves.linear,
-                                  duration: const Duration(milliseconds: 300));
-                            },
-                            child: const Icon(Icons.navigate_next)),
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8.0),
+                                  child: Icon(Icons.navigate_next),
+                                )),
+                          ],
+                        ),
                       ],
                     ),
                   );
