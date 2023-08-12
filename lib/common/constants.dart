@@ -6,6 +6,9 @@ class AppConstants {
   static const String routeSearchResult = '/search_result';
   static const String defaultLocale = 'zh_TW';
 
+  // memo date format
+  static const String memoDateFormat = 'yyyy/MM/dd';
+
   // ad-mob id
   static const String INTERSTITIAL_ANDROID_ID = String.fromEnvironment(
       "INTERSTITIAL-ANDROID-ID",

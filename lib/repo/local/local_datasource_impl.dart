@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
 import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
@@ -21,9 +23,18 @@ class LocalDatasourceImpl extends LocalDatasource {
   @override
   List<MemoModel> getMemos(DateTime dateTime) {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
-    return List<MemoModel>.generate(
-            box.values.length, (index) => box.getAt(index)!)
-        .where((element) => element.dateTime == dateTime)
+    var dateString = DateFormat(AppConstants.memoDateFormat).format(dateTime);
+    debugPrint('[Tony] getMemos: $dateString');
+    return List<MemoModel>.generate(box.values.length, (index) {
+      var memoModel = box.getAt(index)!;
+      // convert old dateTime to new dateString
+      if (memoModel.dateString.isEmpty) {
+        memoModel.dateString =
+            DateFormat(AppConstants.memoDateFormat).format(memoModel.dateTime);
+      }
+      return memoModel;
+    })
+        .where((element) => element.dateString == dateString)
         .whereType<MemoModel>()
         .toList();
   }
@@ -63,8 +74,16 @@ class LocalDatasourceImpl extends LocalDatasource {
   List<MemoModel> getAllMemos() {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     var allMemos = box.values.toList();
-    allMemos
-        .sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
+    allMemos = allMemos
+        .map((e) {
+          // convert old dateTime to new dateString
+          if (e.dateString.isEmpty) {
+            e.dateString = DateFormat(AppConstants.memoDateFormat).format(e.dateTime);
+          }
+          return e;
+        })
+        .toList()
+        ..sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
     return allMemos;
   }
 

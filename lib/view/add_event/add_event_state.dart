@@ -13,6 +13,7 @@ class AddEventState extends Equatable {
     var now = DateTime.now();
     memoModel = MemoModel()
       ..dateTime = DateTime(now.year, now.month, now.day)
+      ..dateString = DateFormat(AppConstants.memoDateFormat).format(now)
       ..memo = "";
   }
 
@@ -25,6 +26,7 @@ class AddEventState extends Equatable {
       return AddEventState(
           MemoModel()
             ..dateTime = dateTime
+            ..dateString = DateFormat(AppConstants.memoDateFormat).format(dateTime)
             ..memo = memoModel.memo,
           status);
     }
@@ -32,6 +34,7 @@ class AddEventState extends Equatable {
       return AddEventState(
           MemoModel()
             ..dateTime = memoModel.dateTime
+            ..dateString = memoModel.dateString
             ..memo = memo,
           status);
     }

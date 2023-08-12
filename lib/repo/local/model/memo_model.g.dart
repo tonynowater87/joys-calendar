@@ -18,17 +18,20 @@ class MemoModelAdapter extends TypeAdapter<MemoModel> {
     };
     return MemoModel()
       ..memo = fields[0] as String
-      ..dateTime = fields[1] as DateTime;
+      ..dateTime = fields[1] as DateTime
+      ..dateString = fields[2] == null ? '' : fields[2] as String;
   }
 
   @override
   void write(BinaryWriter writer, MemoModel obj) {
     writer
-      ..writeByte(2)
+      ..writeByte(3)
       ..writeByte(0)
       ..write(obj.memo)
       ..writeByte(1)
-      ..write(obj.dateTime);
+      ..write(obj.dateTime)
+      ..writeByte(2)
+      ..write(obj.dateString);
   }
 
   @override

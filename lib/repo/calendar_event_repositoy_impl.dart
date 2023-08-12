@@ -122,10 +122,11 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     List<EventModel> result = [];
     for (var year = startYear; year <= endYear; year++) {
       var dateTime = DateTime(year);
-      for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
+      for (var dayOfYear = 0; dayOfYear <= 364; dayOfYear++) {
         var thisDay = dateTime.add(Duration(days: dayOfYear));
         final memos = localDatasource.getMemos(thisDay);
         for (var element in memos) {
+          // debugPrint('[Tony] getCustomEvent ${element.memo}');
           result.add(EventModel(
               date: thisDay,
               eventType: EventType.custom,
@@ -135,7 +136,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     }
     var cost = DateTime.now().millisecondsSinceEpoch - start;
     // around 1000 milliseconds
-    debugPrint('[Tony] getCustomEvent cost=$cost');
+    // debugPrint('[Tony] getCustomEvent cost=$cost');
     return Future.value(result);
   }
 
