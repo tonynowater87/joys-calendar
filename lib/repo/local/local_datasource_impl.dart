@@ -91,7 +91,11 @@ class LocalDatasourceImpl extends LocalDatasource {
   List<CalendarModel> getCalendarModels(String countryCode) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
     final allValues =
-        box.values.where((element) => element.country == countryCode).toList();
+    box.values
+        .where((element) =>
+            element.country == countryCode &&
+            element.key.toString().length > 23) // 過濾掉舊版key是單純用日期的資料, 新版key為`日期 country`
+        .toList();
     allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return allValues;
   }
@@ -108,7 +112,7 @@ class LocalDatasourceImpl extends LocalDatasource {
   Future<void> saveCalendarModels(List<CalendarModel> models) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
     return Future.forEach(
-        models, (element) => box.put(element.dateTime.toString(), element));
+        models, (element) => box.put("${element.dateTime} ${element.country}", element));
   }
 
   @override
