@@ -1,9 +1,12 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
 import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/analytics/analytics_events.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
@@ -47,6 +50,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   Widget build(BuildContext rootContext) {
+    final analyticsHelper = context.read<AnalyticsHelper>();
     return BlocProvider(
       create: (context) => HomeCubit(context.read<CalendarEventRepository>())
         ..getEventWhenAppLaunch(),
@@ -63,6 +67,9 @@ class _MyHomePageState extends State<MyHomePage> {
                 helpText: '搜尋關鍵字',
                 onSuffixTap: () {},
                 onSubmitted: (text) {
+                  analyticsHelper.logEvent(
+                      name: event_search,
+                      parameters: {event_search_params_keyword_name: text});
                   Navigator.of(rootContext).pushNamed(
                       AppConstants.routeSearchResult,
                       arguments: SearchResultArguments(text));
@@ -85,6 +92,16 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.add),
                       onPressed: () async {
+                        analyticsHelper
+                            .logEvent(name: event_add_event, parameters: {
+                          event_add_event_params_position_name:
+                              event_add_event_params_position.menu.toString()
+                        });
+                        analyticsHelper
+                            .logEvent(name: event_home_menu, parameters: {
+                          event_home_menu_params_feature_name:
+                          event_home_menu_params_feature.add_event.toString()
+                        });
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
                             context: context,
@@ -103,6 +120,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.list_alt),
                       onPressed: () async {
+                        analyticsHelper
+                            .logEvent(name: event_home_menu, parameters: {
+                          event_home_menu_params_feature_name:
+                          event_home_menu_params_feature.my_event.toString()
+                        });
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.pushNamed(
                             context, AppConstants.routeMyEvent);
@@ -118,6 +140,11 @@ class _MyHomePageState extends State<MyHomePage> {
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.settings_outlined),
                       onPressed: () async {
+                        analyticsHelper
+                            .logEvent(name: event_home_menu, parameters: {
+                          event_home_menu_params_feature_name:
+                          event_home_menu_params_feature.setting.toString()
+                        });
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.of(rootContext)
                             .pushNamed(AppConstants.routeSettings);
@@ -151,6 +178,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
   Widget build(BuildContext context) {
     final state = context.watch<HomeCubit>().state;
     final cubit = context.read<HomeCubit>();
+    final analyticsHelper = context.read<AnalyticsHelper>();
     switch (state.status) {
       case HomeStatus.loading:
         return const Center(child: CircularProgressIndicator());
@@ -208,6 +236,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                           children: <Widget>[
                             InkWell(
                                 onTap: () {
+                                  analyticsHelper.logEvent(name: event_previous_month);
                                   setState(() {
                                     if (currentDate.month == 1) {
                                       currentDate = DateTime(
@@ -236,6 +265,13 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       child: Icon(Icons.edit_calendar),
                                     ),
                                     onTap: () async {
+                                      analyticsHelper.logEvent(
+                                          name: event_select_date,
+                                          parameters: {
+                                            event_select_date_params_position_name:
+                                            event_select_date_params_position
+                                                .home.toString()
+                                          });
                                       final pickedDate =
                                           await showMonthYearPicker(
                                               context: context,
@@ -262,6 +298,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     })
                                 : InkWell(
                                     onTap: () {
+                                      analyticsHelper.logEvent(name: event_back_to_today);
                                       setState(() {
                                         currentDate = DateTime.now();
                                       });
@@ -278,6 +315,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     )),
                             InkWell(
                                 onTap: () {
+                                  analyticsHelper.logEvent(name: event_next_month);
                                   setState(() {
                                     if (currentDate.month == 12) {
                                       currentDate = DateTime(
@@ -364,6 +402,14 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                       child: OutlinedButton.icon(
                                           style: appTitleButtonStyle(),
                                           onPressed: () async {
+                                            analyticsHelper.logEvent(
+                                                name: event_add_event,
+                                                parameters: {
+                                                  event_add_event_params_position_name:
+                                                      event_add_event_params_position
+                                                          .dialog
+                                                          .toString()
+                                                });
                                             Navigator.pop(context);
                                             var isAdded = await showDialog(
                                                 context: context,

@@ -24,7 +24,7 @@ class LocalDatasourceImpl extends LocalDatasource {
   List<MemoModel> getMemos(DateTime dateTime) {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     var dateString = DateFormat(AppConstants.memoDateFormat).format(dateTime);
-    debugPrint('[Tony] getMemos: $dateString');
+    // debugPrint('[Tony] getMemos: $dateString');
     return List<MemoModel>.generate(box.values.length, (index) {
       var memoModel = box.getAt(index)!;
       // convert old dateTime to new dateString

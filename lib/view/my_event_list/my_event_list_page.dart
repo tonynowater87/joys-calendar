@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/scheduler.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/analytics/analytics_events.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_item_page.dart';
@@ -24,6 +26,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsHelper = context.read<AnalyticsHelper>();
     final myEventState = context.watch<MyEventListCubit>().state;
     var isDeleting =
         myEventState.myEventListStatus == MyEventListStatus.deleting;
@@ -42,7 +45,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                 }
               }),
           title: isDeleting
-              ? Text('刪除(${myEventState.checkedCount})')
+              ? Text('刪除(${myEventState.checkedCount}筆)')
               : const Text('我的記事列表'),
           actions: [
             Padding(
@@ -57,6 +60,12 @@ class _MyEventListPageState extends State<MyEventListPage> {
                       context.read<MyEventListCubit>().startDeleting();
                     } else {
                       if (!hasDeleteCount) return;
+                      analyticsHelper.logEvent(
+                          name: event_delete_my_event,
+                          parameters: {
+                            event_delete_my_event_params_count_name:
+                                myEventState.checkedCount
+                          });
                       await context.read<MyEventListCubit>().delete();
                     }
                   }),
@@ -74,6 +83,8 @@ class _MyEventListPageState extends State<MyEventListPage> {
                         myEventState.myEventList[index].memo.isEmpty) {
                       return;
                     }
+
+                    analyticsHelper.logEvent(name: event_edit_my_event);
                     bool? isUpdated = await showDialog(
                         context: context,
                         builder: (context) => AddEventPage(

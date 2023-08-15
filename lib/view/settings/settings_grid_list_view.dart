@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/analytics/analytics_events.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_event.dart';
@@ -10,6 +12,7 @@ class SettingsGridListView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsHelper = context.read<AnalyticsHelper>();
     return SizedBox(
       height: 200,
       child: BlocBuilder<SettingsBloc, SettingsState>(
@@ -25,6 +28,13 @@ class SettingsGridListView extends StatelessWidget {
                 final item = state.settingEventItems[index];
                 return InkWell(
                   onTap: () {
+                    analyticsHelper
+                        .logEvent(name: event_setting_country, parameters: {
+                      event_setting_country_params_country_code_name:
+                          item.eventType.toSettingName(),
+                      event_setting_country_params_country_code_checked_name:
+                          (!item.isSelected).toString(),
+                    });
                     if (item.isSelected) {
                       context
                           .read<SettingsBloc>()

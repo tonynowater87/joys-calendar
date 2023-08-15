@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:dio/dio.dart';
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -10,6 +11,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
@@ -59,6 +61,7 @@ Future<void> main() async {
 
   debugPrint('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false); // disable in debug mode
     // https://firebase.google.com/docs/emulator-suite/install_and_configure?authuser=0
     // fixme, currently can't connect emulator via real device (Android)
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
@@ -66,6 +69,7 @@ Future<void> main() async {
     LoggingInterceptor.debug = false;
     Bloc.observer = AppBlocObserver();
   } else {
+    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(true);
     LoggingInterceptor.debug = false;
     FlutterError.onError = (errorDetails) {
       FirebaseCrashlytics.instance.recordFlutterFatalError(errorDetails);
@@ -127,6 +131,9 @@ class MyApp extends StatelessWidget {
                     context.read<SharedPreferenceProvider>());
           },
         ),
+        RepositoryProvider<AnalyticsHelper>(create: (BuildContext context) {
+          return AnalyticsHelperImpl();
+        }),
       ],
       child: MaterialApp(
           title: 'Joy\' Calendar',

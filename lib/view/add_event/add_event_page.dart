@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:joys_calendar/common/analytics/analytics_events.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
@@ -36,6 +38,7 @@ class _AddEventPageState extends State<AddEventPage> {
 
   @override
   Widget build(BuildContext context) {
+    final analyticsHelper = context.read<AnalyticsHelper>();
     return BlocProvider<AddEventBloc>(
       create: (context) {
         var addEventBloc = AddEventBloc(context.read<LocalDatasource>());
@@ -87,6 +90,19 @@ class _AddEventPageState extends State<AddEventPage> {
                 Text(titleText, style: Theme.of(context).textTheme.headline4),
                 InkWell(
                   onTap: () async {
+                    if (addEventState.status == AddEventStatus.add) {
+                      analyticsHelper
+                          .logEvent(name: event_select_date, parameters: {
+                        event_select_date_params_position_name:
+                            event_select_date_params_position.add.toString(),
+                      });
+                    } else if (addEventState.status == AddEventStatus.edit) {
+                      analyticsHelper
+                          .logEvent(name: event_select_date, parameters: {
+                        event_select_date_params_position_name:
+                        event_select_date_params_position.edit.toString(),
+                      });
+                    }
                     final pickedDate = await showDatePicker(
                         context: context,
                         initialDate: addEventState.memoModel.dateTime,
