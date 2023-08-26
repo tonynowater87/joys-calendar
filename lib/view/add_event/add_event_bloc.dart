@@ -53,4 +53,8 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
       return true;
     }
   }
+
+  Future<void> delete() async {
+    await localMemoRepository.deleteMemo(key);
+  }
 }

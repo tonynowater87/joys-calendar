@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/analytics/analytics_events.dart';
 import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/constants.dart';
+import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
@@ -74,7 +75,8 @@ class _AddEventPageState extends State<AddEventPage> {
           }
 
           final dateText = Text(
-              DateFormat(DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
+              DateFormat(
+                      DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
                   .format(state.memoModel.dateTime),
               style: Theme.of(context).textTheme.caption);
 
@@ -100,7 +102,7 @@ class _AddEventPageState extends State<AddEventPage> {
                       analyticsHelper
                           .logEvent(name: event_select_date, parameters: {
                         event_select_date_params_position_name:
-                        event_select_date_params_position.edit.toString(),
+                            event_select_date_params_position.edit.toString(),
                       });
                     }
                     final pickedDate = await showDatePicker(
@@ -129,6 +131,26 @@ class _AddEventPageState extends State<AddEventPage> {
               ],
             ),
             actions: [
+              Visibility(
+                visible: addEventState.status == AddEventStatus.edit,
+                child: OutlinedButton.icon(
+                  style: appOutlineButtonStyle(),
+                  icon: const Icon(Icons.delete),
+                  label: const Text('刪除'),
+                  onPressed: () {
+                    if (!mounted) {
+                      return;
+                    }
+                    DialogUtils.showAlertDialog(
+                        title: "確定要刪除這筆記事嗎？",
+                        onConfirmCallback: () async {
+                          await context.read<AddEventBloc>().delete();
+                          Navigator.pop(context, true);
+                        },
+                        context: context);
+                  },
+                ),
+              ),
               OutlinedButton.icon(
                   style: appOutlineButtonStyle(),
                   icon: const Icon(Icons.cancel),
@@ -145,13 +167,14 @@ class _AddEventPageState extends State<AddEventPage> {
                     ? const Text('新增')
                     : const Text('更新'),
                 onPressed: () async {
-                  final result = await context.read<AddEventBloc>().saveEvent();
+                  final result =
+                      await context.read<AddEventBloc>().saveEvent();
                   if (!mounted || !result) {
                     return;
                   }
                   Navigator.pop(context, true);
                 },
-              )
+              ),
             ],
             content: SizedBox(
               width: 300,

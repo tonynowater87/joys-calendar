@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class DialogUtils {
   static showAlertDialog({required String title,
-      required String content,
+      String? content,
       VoidCallback? onConfirmCallback,
       VoidCallback? onCancelCallback,
       required BuildContext context}) {
@@ -25,7 +25,8 @@ class DialogUtils {
     // set up the AlertDialog
     AlertDialog alert = AlertDialog(
       title: Text(title),
-      content: Text(content),
+      content: Visibility(
+          visible: content?.isNotEmpty == true, child: Text(content ?? "")),
       actions: [
         cancelButton,
         continueButton,
