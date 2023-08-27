@@ -46,7 +46,8 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
       final memoModel = localMemoRepository.getMemo(key);
       await localMemoRepository.saveMemo(memoModel
         ..memo = updatedMemoModel.memo
-        ..dateTime = updatedMemoModel.dateTime);
+        ..dateTime = updatedMemoModel.dateTime
+        ..dateString = DateFormat(AppConstants.memoDateFormat).format(updatedMemoModel.dateTime));
       return true;
     } else {
       await localMemoRepository.saveMemo(updatedMemoModel);

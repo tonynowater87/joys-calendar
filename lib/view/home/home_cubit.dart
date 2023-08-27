@@ -2,7 +2,9 @@ import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/widgets.dart';
+import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
+import 'package:joys_calendar/common/utils/string_utils.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 
@@ -37,7 +39,7 @@ class HomeCubit extends Cubit<HomeState> {
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: e.eventType.name,
+            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -64,14 +66,14 @@ class HomeCubit extends Cubit<HomeState> {
               .contains(events.first.eventType)) {
         // remove old event-type data from database
         originCombinedCalendarEvents.removeWhere(
-            (element) => element.eventID == events.first.eventType.name);
+            (element) => element.extractEventTypeName() == events.first.eventType.name);
 
         // add new event-type data from api
         originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: e.eventType.name,
+            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -99,7 +101,7 @@ class HomeCubit extends Cubit<HomeState> {
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: e.eventType.name,
+            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -175,19 +177,19 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void refreshFromAddOrUpdateCustomEvent() async {
+  Future<void> refreshFromAddOrUpdateCustomEvent() async {
     var updatedCustomEvents = await _getCustomEvents();
     if (updatedCustomEvents.isEmpty) {
       return;
     } else {
       var newEventsList = state.events.toList();
       newEventsList
-          .removeWhere((element) => element.eventID == EventType.custom.name);
+          .removeWhere((element) => element.extractEventTypeName() == EventType.custom.name);
       newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
           order: e.eventType.index,
           eventName: e.eventName,
           eventDate: e.date,
-          eventID: e.eventType.name,
+          eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
           eventBackgroundColor: e.eventType.toEventColor(),
           eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
       emit(HomeState.success(newEventsList));
@@ -206,7 +208,7 @@ class HomeCubit extends Cubit<HomeState> {
       for (var refreshEvents in allRefreshedEvents) {
         for (var refreshEvent in refreshEvents) {
           if (newEventsList.indexWhere((element) =>
-                  element.eventID == refreshEvent.eventType.name &&
+                  element.extractEventTypeName() == refreshEvent.eventType.name &&
                   element.eventDate == refreshEvent.date) !=
               -1) {
             continue;
@@ -217,7 +219,7 @@ class HomeCubit extends Cubit<HomeState> {
                   : refreshEvent.eventType.index,
               eventName: refreshEvent.eventName,
               eventDate: refreshEvent.date,
-              eventID: refreshEvent.eventType.name,
+              eventID: StringUtils.combineEventTypeAndIdForModify(refreshEvent.eventType.name, refreshEvent.idForModify),
               eventBackgroundColor: refreshEvent.eventType.toEventColor(),
               eventTextStyle:
                   JoysCalendarThemeData.calendarTextTheme.overline!));

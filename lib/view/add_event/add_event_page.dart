@@ -11,7 +11,7 @@ import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
 
 class AddEventPage extends StatefulWidget {
-  dynamic? memoModelKey;
+  dynamic memoModelKey;
   DateTime? dateTime;
 
   AddEventPage({Key? key, this.memoModelKey, this.dateTime}) : super(key: key);
@@ -138,13 +138,13 @@ class _AddEventPageState extends State<AddEventPage> {
                   icon: const Icon(Icons.delete),
                   label: const Text('刪除'),
                   onPressed: () {
-                    if (!mounted) {
-                      return;
-                    }
                     DialogUtils.showAlertDialog(
                         title: "確定要刪除這筆記事嗎？",
                         onConfirmCallback: () async {
                           await context.read<AddEventBloc>().delete();
+                          if (!mounted) {
+                            return;
+                          }
                           Navigator.pop(context, true);
                         },
                         context: context);

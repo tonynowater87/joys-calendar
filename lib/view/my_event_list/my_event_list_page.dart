@@ -84,7 +84,11 @@ class _MyEventListPageState extends State<MyEventListPage> {
                       return;
                     }
 
-                    analyticsHelper.logEvent(name: event_edit_my_event);
+                    analyticsHelper
+                        .logEvent(name: event_edit_my_event, parameters: {
+                      event_edit_my_event_params_position_name:
+                          event_edit_my_event_params_position.my_event.name
+                    });
                     bool? isUpdated = await showDialog(
                         context: context,
                         builder: (context) => AddEventPage(

@@ -175,10 +175,10 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
   var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
 
   @override
-  Widget build(BuildContext context) {
-    final state = context.watch<HomeCubit>().state;
-    final cubit = context.read<HomeCubit>();
-    final analyticsHelper = context.read<AnalyticsHelper>();
+  Widget build(BuildContext parentContext) {
+    final state = parentContext.watch<HomeCubit>().state;
+    final cubit = parentContext.read<HomeCubit>();
+    final analyticsHelper = parentContext.read<AnalyticsHelper>();
     switch (state.status) {
       case HomeStatus.loading:
         return const Center(child: CircularProgressIndicator());
@@ -188,7 +188,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
           children: [
             Expanded(
               child: CellCalendar(
-                todayMarkColor: Theme.of(context).colorScheme.primary,
+                todayMarkColor: Theme.of(parentContext).colorScheme.primary,
                 cellCalendarPageController: cellCalendarPageController,
                 events: state.events,
                 daysOfTheWeekBuilder: (dayIndex) {
@@ -274,7 +274,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                           });
                                       final pickedDate =
                                           await showMonthYearPicker(
-                                              context: context,
+                                              context: parentContext,
                                               initialMonthYearPickerMode:
                                                   MonthYearPickerMode.month,
                                               initialDate: DateTime.now(),
@@ -365,7 +365,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                       DateFormat.ABBR_MONTH_WEEKDAY_DAY,
                       AppConstants.defaultLocale);
                   showDialog(
-                      context: context,
+                      context: parentContext,
                       builder: (_) => AlertDialog(
                           shape: const RoundedRectangleBorder(
                               borderRadius:
@@ -380,20 +380,20 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                               children: [
                                 SizedBox(
                                   width:
-                                      (MediaQuery.of(context).size.width - 80) *
+                                      (MediaQuery.of(parentContext).size.width - 80) *
                                           0.6,
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
                                       dateFormat.format(date),
                                       style:
-                                          Theme.of(context).textTheme.headline4,
+                                          Theme.of(parentContext).textTheme.headline4,
                                     ),
                                   ),
                                 ),
                                 SizedBox(
                                   width:
-                                      (MediaQuery.of(context).size.width - 80) *
+                                      (MediaQuery.of(parentContext).size.width - 80) *
                                           0.4,
                                   child: Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
@@ -410,9 +410,9 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                                           .dialog
                                                           .toString()
                                                 });
-                                            Navigator.pop(context);
+                                            Navigator.pop(parentContext);
                                             var isAdded = await showDialog(
-                                                context: context,
+                                                context: parentContext,
                                                 builder: (context) =>
                                                     AddEventPage(
                                                         dateTime: date));
@@ -420,14 +420,14 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                               return;
                                             }
                                             if (isAdded == true) {
-                                              context
+                                              parentContext
                                                   .read<HomeCubit>()
                                                   .refreshFromAddOrUpdateCustomEvent();
                                             }
                                           },
                                           icon: const Icon(Icons.add),
                                           label: Text("新增記事",
-                                              style: Theme.of(context)
+                                              style: Theme.of(parentContext)
                                                   .textTheme
                                                   .button!)),
                                     ),
@@ -448,7 +448,28 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> {
                                     title: Text(event.eventName,
                                         style: TextStyle(
                                             color: event.eventTextStyle.color)),
-                                    onTap: () {},
+                                    onTap: () async {
+                                      if (event.extractEventTypeName() == EventType.custom.name) {
+                                        analyticsHelper
+                                            .logEvent(name: event_edit_my_event, parameters: {
+                                          event_edit_my_event_params_position_name:
+                                          event_edit_my_event_params_position.dialog.name
+                                        });
+                                        Navigator.pop(context);
+                                        dynamic id = int.tryParse(event.extractEventIdForModify());
+                                        var isAdded = await showDialog(
+                                            context: context,
+                                            builder: (context) => AddEventPage(memoModelKey: id));
+                                        if (!mounted) {
+                                          return;
+                                        }
+                                        if (isAdded == true) {
+                                          parentContext
+                                              .read<HomeCubit>()
+                                              .refreshFromAddOrUpdateCustomEvent();
+                                        }
+                                      }
+                                    },
                                   );
                                 },
                                 separatorBuilder: (context, index) =>

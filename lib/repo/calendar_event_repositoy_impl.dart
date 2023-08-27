@@ -130,7 +130,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           result.add(EventModel(
               date: thisDay,
               eventType: EventType.custom,
-              eventName: element.memo));
+              eventName: element.memo,
+              idForModify: element.key));
         }
       }
     }
