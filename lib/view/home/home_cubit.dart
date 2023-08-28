@@ -179,21 +179,18 @@ class HomeCubit extends Cubit<HomeState> {
 
   Future<void> refreshFromAddOrUpdateCustomEvent() async {
     var updatedCustomEvents = await _getCustomEvents();
-    if (updatedCustomEvents.isEmpty) {
-      return;
-    } else {
-      var newEventsList = state.events.toList();
-      newEventsList
-          .removeWhere((element) => element.extractEventTypeName() == EventType.custom.name);
-      newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
-          order: e.eventType.index,
-          eventName: e.eventName,
-          eventDate: e.date,
-          eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
-          eventBackgroundColor: e.eventType.toEventColor(),
-          eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
-      emit(HomeState.success(newEventsList));
-    }
+    var newEventsList = state.events.toList();
+    newEventsList.removeWhere(
+        (element) => element.extractEventTypeName() == EventType.custom.name);
+    newEventsList.addAll(updatedCustomEvents.map((e) => CalendarEvent(
+        order: e.eventType.index,
+        eventName: e.eventName,
+        eventDate: e.date,
+        eventID: StringUtils.combineEventTypeAndIdForModify(
+            e.eventType.name, e.idForModify),
+        eventBackgroundColor: e.eventType.toEventColor(),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+    emit(HomeState.success(newEventsList));
   }
 
   Future<void> refreshWhenYearChanged(int year) async {
