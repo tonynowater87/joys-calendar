@@ -1,6 +1,5 @@
 import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
@@ -168,11 +167,32 @@ class HomeCalendarPage extends StatefulWidget {
   State<HomeCalendarPage> createState() => _HomeCalendarPageState();
 }
 
-class _HomeCalendarPageState extends State<HomeCalendarPage> {
+class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBindingObserver {
   final CellCalendarPageController cellCalendarPageController =
       CellCalendarPageController();
 
   var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
+
+  @override
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addObserver(this);
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    if(state == AppLifecycleState.resumed){
+      // 每次回前景時觸發更新，解決UI停留到隔日後，返回App日曆的今天UI沒有更新問題
+      context.read<HomeCubit>().refreshAllEventsFromSettings();
+    }
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext parentContext) {
