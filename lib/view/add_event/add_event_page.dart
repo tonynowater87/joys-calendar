@@ -81,6 +81,7 @@ class _AddEventPageState extends State<AddEventPage> {
               style: Theme.of(context).textTheme.caption);
 
           return AlertDialog(
+            insetPadding: const EdgeInsets.all(8.0),
             shape: const RoundedRectangleBorder(
                 borderRadius: BorderRadius.all(Radius.circular(20.0))),
             actionsAlignment: MainAxisAlignment.end,

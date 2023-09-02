@@ -254,34 +254,34 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                         ),
                         Row(
                           children: <Widget>[
-                            InkWell(
-                                onTap: () {
-                                  analyticsHelper.logEvent(name: event_previous_month);
-                                  setState(() {
-                                    if (currentDate.month == 1) {
-                                      currentDate = DateTime(
-                                          currentDate.year - 1,
-                                          DateTime.december);
-                                    } else {
-                                      currentDate = DateTime(currentDate.year,
-                                          currentDate.month - 1);
-                                    }
-                                  });
-                                  cellCalendarPageController.animateToDate(
-                                      currentDate,
-                                      curve: Curves.linear,
-                                      duration:
-                                          const Duration(milliseconds: 300));
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.navigate_before),
-                                )),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
+                              child: InkWell(
+                                  onTap: () {
+                                    analyticsHelper.logEvent(name: event_previous_month);
+                                    setState(() {
+                                      if (currentDate.month == 1) {
+                                        currentDate = DateTime(
+                                            currentDate.year - 1,
+                                            DateTime.december);
+                                      } else {
+                                        currentDate = DateTime(currentDate.year,
+                                            currentDate.month - 1);
+                                      }
+                                    });
+                                    cellCalendarPageController.animateToDate(
+                                        currentDate,
+                                        curve: Curves.linear,
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                  },
+                                  child: const Icon(Icons.navigate_before)),
+                            ),
                             currentDate.year == DateTime.now().year &&
                                     currentDate.month == DateTime.now().month
                                 ? InkWell(
                                     child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
                                       child: Icon(Icons.edit_calendar),
                                     ),
                                     onTap: () async {
@@ -330,32 +330,32 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                                       );
                                     },
                                     child: const Padding(
-                                      padding: EdgeInsets.all(8.0),
+                                      padding: EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
                                       child: Icon(Icons.calendar_today),
                                     )),
-                            InkWell(
-                                onTap: () {
-                                  analyticsHelper.logEvent(name: event_next_month);
-                                  setState(() {
-                                    if (currentDate.month == 12) {
-                                      currentDate = DateTime(
-                                          currentDate.year + 1,
-                                          DateTime.january);
-                                    } else {
-                                      currentDate = DateTime(currentDate.year,
-                                          currentDate.month + 1);
-                                    }
-                                  });
-                                  cellCalendarPageController.animateToDate(
-                                      currentDate,
-                                      curve: Curves.linear,
-                                      duration:
-                                          const Duration(milliseconds: 300));
-                                },
-                                child: const Padding(
-                                  padding: EdgeInsets.all(8.0),
-                                  child: Icon(Icons.navigate_next),
-                                )),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
+                              child: InkWell(
+                                  onTap: () {
+                                    analyticsHelper.logEvent(name: event_next_month);
+                                    setState(() {
+                                      if (currentDate.month == 12) {
+                                        currentDate = DateTime(
+                                            currentDate.year + 1,
+                                            DateTime.january);
+                                      } else {
+                                        currentDate = DateTime(currentDate.year,
+                                            currentDate.month + 1);
+                                      }
+                                    });
+                                    cellCalendarPageController.animateToDate(
+                                        currentDate,
+                                        curve: Curves.linear,
+                                        duration:
+                                            const Duration(milliseconds: 300));
+                                  },
+                                  child: Icon(Icons.navigate_next)),
+                            ),
                           ],
                         ),
                       ],
@@ -391,6 +391,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                               borderRadius:
                                   BorderRadius.all(Radius.circular(20.0))),
                           actionsAlignment: MainAxisAlignment.center,
+                          insetPadding: const EdgeInsets.all(8.0),
                           titlePadding:
                               const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                           contentPadding:
