@@ -7,6 +7,7 @@ import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/analytics/analytics_events.dart';
 import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
+import 'package:joys_calendar/common/extentions/date_time_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -228,14 +229,6 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                   final monthString =
                       DateFormat('MMMM', AppConstants.defaultLocale)
                           .format(datetime);
-                  Lunar lunar = Lunar.fromDate(datetime);
-                  final ganZhi = lunar.getYearInGanZhi();
-                  final shenXiao = lunar.getYearShengXiao();
-                  String minkuoYearString = "";
-                  if (datetime.year - 1911 >= 0) {
-                    final minkuoYear = datetime.year - 1911;
-                    minkuoYearString = "民國 $minkuoYear年";
-                  }
 
                   return Padding(
                     padding:
@@ -248,8 +241,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                           mainAxisSize: MainAxisSize.max,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: <Widget>[
-                            Text("$yearString $minkuoYearString"),
-                            Text("$monthString $ganZhi $shenXiao"),
+                            Text("$yearString ${datetime.yearOfRoc}"),
+                            Text("$monthString ${datetime.ganZhi} ${datetime.shenXiao}"),
                           ],
                         ),
                         Row(

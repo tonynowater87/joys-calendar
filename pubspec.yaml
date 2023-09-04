@@ -73,6 +73,8 @@ dependencies:
       url: https://github.com/tonynowater87/lunar-flutter.git
       ref: master
   google_mobile_ads: 3.0.0
+  easy_sticky_header: 1.0.5
+  tuple: 2.0.2
 
 dependency_overrides:
   intl: any

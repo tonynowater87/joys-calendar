@@ -17,7 +17,7 @@ class MyEventListItemPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final date =
-        DateFormat(DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
+        DateFormat(DateFormat.MONTH_WEEKDAY_DAY, AppConstants.defaultLocale)
             .format(_model.dateTime);
     final memo = _model.memo;
     return Container(
@@ -79,8 +79,7 @@ class MyEventListItemPage extends StatelessWidget {
                     }),
               ),
             ],
-          ),
-          const Divider()
+          )
         ],
       ),
     );
