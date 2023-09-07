@@ -11,7 +11,6 @@ class MyEventListCubit extends Cubit<MyEventListState> {
       : super(const MyEventListState.loading());
 
   List<MyEventUIModel> _getMyEventList() {
-
     DateTime? dateTime;
     var allMemos = localDatasource.getAllMemos();
     var myEventList = <MyEventUIModel>[];
@@ -23,11 +22,13 @@ class MyEventListCubit extends Cubit<MyEventListState> {
     allMemos.asMap().forEach((key, value) {
       if (year != value.dateTime.year) {
         year = value.dateTime.year;
-        myEventList.add(MyEventUIModel(key: -2, memo: "", dateTime: value.dateTime, isChecked: false));
+        myEventList.add(MyEventUIModel(
+            key: -2, memo: "", dateTime: value.dateTime, isChecked: false));
       }
 
       if (dateTime?.day != value.dateTime.day) {
-        myEventList.add(MyEventUIModel(key: -1, memo: "", dateTime: value.dateTime, isChecked: false));
+        myEventList.add(MyEventUIModel(
+            key: -1, memo: "", dateTime: value.dateTime, isChecked: false));
       }
       myEventList.add(MyEventUIModel(
           key: value.key,
@@ -60,6 +61,7 @@ class MyEventListCubit extends Cubit<MyEventListState> {
         await localDatasource.deleteMemo(element.key);
       }
     }
+    checkedCount = 0;
     emit(MyEventListState.loaded(_getMyEventList()));
   }
 
