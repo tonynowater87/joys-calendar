@@ -48,7 +48,7 @@ const event_delete_my_event = 'my_event_delete';
 const event_delete_my_event_params_count_name = 'count';
 const event_edit_my_event = 'my_event_edit';
 const event_edit_my_event_params_position_name = 'position';
-enum event_edit_my_event_params_position { dialog, my_event }
+enum event_edit_my_event_params_position { dialog, my_event, search }
 
 
 

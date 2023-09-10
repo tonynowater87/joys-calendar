@@ -172,7 +172,10 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         .getAllMemos()
         .where((element) => element.memo.contains(keyword))
         .map((e) => EventModel(
-            date: e.dateTime, eventType: EventType.custom, eventName: e.memo)));
+        date: e.dateTime,
+            eventType: EventType.custom,
+            eventName: e.memo,
+            idForModify: e.key)));
 
     allEvents.addAll(calendars);
     allEvents.addAll(solarEvents);

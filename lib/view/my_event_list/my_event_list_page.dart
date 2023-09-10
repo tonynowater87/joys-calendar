@@ -114,9 +114,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                   return StickyContainerWidget(
                     index: index,
                     child: Container(
-                      color: Theme.of(context)
-                          .colorScheme
-                          .primary,
+                      color: AppColors.lightGreen,
                       child: ListTile(
                         title: Text(
                             '西元 $date ${itemDateTime.yearOfRoc} ${itemDateTime.ganZhi} ${itemDateTime.shenXiao}',

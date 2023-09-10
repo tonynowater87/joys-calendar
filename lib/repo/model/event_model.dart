@@ -1,8 +1,9 @@
 import 'dart:ui';
 
+import 'package:equatable/equatable.dart';
 import 'package:joys_calendar/common/configs/colors.dart';
 
-class EventModel {
+class EventModel extends Equatable {
   DateTime date;
   EventType eventType;
   String eventName;
@@ -14,6 +15,9 @@ class EventModel {
     required this.eventName,
     this.idForModify
   });
+
+  @override
+  List<Object?> get props => [date, eventType, eventName, idForModify];
 }
 
 enum EventType { taiwan, china, hongKong, japan, uk, usa, lunar, solar, custom }

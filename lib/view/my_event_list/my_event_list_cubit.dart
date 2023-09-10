@@ -26,7 +26,7 @@ class MyEventListCubit extends Cubit<MyEventListState> {
             key: -2, memo: "", dateTime: value.dateTime, isChecked: false));
       }
 
-      if (dateTime?.day != value.dateTime.day) {
+      if (dateTime?.toIso8601String() != value.dateTime.toIso8601String()) {
         myEventList.add(MyEventUIModel(
             key: -1, memo: "", dateTime: value.dateTime, isChecked: false));
       }
