@@ -16,7 +16,6 @@ import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
-import 'package:lunar/calendar/Lunar.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 
 import '../../common/constants.dart';
@@ -100,7 +99,8 @@ class _MyHomePageState extends State<MyHomePage> {
                         analyticsHelper
                             .logEvent(name: event_home_menu, parameters: {
                           event_home_menu_params_feature_name:
-                          event_home_menu_params_feature.add_event.toString()
+                              event_home_menu_params_feature.add_event
+                                  .toString()
                         });
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
@@ -123,7 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         analyticsHelper
                             .logEvent(name: event_home_menu, parameters: {
                           event_home_menu_params_feature_name:
-                          event_home_menu_params_feature.my_event.toString()
+                              event_home_menu_params_feature.my_event.toString()
                         });
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.pushNamed(
@@ -143,7 +143,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         analyticsHelper
                             .logEvent(name: event_home_menu, parameters: {
                           event_home_menu_params_feature_name:
-                          event_home_menu_params_feature.setting.toString()
+                              event_home_menu_params_feature.setting.toString()
                         });
                         isDialOpen.value = !isDialOpen.value;
                         await Navigator.of(rootContext)
@@ -168,7 +168,8 @@ class HomeCalendarPage extends StatefulWidget {
   State<HomeCalendarPage> createState() => _HomeCalendarPageState();
 }
 
-class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBindingObserver {
+class _HomeCalendarPageState extends State<HomeCalendarPage>
+    with WidgetsBindingObserver {
   final CellCalendarPageController cellCalendarPageController =
       CellCalendarPageController();
 
@@ -183,7 +184,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
   @override
   void didChangeAppLifecycleState(AppLifecycleState state) {
     super.didChangeAppLifecycleState(state);
-    if(state == AppLifecycleState.resumed){
+    if (state == AppLifecycleState.resumed) {
       // 每次回前景時觸發更新，解決UI停留到隔日後，返回App日曆的今天UI沒有更新問題
       context.read<HomeCubit>().refreshAllEventsFromSettings();
     }
@@ -237,68 +238,95 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                       crossAxisAlignment: CrossAxisAlignment.center,
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        Column(
-                          mainAxisSize: MainAxisSize.max,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            Text("$yearString ${datetime.yearOfRoc}"),
-                            Text("$monthString ${datetime.ganZhi} ${datetime.shenXiao}"),
-                          ],
+                        Flexible(
+                          flex: 3,
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              Text("$yearString ${datetime.yearOfRoc}"),
+                              Text(
+                                  "$monthString ${datetime.ganZhi} ${datetime.shenXiao}"),
+                            ],
+                          ),
                         ),
-                        Row(
-                          children: <Widget>[
-                            Padding(
-                              padding: const EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
-                              child: InkWell(
-                                  onTap: () {
-                                    analyticsHelper.logEvent(name: event_previous_month);
-                                    setState(() {
-                                      if (currentDate.month == 1) {
-                                        currentDate = DateTime(
-                                            currentDate.year - 1,
-                                            DateTime.december);
-                                      } else {
-                                        currentDate = DateTime(currentDate.year,
-                                            currentDate.month - 1);
-                                      }
-                                    });
-                                    cellCalendarPageController.animateToDate(
-                                        currentDate,
-                                        curve: Curves.linear,
-                                        duration:
-                                            const Duration(milliseconds: 300));
-                                  },
-                                  child: const Icon(Icons.navigate_before)),
-                            ),
-                            currentDate.year == DateTime.now().year &&
-                                    currentDate.month == DateTime.now().month
-                                ? InkWell(
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
-                                      child: Icon(Icons.edit_calendar),
-                                    ),
-                                    onTap: () async {
+                        Flexible(
+                          flex: 2,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.max,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
+                                    onTap: () {
                                       analyticsHelper.logEvent(
-                                          name: event_select_date,
-                                          parameters: {
-                                            event_select_date_params_position_name:
-                                            event_select_date_params_position
-                                                .home.toString()
+                                          name: event_previous_month);
+                                      setState(() {
+                                        if (currentDate.month == 1) {
+                                          currentDate = DateTime(
+                                              currentDate.year - 1,
+                                              DateTime.december);
+                                        } else {
+                                          currentDate = DateTime(
+                                              currentDate.year,
+                                              currentDate.month - 1);
+                                        }
+                                      });
+                                      cellCalendarPageController.animateToDate(
+                                          currentDate,
+                                          curve: Curves.linear,
+                                          duration: const Duration(
+                                              milliseconds: 300));
+                                    },
+                                    child: const Icon(Icons.navigate_before)),
+                              ),
+                              currentDate.year == DateTime.now().year &&
+                                      currentDate.month == DateTime.now().month
+                                  ? InkWell(
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Icon(Icons.edit_calendar),
+                                      ),
+                                      onTap: () async {
+                                        analyticsHelper.logEvent(
+                                            name: event_select_date,
+                                            parameters: {
+                                              event_select_date_params_position_name:
+                                                  event_select_date_params_position
+                                                      .home
+                                                      .toString()
+                                            });
+                                        final pickedDate =
+                                            await showMonthYearPicker(
+                                                context: parentContext,
+                                                initialMonthYearPickerMode:
+                                                    MonthYearPickerMode.month,
+                                                initialDate: DateTime.now(),
+                                                firstDate: DateTime(1900),
+                                                lastDate: DateTime(2100));
+                                        if (!mounted) {
+                                          return;
+                                        }
+                                        if (pickedDate != null) {
+                                          setState(() {
+                                            currentDate = pickedDate;
                                           });
-                                      final pickedDate =
-                                          await showMonthYearPicker(
-                                              context: parentContext,
-                                              initialMonthYearPickerMode:
-                                                  MonthYearPickerMode.month,
-                                              initialDate: DateTime.now(),
-                                              firstDate: DateTime(1900),
-                                              lastDate: DateTime(2100));
-                                      if (!mounted) {
-                                        return;
-                                      }
-                                      if (pickedDate != null) {
+                                          cellCalendarPageController
+                                              .animateToDate(
+                                            currentDate,
+                                            curve: Curves.linear,
+                                            duration: const Duration(
+                                                milliseconds: 300),
+                                          );
+                                        }
+                                      })
+                                  : InkWell(
+                                      onTap: () {
+                                        analyticsHelper.logEvent(
+                                            name: event_back_to_today);
                                         setState(() {
-                                          currentDate = pickedDate;
+                                          currentDate = DateTime.now();
                                         });
                                         cellCalendarPageController
                                             .animateToDate(
@@ -307,49 +335,38 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                                           duration:
                                               const Duration(milliseconds: 300),
                                         );
-                                      }
-                                    })
-                                : InkWell(
+                                      },
+                                      child: const Padding(
+                                        padding: EdgeInsets.all(8),
+                                        child: Icon(Icons.calendar_today),
+                                      )),
+                              Padding(
+                                padding: const EdgeInsets.all(8),
+                                child: InkWell(
                                     onTap: () {
-                                      analyticsHelper.logEvent(name: event_back_to_today);
+                                      analyticsHelper.logEvent(
+                                          name: event_next_month);
                                       setState(() {
-                                        currentDate = DateTime.now();
+                                        if (currentDate.month == 12) {
+                                          currentDate = DateTime(
+                                              currentDate.year + 1,
+                                              DateTime.january);
+                                        } else {
+                                          currentDate = DateTime(
+                                              currentDate.year,
+                                              currentDate.month + 1);
+                                        }
                                       });
                                       cellCalendarPageController.animateToDate(
-                                        currentDate,
-                                        curve: Curves.linear,
-                                        duration:
-                                            const Duration(milliseconds: 300),
-                                      );
+                                          currentDate,
+                                          curve: Curves.linear,
+                                          duration: const Duration(
+                                              milliseconds: 300));
                                     },
-                                    child: const Padding(
-                                      padding: EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
-                                      child: Icon(Icons.calendar_today),
-                                    )),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 4.0, top: 8, right: 4, bottom: 8),
-                              child: InkWell(
-                                  onTap: () {
-                                    analyticsHelper.logEvent(name: event_next_month);
-                                    setState(() {
-                                      if (currentDate.month == 12) {
-                                        currentDate = DateTime(
-                                            currentDate.year + 1,
-                                            DateTime.january);
-                                      } else {
-                                        currentDate = DateTime(currentDate.year,
-                                            currentDate.month + 1);
-                                      }
-                                    });
-                                    cellCalendarPageController.animateToDate(
-                                        currentDate,
-                                        curve: Curves.linear,
-                                        duration:
-                                            const Duration(milliseconds: 300));
-                                  },
-                                  child: Icon(Icons.navigate_next)),
-                            ),
-                          ],
+                                    child: const Icon(Icons.navigate_next)),
+                              ),
+                            ],
+                          ),
                         ),
                       ],
                     ),
@@ -394,20 +411,23 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                               children: [
                                 SizedBox(
                                   width:
-                                      (MediaQuery.of(parentContext).size.width - 80) *
+                                      (MediaQuery.of(parentContext).size.width -
+                                              80) *
                                           0.6,
                                   child: FittedBox(
                                     fit: BoxFit.scaleDown,
                                     child: Text(
                                       dateFormat.format(date),
-                                      style:
-                                          Theme.of(parentContext).textTheme.headline4,
+                                      style: Theme.of(parentContext)
+                                          .textTheme
+                                          .headline4,
                                     ),
                                   ),
                                 ),
                                 SizedBox(
                                   width:
-                                      (MediaQuery.of(parentContext).size.width - 80) *
+                                      (MediaQuery.of(parentContext).size.width -
+                                              80) *
                                           0.4,
                                   child: Padding(
                                     padding: const EdgeInsets.only(right: 8.0),
@@ -463,17 +483,22 @@ class _HomeCalendarPageState extends State<HomeCalendarPage> with WidgetsBinding
                                         style: TextStyle(
                                             color: event.eventTextStyle.color)),
                                     onTap: () async {
-                                      if (event.extractEventTypeName() == EventType.custom.name) {
-                                        analyticsHelper
-                                            .logEvent(name: event_edit_my_event, parameters: {
-                                          event_edit_my_event_params_position_name:
-                                          event_edit_my_event_params_position.dialog.name
-                                        });
+                                      if (event.extractEventTypeName() ==
+                                          EventType.custom.name) {
+                                        analyticsHelper.logEvent(
+                                            name: event_edit_my_event,
+                                            parameters: {
+                                              event_edit_my_event_params_position_name:
+                                                  event_edit_my_event_params_position
+                                                      .dialog.name
+                                            });
                                         Navigator.pop(context);
-                                        dynamic id = int.tryParse(event.extractEventIdForModify());
+                                        dynamic id = int.tryParse(
+                                            event.extractEventIdForModify());
                                         var isAdded = await showDialog(
                                             context: context,
-                                            builder: (context) => AddEventPage(memoModelKey: id));
+                                            builder: (context) =>
+                                                AddEventPage(memoModelKey: id));
                                         if (!mounted) {
                                           return;
                                         }
