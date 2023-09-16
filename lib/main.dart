@@ -26,6 +26,8 @@ import 'package:joys_calendar/repo/calendar_event_repositoy_impl.dart';
 import 'package:joys_calendar/repo/constants.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/local_datasource_impl.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/local_notification_provider_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
@@ -104,6 +106,9 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<SharedPreferenceProvider>(
             create: (BuildContext context) {
           return SharedPreferenceProviderImpl(_prefs);
+        }),
+        RepositoryProvider<LocalNotificationProvider>(create: (BuildContext context) {
+          return LocalNotificationProviderImpl();
         }),
         RepositoryProvider<CalendarEventRepository>(
             create: (BuildContext context) {

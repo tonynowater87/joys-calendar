@@ -10,6 +10,7 @@ import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/extentions/date_time_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
@@ -57,7 +58,12 @@ class _MyHomePageState extends State<MyHomePage> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: Text(key: _titleKey, widget.title),
+            title: InkWell(
+              onTap: () {
+                context.read<LocalNotificationProvider>().showNotification(1, 'notification', 'body');
+              },
+                child: Text(key: _titleKey, widget.title)
+            ),
             actions: [
               AnimSearchBar(
                 boxShadow: false,
