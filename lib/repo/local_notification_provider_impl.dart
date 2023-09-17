@@ -57,7 +57,13 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
           _flutterLocalNotificationsPlugin.show(id, title, body,
               const NotificationDetails(android: androidNotificationDetails),
               payload: null));
-    }
+    } else if (Platform.isIOS) {
+      const DarwinNotificationDetails iOSPlatformChannelSpecifics =
+          DarwinNotificationDetails(threadIdentifier: 'joys_calendar');
+      _ensureInitialized().then((value) =>
+          _flutterLocalNotificationsPlugin.show(id, title, body,
+              const NotificationDetails(iOS: iOSPlatformChannelSpecifics)));
+    } else {}
   }
 
   Future<bool> _ensureInitialized() {
