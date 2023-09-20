@@ -39,11 +39,13 @@ import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:timezone/data/latest.dart' as tz;
 
 Future<void> main() async {
   await LocalDatasourceImpl.init();
 
   WidgetsFlutterBinding.ensureInitialized();
+  tz.initializeTimeZones();
   await Firebase.initializeApp(
       name: "Joys-Calendar", options: DefaultFirebaseOptions.currentPlatform);
 
