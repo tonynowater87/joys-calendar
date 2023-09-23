@@ -12,4 +12,16 @@ abstract class SharedPreferenceProvider {
   Future<bool> updatedGoogleCalendarYear(int year);
 
   int? getUpdatedGoogleCalendarYear();
+
+  Future<bool> setMemoNotifyEnable(bool enable);
+
+  bool isMemoNotifyEnable();
+
+  Future<bool> setCalendarNotifyEnable(bool enable);
+
+  bool isCalendarNotifyEnable();
+
+  Future<bool> setSolarNotifyEnable(bool enable);
+
+  bool isSolarNotifyEnable();
 }

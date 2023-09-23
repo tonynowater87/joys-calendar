@@ -7,6 +7,9 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _calendarKey = "CALENDAR_KEY";
   static const String _googleCalendarApiUpdatedYear = "GOOGLE_CALENDAR_API_UPDATED_YEAR";
   static const String _hasRunBefore = "HAS_RUN_BEFORE";
+  static const String _isMemoNotifyEnable = "IS_MEMO_NOTIFY_ENABLE";
+  static const String _isCalendarNotifyEnable = "IS_CALENDAR_NOTIFY_ENABLE";
+  static const String _isSolarNotifyEnable = "IS_SOLAR_NOTIFY_ENABLE";
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
     EventType.lunar,
@@ -53,5 +56,35 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   @override
   Future<bool> setHasRunBefore(bool hasRunBefore) {
     return _sharedPreferences.setBool(_hasRunBefore, hasRunBefore);
+  }
+
+  @override
+  bool isMemoNotifyEnable() {
+    return _sharedPreferences.getBool(_isMemoNotifyEnable) ?? false;
+  }
+
+  @override
+  Future<bool> setMemoNotifyEnable(bool enable) {
+    return _sharedPreferences.setBool(_isMemoNotifyEnable, enable);
+  }
+
+  @override
+  bool isCalendarNotifyEnable() {
+    return _sharedPreferences.getBool(_isCalendarNotifyEnable) ?? false;
+  }
+
+  @override
+  Future<bool> setCalendarNotifyEnable(bool enable) {
+    return _sharedPreferences.setBool(_isCalendarNotifyEnable, enable);
+  }
+
+  @override
+  bool isSolarNotifyEnable() {
+    return _sharedPreferences.getBool(_isSolarNotifyEnable) ?? false;
+  }
+
+  @override
+  Future<bool> setSolarNotifyEnable(bool enable) {
+    return _sharedPreferences.setBool(_isSolarNotifyEnable, enable);
   }
 }
