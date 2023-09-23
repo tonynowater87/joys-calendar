@@ -41,7 +41,7 @@ class SettingsNotifyPage extends StatelessWidget {
               children: const [
                 Icon(Icons.info_outlined),
                 SizedBox(width: 8),
-                Text('通知提醒的時間為前1日的晚上9點'),
+                Text('通知提醒的時間為前1日的早上9點'),
               ],
             ),
           ),

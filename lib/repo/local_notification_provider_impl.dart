@@ -15,6 +15,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
 
   @override
   Future<void> cancelNotification(int id) async {
+    debugPrint('[Tony] cancelNotification: $id');
     _ensureInitialized()
         .then((value) => _flutterLocalNotificationsPlugin.cancel(id));
   }
@@ -54,8 +55,11 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
       remindDate = targetDateTime.add(const Duration(seconds: 10));
     } else {
       remindDate = targetDateTime
-          .subtract(const Duration(hours: 3)); // TODO get from setting
+          .subtract(const Duration(hours: 15)); // TODO get from setting
     }
+
+    debugPrint(
+        '[Tony] showNotification: $id, $title, $body, $targetDateTime $remindDate');
 
     if (Platform.isAndroid) {
       var permissionResult = await checkPermission();

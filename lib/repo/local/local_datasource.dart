@@ -9,16 +9,24 @@ abstract class LocalDatasource {
 
   Future<void> deleteMemo(dynamic key);
 
+  List<MemoModel> getFutureMemos();
+
   List<MemoModel> getMemos(DateTime dateTime);
 
   List<MemoModel> getAllMemos();
 
   MemoModel getMemo(dynamic key);
 
+  List<CalendarModel> getFutureCalendarModels(String countryCode);
+
   List<CalendarModel> getCalendarModels(String countryCode);
+
   Future<void> saveCalendarModels(List<CalendarModel> models);
 
+  List<JieQiModel> getFutureJieQiModels();
+
   List<JieQiModel> getJieQiModels();
+
   Future<void> saveJieQiModels(List<JieQiModel> models);
 
   String localMemoToJson();

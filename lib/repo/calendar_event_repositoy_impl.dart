@@ -29,7 +29,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           eventName: element.displayName);
       result.add(eventModel);
     });
-    debugPrint('[Tony] getEventsFromLocalDB end ($country), length=${result.length}');
+    debugPrint(
+        '[Tony] getEventsFromLocalDB end ($country), length=${result.length}');
     return result;
   }
 
@@ -172,7 +173,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         .getAllMemos()
         .where((element) => element.memo.contains(keyword))
         .map((e) => EventModel(
-        date: e.dateTime,
+            date: e.dateTime,
             eventType: EventType.custom,
             eventName: e.memo,
             idForModify: e.key)));
@@ -185,6 +186,46 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     final cost = DateTime.now().millisecondsSinceEpoch - start;
     debugPrint('[Tony] searching($keyword) cost $cost');
     return Future.value(allEvents);
+  }
+
+  @override
+  Future<List<EventModel>> getFutureCustomEvents() {
+    List<EventModel> result = [];
+    var memos = localDatasource.getFutureMemos();
+    for (var element in memos) {
+      result.add(EventModel(
+          date: element.dateTime,
+          eventType: EventType.custom,
+          eventName: element.memo,
+          idForModify: element.key));
+    }
+    return Future.value(result);
+  }
+
+  @override
+  Future<List<EventModel>> getFutureEventsFromLocalDB(String country) {
+    List<EventModel> result = [];
+    var calendars = localDatasource.getFutureCalendarModels(country);
+    for (var element in calendars) {
+      result.add(EventModel(
+          date: element.dateTime,
+          eventType: fromCreatorEmail(country)!,
+          eventName: element.displayName));
+    }
+    return Future.value(result);
+  }
+
+  @override
+  Future<List<EventModel>> getFutureSolarEvents() {
+    List<EventModel> result = [];
+    var jieQis = localDatasource.getFutureJieQiModels();
+    for (var element in jieQis) {
+      result.add(EventModel(
+          date: element.dateTime,
+          eventType: EventType.solar,
+          eventName: element.displayName));
+    }
+    return Future.value(result);
   }
 }
 

@@ -74,27 +74,26 @@ class LocalDatasourceImpl extends LocalDatasource {
   List<MemoModel> getAllMemos() {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     var allMemos = box.values.toList();
-    allMemos = allMemos
-        .map((e) {
-          // convert old dateTime to new dateString
-          if (e.dateString.isEmpty) {
-            e.dateString = DateFormat(AppConstants.memoDateFormat).format(e.dateTime);
-          }
-          return e;
-        })
-        .toList()
-        ..sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
+    allMemos = allMemos.map((e) {
+      // convert old dateTime to new dateString
+      if (e.dateString.isEmpty) {
+        e.dateString =
+            DateFormat(AppConstants.memoDateFormat).format(e.dateTime);
+      }
+      return e;
+    }).toList()
+      ..sort((a, b) => b.dateTime.compareTo(a.dateTime)); // sorted descending
     return allMemos;
   }
 
   @override
   List<CalendarModel> getCalendarModels(String countryCode) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
-    final allValues =
-    box.values
+    final allValues = box.values
         .where((element) =>
             element.country == countryCode &&
-            element.key.toString().length > 23) // 過濾掉舊版key是單純用日期的資料, 新版key為`日期 country`
+            element.key.toString().length >
+                23) // 過濾掉舊版key是單純用日期的資料, 新版key為`日期 country`
         .toList();
     allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return allValues;
@@ -112,7 +111,9 @@ class LocalDatasourceImpl extends LocalDatasource {
   Future<void> saveCalendarModels(List<CalendarModel> models) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
     return Future.forEach(
-        models, (element) => box.put("${element.dateTime} ${element.country}", element));
+        models,
+        (element) =>
+            box.put("${element.dateTime} ${element.country}", element));
   }
 
   @override
@@ -157,5 +158,32 @@ class LocalDatasourceImpl extends LocalDatasource {
     for (var element in downloadMemos) {
       await box.add(element);
     }
+  }
+
+  @override
+  List<CalendarModel> getFutureCalendarModels(String countryCode) {
+    var now = DateTime.now();
+    var result = getCalendarModels(countryCode)
+        .where((element) => element.dateTime.isAfter(now))
+        .toList();
+    return result;
+  }
+
+  @override
+  List<MemoModel> getFutureMemos() {
+    var now = DateTime.now();
+    var result = getAllMemos()
+        .where((element) => element.dateTime.isAfter(now))
+        .toList();
+    return result;
+  }
+
+  @override
+  List<JieQiModel> getFutureJieQiModels() {
+    var now = DateTime.now();
+    var result = getJieQiModels()
+        .where((element) => element.dateTime.isAfter(now))
+        .toList();
+    return result;
   }
 }
