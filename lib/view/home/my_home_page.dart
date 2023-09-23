@@ -19,6 +19,7 @@ import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:permission_handler/permission_handler.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 import '../../common/constants.dart';
 
@@ -60,16 +61,22 @@ class _MyHomePageState extends State<MyHomePage> {
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: InkWell(
-              onDoubleTap: () async {
-                var open = await openAppSettings();
-                debugPrint('[Tony] open=$open');
-              },
-              onTap: () {
-                debugPrint('[Tony] onTap');
-                  context.read<LocalNotificationProvider>().showNotification(1, 'notification', 'body');
-              },
-                child: Text(key: _titleKey, widget.title)
-            ),
+                onLongPress: () async {
+                  await context.read<LocalNotificationProvider>().checkPermission();
+                },
+                onDoubleTap: () async {
+                  var open = await openAppSettings();
+                  debugPrint('[Tony] open=$open');
+                },
+                onTap: () {
+                  debugPrint('[Tony] onTap');
+                  context.read<LocalNotificationProvider>().showNotification(
+                      1,
+                      '123456789012345678901234567890123456789012345678901234567890abcdefghijklmnopqrstuv',
+                      '123456789012345678901234567890123456789012345678901234567890abcdefghijklmnopqrstuv',
+                      tz.TZDateTime.now(tz.local));
+                },
+                child: Text(key: _titleKey, widget.title)),
             actions: [
               AnimSearchBar(
                 boxShadow: false,
