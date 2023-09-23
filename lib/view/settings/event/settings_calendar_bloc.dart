@@ -1,21 +1,21 @@
 import 'package:bloc/bloc.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
-import 'package:joys_calendar/view/settings/settings_event.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_event.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
 import 'package:joys_calendar/view/settings/settings_state.dart';
 
-class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
+class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
   late List<SettingsEventItem> settingsEventItems;
   late CalendarEventRepository calendarEventRepository;
 
-  SettingsBloc(this.calendarEventRepository) : super(const SettingsState.initial()) {
+  SettingsCalendarBloc(this.calendarEventRepository) : super(const SettingsState.initial()) {
     on<LoadStarted>(_initSettingEventItems);
     on<AddFilterEvent>(_addSettingEventItems);
     on<RemoveFilterEvent>(_removeSettingEventItems);
   }
 
-  _initSettingEventItems(SettingsEvent event, Emitter<SettingsState> emitter) {
+  _initSettingEventItems(SettingsCalendarEvent event, Emitter<SettingsState> emitter) {
     List<EventType> currentEventTypes =
         calendarEventRepository.getDisplayEventType();
 

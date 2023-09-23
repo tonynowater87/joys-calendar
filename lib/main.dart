@@ -35,7 +35,6 @@ import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
 import 'package:joys_calendar/view/search_result/search_result_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_page.dart';
-import 'package:joys_calendar/view/settings/settings_bloc.dart';
 import 'package:joys_calendar/view/settings/settings_page.dart';
 import 'package:month_year_picker/month_year_picker.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -167,11 +166,7 @@ class MyApp extends StatelessWidget {
           routes: <String, WidgetBuilder>{
             AppConstants.routeHome: (context) =>
                 const MyHomePage(title: 'Joy\' Calendar'),
-            AppConstants.routeSettings: (context) => BlocProvider(
-                  create: (context) =>
-                      SettingsBloc(context.read<CalendarEventRepository>()),
-                  child: const SettingsPage(),
-                ),
+            AppConstants.routeSettings: (context) => const SettingsPage(),
             AppConstants.routeMyEvent: (context) => BlocProvider(
                 create: (context) =>
                     MyEventListCubit(context.read<LocalDatasource>()),

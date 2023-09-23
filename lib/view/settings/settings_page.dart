@@ -2,10 +2,10 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/repo/app_info_provider.dart';
+import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_bloc.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_grid_list_view.dart';
 import 'package:joys_calendar/view/settings/login/login_view.dart';
-import 'package:joys_calendar/view/settings/settings_bloc.dart';
-import 'package:joys_calendar/view/settings/settings_event.dart';
-import 'package:joys_calendar/view/settings/settings_grid_list_view.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 
@@ -19,15 +19,10 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
   List<SettingsTitleItem> settingsItem = [
     SettingsTitleItem(SettingType.eventType, true),
+    SettingsTitleItem(SettingType.notify, true),
     SettingsTitleItem(SettingType.backup, true),
-    /*SettingsTitleItem(SettingType.locale, false)*/ // TODO future feature
+    // SettingsTitleItem(SettingType.locale, false) // TODO future feature
   ];
-
-  @override
-  void initState() {
-    super.initState();
-    context.read<SettingsBloc>().add(LoadStarted());
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -57,10 +52,15 @@ class _SettingsPageState extends State<SettingsPage> {
                                     style: Theme.of(context).textTheme.caption,
                                   ));
                                 },
-                                body: const Padding(
+                                body: Padding(
                                   padding:
-                                      EdgeInsets.symmetric(horizontal: 8.0),
-                                  child: SettingsGridListView(),
+                                      const EdgeInsets.symmetric(horizontal: 8.0),
+                                  child: BlocProvider(
+                                    create: (context) => SettingsCalendarBloc(
+                                        context
+                                            .read<CalendarEventRepository>()),
+                                    child: const SettingsCalendarGridListView(),
+                                  ),
                                 ),
                                 isExpanded: item.isExpanded);
                           case SettingType.locale:

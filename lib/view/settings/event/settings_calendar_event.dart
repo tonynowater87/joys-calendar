@@ -1,12 +1,12 @@
 import 'package:joys_calendar/repo/model/event_model.dart';
 
-abstract class SettingsEvent {}
+abstract class SettingsCalendarEvent {}
 
-class LoadStarted extends SettingsEvent {
+class LoadStarted extends SettingsCalendarEvent {
 
 }
 
-class AddFilterEvent extends SettingsEvent {
+class AddFilterEvent extends SettingsCalendarEvent {
   late EventType eventType;
 
   AddFilterEvent({
@@ -14,7 +14,7 @@ class AddFilterEvent extends SettingsEvent {
   });
 }
 
-class RemoveFilterEvent extends SettingsEvent {
+class RemoveFilterEvent extends SettingsCalendarEvent {
   late EventType eventType;
 
   RemoveFilterEvent({

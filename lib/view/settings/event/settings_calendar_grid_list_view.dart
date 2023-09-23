@@ -3,19 +3,32 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/common/analytics/analytics_events.dart';
 import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
-import 'package:joys_calendar/view/settings/settings_bloc.dart';
-import 'package:joys_calendar/view/settings/settings_event.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_bloc.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_event.dart';
 import 'package:joys_calendar/view/settings/settings_state.dart';
 
-class SettingsGridListView extends StatelessWidget {
-  const SettingsGridListView({Key? key}) : super(key: key);
+class SettingsCalendarGridListView extends StatefulWidget {
+  const SettingsCalendarGridListView({Key? key}) : super(key: key);
+
+  @override
+  State<SettingsCalendarGridListView> createState() =>
+      _SettingsCalendarGridListViewState();
+}
+
+class _SettingsCalendarGridListViewState
+    extends State<SettingsCalendarGridListView> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<SettingsCalendarBloc>().add(LoadStarted());
+  }
 
   @override
   Widget build(BuildContext context) {
     final analyticsHelper = context.read<AnalyticsHelper>();
     return SizedBox(
       height: 200,
-      child: BlocBuilder<SettingsBloc, SettingsState>(
+      child: BlocBuilder<SettingsCalendarBloc, SettingsState>(
         builder: (context, state) {
           return GridView.builder(
               gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
@@ -37,11 +50,11 @@ class SettingsGridListView extends StatelessWidget {
                     });
                     if (item.isSelected) {
                       context
-                          .read<SettingsBloc>()
+                          .read<SettingsCalendarBloc>()
                           .add(RemoveFilterEvent(eventType: item.eventType));
                     } else {
                       context
-                          .read<SettingsBloc>()
+                          .read<SettingsCalendarBloc>()
                           .add(AddFilterEvent(eventType: item.eventType));
                     }
                   },
