@@ -52,7 +52,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
   Future<NotificationStatus> showNotification(
       int id, String title, String body) async {
     var remindDate =
-        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
+        tz.TZDateTime.now(tz.local).add(const Duration(seconds: 30));
 
     if (Platform.isAndroid) {
       const AndroidNotificationDetails androidNotificationDetails =

@@ -75,7 +75,8 @@ dependencies:
   google_mobile_ads: 3.0.0
   easy_sticky_header: 1.0.5
   tuple: 2.0.2
-  flutter_local_notifications: ^15.1.1
+  flutter_local_notifications: 15.1.1
+  permission_handler: 11.0.0
 
 dependency_overrides:
   intl: any
