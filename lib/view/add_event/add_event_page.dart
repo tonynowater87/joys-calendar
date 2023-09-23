@@ -178,7 +178,7 @@ class _AddEventPageState extends State<AddEventPage> {
               ),
             ],
             content: SizedBox(
-              width: 300,
+              width: MediaQuery.of(context).size.width * 0.95,
               child: SingleChildScrollView(
                 child:
                     Column(mainAxisSize: MainAxisSize.min, children: <Widget>[

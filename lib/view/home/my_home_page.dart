@@ -62,7 +62,9 @@ class _MyHomePageState extends State<MyHomePage> {
           appBar: AppBar(
             title: InkWell(
                 onLongPress: () async {
-                  await context.read<LocalNotificationProvider>().checkPermission();
+                  await context
+                      .read<LocalNotificationProvider>()
+                      .checkPermission();
                 },
                 onDoubleTap: () async {
                   var open = await openAppSettings();
@@ -424,72 +426,63 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                           titlePadding:
                               const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
                           contentPadding:
-                              const EdgeInsets.fromLTRB(10.0, 20.0, 10.0, 0.0),
+                              const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
                           title: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
+                              mainAxisSize: MainAxisSize.max,
+                              mainAxisAlignment:
+                                  MainAxisAlignment.spaceAround,
                               children: [
-                                SizedBox(
-                                  width:
-                                      (MediaQuery.of(parentContext).size.width -
-                                              80) *
-                                          0.6,
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: Text(
-                                      dateFormat.format(date),
-                                      style: Theme.of(parentContext)
-                                          .textTheme
-                                          .headline4,
-                                    ),
+                                FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Text(
+                                    dateFormat.format(date),
+                                    style: Theme.of(parentContext)
+                                        .textTheme
+                                        .headline4,
                                   ),
                                 ),
-                                SizedBox(
-                                  width:
-                                      (MediaQuery.of(parentContext).size.width -
-                                              80) *
-                                          0.4,
-                                  child: Padding(
-                                    padding: const EdgeInsets.only(right: 8.0),
-                                    child: FittedBox(
-                                      fit: BoxFit.scaleDown,
-                                      child: OutlinedButton.icon(
-                                          style: appTitleButtonStyle(),
-                                          onPressed: () async {
-                                            analyticsHelper.logEvent(
-                                                name: event_add_event,
-                                                parameters: {
-                                                  event_add_event_params_position_name:
-                                                      event_add_event_params_position
-                                                          .dialog
-                                                          .toString()
-                                                });
-                                            Navigator.pop(parentContext);
-                                            var isAdded = await showDialog(
-                                                context: parentContext,
-                                                builder: (context) =>
-                                                    AddEventPage(
-                                                        dateTime: date));
-                                            if (!mounted) {
-                                              return;
-                                            }
-                                            if (isAdded == true) {
-                                              parentContext
-                                                  .read<HomeCubit>()
-                                                  .refreshFromAddOrUpdateCustomEvent();
-                                            }
-                                          },
-                                          icon: const Icon(Icons.add),
-                                          label: Text("新增記事",
-                                              style: Theme.of(parentContext)
-                                                  .textTheme
-                                                  .button!)),
-                                    ),
+                                Padding(
+                                  padding: const EdgeInsets.only(right: 8.0),
+                                  child: FittedBox(
+                                    fit: BoxFit.scaleDown,
+                                    child: OutlinedButton.icon(
+                                        style: appTitleButtonStyle(),
+                                        onPressed: () async {
+                                          analyticsHelper.logEvent(
+                                              name: event_add_event,
+                                              parameters: {
+                                                event_add_event_params_position_name:
+                                                    event_add_event_params_position
+                                                        .dialog
+                                                        .toString()
+                                              });
+                                          Navigator.pop(parentContext);
+                                          var isAdded = await showDialog(
+                                              context: parentContext,
+                                              builder: (context) =>
+                                                  AddEventPage(
+                                                      dateTime: date));
+                                          if (!mounted) {
+                                            return;
+                                          }
+                                          if (isAdded == true) {
+                                            parentContext
+                                                .read<HomeCubit>()
+                                                .refreshFromAddOrUpdateCustomEvent();
+                                          }
+                                        },
+                                        icon: const Icon(Icons.add),
+                                        label: Text("新增記事",
+                                            style: Theme.of(parentContext)
+                                                .textTheme
+                                                .button!)),
                                   ),
                                 )
                               ]),
-                          content: SizedBox.fromSize(
-                            size: const Size(300, 300),
+                          content: SizedBox(
+                            width: MediaQuery.of(parentContext).size.width * 0.95,
                             child: ListView.separated(
+                              shrinkWrap: true,
                                 itemBuilder: (context, index) {
                                   final event = dayEvents[index];
                                   return ListTile(
