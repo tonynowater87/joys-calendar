@@ -58,6 +58,11 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
           .subtract(const Duration(hours: 15)); // TODO get from setting
     }
 
+    if (tz.TZDateTime.now(tz.local).isAfter(remindDate)) {
+      debugPrint('[Tony] showNotification due date in past, $remindDate');
+      return Future.value(NotificationStatus.notificationDueDateInPast);
+    }
+
     debugPrint(
         '[Tony] showNotification: $id, $title, $body, $targetDateTime $remindDate');
 
@@ -71,6 +76,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
         case NotificationStatus.androidSettings:
         case NotificationStatus.iOSSettings:
         case NotificationStatus.unknown:
+        case NotificationStatus.notificationDueDateInPast:
           return permissionResult;
       }
     } else if (Platform.isIOS) {
@@ -83,6 +89,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
         case NotificationStatus.androidSettings:
         case NotificationStatus.iOSSettings:
         case NotificationStatus.unknown:
+        case NotificationStatus.notificationDueDateInPast:
           return permissionResult;
       }
     } else {

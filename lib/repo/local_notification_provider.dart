@@ -5,7 +5,8 @@ enum NotificationStatus {
   denied,
   androidSettings,
   iOSSettings,
-  unknown
+  unknown,
+  notificationDueDateInPast,
 }
 
 abstract class LocalNotificationProvider {
