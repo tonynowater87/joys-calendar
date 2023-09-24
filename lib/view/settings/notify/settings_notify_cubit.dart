@@ -95,25 +95,23 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
       }
     }
 
+    debugPrint('[Tony] setSolarNotify: $enable');
+
     var hasSavedSolarEvent = sharedPreferenceProvider
         .getSavedCalendarEvents()
         .where((element) => element == EventType.solar)
         .toList()
         .isNotEmpty;
 
-    if (!hasSavedSolarEvent) {
-      return;
-    }
-
-    debugPrint('[Tony] setSolarNotify: $enable');
-
-    for (var event in await calendarEventRepository.getFutureSolarEvents()) {
-      int id = event.getNotifyId();
-      if (enable) {
-        localNotificationProvider.showNotification(id, event.eventName, null,
-            tz.TZDateTime.from(event.date, tz.local));
-      } else {
-        localNotificationProvider.cancelNotification(id);
+    if (hasSavedSolarEvent) {
+      for (var event in await calendarEventRepository.getFutureSolarEvents()) {
+        int id = event.getNotifyId();
+        if (enable) {
+          localNotificationProvider.showNotification(id, event.eventName, null,
+              tz.TZDateTime.from(event.date, tz.local));
+        } else {
+          localNotificationProvider.cancelNotification(id);
+        }
       }
     }
 

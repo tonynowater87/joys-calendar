@@ -7,6 +7,7 @@ import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/settings/event/settings_calendar_event.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
 import 'package:joys_calendar/view/settings/settings_state.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
   late List<SettingsEventItem> settingsEventItems;
@@ -41,6 +42,47 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
     settingsEventItems[settingsEventItems
             .indexWhere((element) => element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, true);
+
+    var isPermissionGranted =
+        await localNotificationProvider.isPermissionGranted();
+    if (isPermissionGranted &&
+        sharedPreferenceProvider.isCalendarNotifyEnable() &&
+        event.eventType != EventType.solar &&
+        event.eventType != EventType.lunar &&
+        event.eventType != EventType.custom) {
+      var calendarEvents = await calendarEventRepository
+          .getFutureEventsFromLocalDB(event.eventType.toCountryCode());
+      for (var event in calendarEvents) {
+        int id = event.getNotifyId();
+        localNotificationProvider.showNotification(id, event.eventName, null,
+            tz.TZDateTime.from(event.date, tz.local));
+      }
+    }
+
+    if (isPermissionGranted &&
+        sharedPreferenceProvider.isSolarNotifyEnable() &&
+        event.eventType == EventType.solar) {
+      var futureSolarEvents =
+          await calendarEventRepository.getFutureSolarEvents();
+      for (var event in futureSolarEvents) {
+        int id = event.getNotifyId();
+        localNotificationProvider.showNotification(id, event.eventName, null,
+            tz.TZDateTime.from(event.date, tz.local));
+      }
+    }
+
+    if (isPermissionGranted &&
+        sharedPreferenceProvider.isMemoNotifyEnable() &&
+        event.eventType == EventType.custom) {
+      var futureCustomEvents =
+          await calendarEventRepository.getFutureCustomEvents();
+      for (var event in futureCustomEvents) {
+        int id = event.getNotifyId();
+        localNotificationProvider.showNotification(id, event.eventName, null,
+            tz.TZDateTime.from(event.date, tz.local));
+      }
+    }
+
     await _update();
     emitter.call(state.copyWith(settingsEventItems.toList()));
   }

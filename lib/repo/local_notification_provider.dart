@@ -12,6 +12,8 @@ enum NotificationStatus {
 abstract class LocalNotificationProvider {
   Future<bool?> init();
 
+  Future<bool> isPermissionGranted();
+
   Future<NotificationStatus> checkPermission();
 
   Future<NotificationStatus> showNotification(

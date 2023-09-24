@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class LocalNotificationProviderImpl implements LocalNotificationProvider {
@@ -194,5 +195,12 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     } else {
       return Future.value(NotificationStatus.unknown);
     }
+  }
+
+  @override
+  Future<bool> isPermissionGranted() async {
+    var status = await Permission.notification.status;
+    debugPrint('[Tony] permission status = $status');
+    return status == PermissionStatus.granted;
   }
 }
