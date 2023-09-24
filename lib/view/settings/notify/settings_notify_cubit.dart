@@ -26,11 +26,14 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
             showNotifyAlertPermissionDialog: false));
 
   Future<void> setCalendarNotify(bool enable) async {
-    var permission = await localNotificationProvider.checkPermission();
-    if (permission != NotificationStatus.granted) {
-      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
-      return;
+    if (enable) {
+      var permission = await localNotificationProvider.checkPermission();
+      if (permission != NotificationStatus.granted) {
+        emit(state.copyWith(showNotifyAlertPermissionDialog: true));
+        return;
+      }
     }
+
     debugPrint('[Tony] setCalendarNotify: $enable');
 
     var countries = sharedPreferenceProvider.getSavedCalendarEvents().where(
@@ -59,11 +62,14 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
   }
 
   Future<void> setMemoNotify(bool enable) async {
-    var permission = await localNotificationProvider.checkPermission();
-    if (permission != NotificationStatus.granted) {
-      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
-      return;
+    if (enable) {
+      var permission = await localNotificationProvider.checkPermission();
+      if (permission != NotificationStatus.granted) {
+        emit(state.copyWith(showNotifyAlertPermissionDialog: true));
+        return;
+      }
     }
+
     debugPrint('[Tony] setMemoNotify: $enable');
 
     for (var event in await calendarEventRepository.getFutureCustomEvents()) {
@@ -84,11 +90,14 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
   }
 
   Future<void> setSolarNotify(bool enable) async {
-    var permission = await localNotificationProvider.checkPermission();
-    if (permission != NotificationStatus.granted) {
-      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
-      return;
+    if (enable) {
+      var permission = await localNotificationProvider.checkPermission();
+      if (permission != NotificationStatus.granted) {
+        emit(state.copyWith(showNotifyAlertPermissionDialog: true));
+        return;
+      }
     }
+
     debugPrint('[Tony] setSolarNotify: $enable');
 
     for (var event in await calendarEventRepository.getFutureSolarEvents()) {
