@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -44,9 +45,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     for (var country in countries) {
       for (var event in await calendarEventRepository
           .getFutureEventsFromLocalDB(country.toCountryCode())) {
-        int id = (event.date.millisecondsSinceEpoch & 0xFFFFFFFF >>> 2) +
-            event.eventType.index;
-
+        int id = event.getNotifyId();
         if (enable) {
           localNotificationProvider.showNotification(id, event.eventName, null,
               tz.TZDateTime.from(event.date, tz.local));
@@ -73,9 +72,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     debugPrint('[Tony] setMemoNotify: $enable');
 
     for (var event in await calendarEventRepository.getFutureCustomEvents()) {
-      int id = (event.date.millisecondsSinceEpoch & 0xFFFFFFFF >>> 2) +
-          (int.tryParse(event.idForModify.toString()) ?? 0) +
-          EventType.values.length;
+      int id = event.getNotifyId();
       if (enable) {
         localNotificationProvider.showNotification(id, event.eventName, null,
             tz.TZDateTime.from(event.date, tz.local));
@@ -98,11 +95,20 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
       }
     }
 
+    var hasSavedSolarEvent = sharedPreferenceProvider
+        .getSavedCalendarEvents()
+        .where((element) => element == EventType.solar)
+        .toList()
+        .isNotEmpty;
+
+    if (!hasSavedSolarEvent) {
+      return;
+    }
+
     debugPrint('[Tony] setSolarNotify: $enable');
 
     for (var event in await calendarEventRepository.getFutureSolarEvents()) {
-      int id = (event.date.millisecondsSinceEpoch & 0xFFFFFFFF >>> 2) +
-          event.eventType.index;
+      int id = event.getNotifyId();
       if (enable) {
         localNotificationProvider.showNotification(id, event.eventName, null,
             tz.TZDateTime.from(event.date, tz.local));

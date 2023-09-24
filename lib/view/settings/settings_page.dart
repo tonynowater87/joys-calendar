@@ -61,8 +61,11 @@ class _SettingsPageState extends State<SettingsPage> {
                                       horizontal: 8.0),
                                   child: BlocProvider(
                                     create: (context) => SettingsCalendarBloc(
+                                        context.read<CalendarEventRepository>(),
                                         context
-                                            .read<CalendarEventRepository>()),
+                                            .read<SharedPreferenceProvider>(),
+                                        context
+                                            .read<LocalNotificationProvider>()),
                                     child: const SettingsCalendarGridListView(),
                                   ),
                                 ),
