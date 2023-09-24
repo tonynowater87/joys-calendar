@@ -1,5 +1,7 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
+import 'package:flutter/material.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -20,11 +22,13 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
       : super(SettingsNotifyState(
             calendarNotify: sharedPreferenceProvider.isCalendarNotifyEnable(),
             memoNotify: sharedPreferenceProvider.isMemoNotifyEnable(),
-            solarNotify: sharedPreferenceProvider.isSolarNotifyEnable()));
+            solarNotify: sharedPreferenceProvider.isSolarNotifyEnable(),
+            showNotifyAlertPermissionDialog: false));
 
   Future<void> setCalendarNotify(bool enable) async {
     var permission = await localNotificationProvider.checkPermission();
     if (permission != NotificationStatus.granted) {
+      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
       return;
     }
     debugPrint('[Tony] setCalendarNotify: $enable');
@@ -50,15 +54,14 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     }
 
     sharedPreferenceProvider.setCalendarNotifyEnable(enable);
-    emit(SettingsNotifyState(
-        calendarNotify: enable,
-        memoNotify: state.memoNotify,
-        solarNotify: state.solarNotify));
+    emit(state.copyWith(
+        calendarNotify: enable, showNotifyAlertPermissionDialog: false));
   }
 
   Future<void> setMemoNotify(bool enable) async {
     var permission = await localNotificationProvider.checkPermission();
     if (permission != NotificationStatus.granted) {
+      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
       return;
     }
     debugPrint('[Tony] setMemoNotify: $enable');
@@ -76,15 +79,14 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     }
 
     sharedPreferenceProvider.setMemoNotifyEnable(enable);
-    emit(SettingsNotifyState(
-        calendarNotify: state.calendarNotify,
-        memoNotify: enable,
-        solarNotify: state.solarNotify));
+    emit(state.copyWith(
+        memoNotify: enable, showNotifyAlertPermissionDialog: false));
   }
 
   Future<void> setSolarNotify(bool enable) async {
     var permission = await localNotificationProvider.checkPermission();
     if (permission != NotificationStatus.granted) {
+      emit(state.copyWith(showNotifyAlertPermissionDialog: true));
       return;
     }
     debugPrint('[Tony] setSolarNotify: $enable');
@@ -101,11 +103,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     }
 
     sharedPreferenceProvider.setSolarNotifyEnable(enable);
-    emit(SettingsNotifyState(
-        calendarNotify: state.calendarNotify,
-        memoNotify: state.memoNotify,
-        solarNotify: enable));
+    emit(state.copyWith(
+        solarNotify: enable, showNotifyAlertPermissionDialog: false));
   }
-
-  void _checkPermission() {}
 }

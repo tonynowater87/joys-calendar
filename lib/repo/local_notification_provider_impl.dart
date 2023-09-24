@@ -52,7 +52,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
       int id, String title, String? body, tz.TZDateTime targetDateTime) async {
     tz.TZDateTime remindDate;
     if (kDebugMode) {
-      remindDate = targetDateTime.add(const Duration(seconds: 10));
+      remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
     } else {
       remindDate = targetDateTime
           .subtract(const Duration(hours: 15)); // TODO get from setting
