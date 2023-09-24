@@ -38,9 +38,12 @@ class FirebaseBackUpRepository implements BackUpRepository {
     if (!hasRunBefore) {
       try {
         logout();
-      } on Exception catch (e) {}
+      } on Exception catch (e) {
+
+      } finally {
+        sharedPreferenceProvider.setHasRunBefore(true);
+      }
     }
-    sharedPreferenceProvider.setHasRunBefore(true);
   }
 
   @override
