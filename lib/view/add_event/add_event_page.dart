@@ -7,6 +7,8 @@ import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/add_event/add_event_bloc.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
 
@@ -42,7 +44,10 @@ class _AddEventPageState extends State<AddEventPage> {
     final analyticsHelper = context.read<AnalyticsHelper>();
     return BlocProvider<AddEventBloc>(
       create: (context) {
-        var addEventBloc = AddEventBloc(context.read<LocalDatasource>());
+        var addEventBloc = AddEventBloc(
+            context.read<LocalDatasource>(),
+            context.read<SharedPreferenceProvider>(),
+            context.read<LocalNotificationProvider>());
         if (widget.memoModelKey != null) {
           addEventBloc.add(EditDateTimeEvent(widget.memoModelKey));
         } else {
@@ -75,8 +80,7 @@ class _AddEventPageState extends State<AddEventPage> {
           }
 
           final dateText = Text(
-              DateFormat(
-                      DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
+              DateFormat(DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
                   .format(state.memoModel.dateTime),
               style: Theme.of(context).textTheme.caption);
 
@@ -168,8 +172,7 @@ class _AddEventPageState extends State<AddEventPage> {
                     ? const Text('新增')
                     : const Text('更新'),
                 onPressed: () async {
-                  final result =
-                      await context.read<AddEventBloc>().saveEvent();
+                  final result = await context.read<AddEventBloc>().saveEvent();
                   if (!mounted || !result) {
                     return;
                   }

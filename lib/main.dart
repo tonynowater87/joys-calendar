@@ -64,7 +64,8 @@ Future<void> main() async {
 
   debugPrint('[Tony] App Launched, kDebugMode=$kDebugMode');
   if (kDebugMode) {
-    FirebaseAnalytics.instance.setAnalyticsCollectionEnabled(false); // disable in debug mode
+    FirebaseAnalytics.instance
+        .setAnalyticsCollectionEnabled(false); // disable in debug mode
     // https://firebase.google.com/docs/emulator-suite/install_and_configure?authuser=0
     // fixme, currently can't connect emulator via real device (Android)
     await FirebaseAuth.instance.useAuthEmulator('localhost', 9099);
@@ -108,7 +109,8 @@ class MyApp extends StatelessWidget {
             create: (BuildContext context) {
           return SharedPreferenceProviderImpl(_prefs);
         }),
-        RepositoryProvider<LocalNotificationProvider>(create: (BuildContext context) {
+        RepositoryProvider<LocalNotificationProvider>(
+            create: (BuildContext context) {
           return LocalNotificationProviderImpl();
         }),
         RepositoryProvider<CalendarEventRepository>(
@@ -151,7 +153,7 @@ class MyApp extends StatelessWidget {
             final mediaQueryData = MediaQuery.of(context);
             final scale = mediaQueryData.textScaleFactor.clamp(1.0, 1.2);
             return MediaQuery(
-                data: MediaQuery.of(context).copyWith(textScaleFactor:scale),
+                data: MediaQuery.of(context).copyWith(textScaleFactor: scale),
                 child: child!);
           },
           localizationsDelegates: const [
@@ -168,8 +170,10 @@ class MyApp extends StatelessWidget {
                 const MyHomePage(title: 'Joy\' Calendar'),
             AppConstants.routeSettings: (context) => const SettingsPage(),
             AppConstants.routeMyEvent: (context) => BlocProvider(
-                create: (context) =>
-                    MyEventListCubit(context.read<LocalDatasource>()),
+                create: (context) => MyEventListCubit(
+                    context.read<LocalDatasource>(),
+                    context.read<SharedPreferenceProvider>(),
+                    context.read<LocalNotificationProvider>()),
                 child: const MyEventListPage()),
             AppConstants.routeSearchResult: (context) => BlocProvider(
                 create: (context) =>

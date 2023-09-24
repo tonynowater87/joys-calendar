@@ -40,7 +40,7 @@ class LocalDatasourceImpl extends LocalDatasource {
   }
 
   @override
-  Future<void> saveMemo(MemoModel memoModel) {
+  Future<int?> saveMemo(MemoModel memoModel) async {
     final box = Hive.box<MemoModel>(MemoModel.boxKey);
     final existModel = Hive.box<MemoModel>(MemoModel.boxKey)
         .values
@@ -48,7 +48,8 @@ class LocalDatasourceImpl extends LocalDatasource {
     if (existModel.isEmpty) {
       return box.add(memoModel);
     } else {
-      return box.put(memoModel.key, memoModel);
+      await box.put(memoModel.key, memoModel);
+      return null;
     }
   }
 

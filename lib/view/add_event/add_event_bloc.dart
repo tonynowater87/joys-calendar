@@ -2,8 +2,12 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
+import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 part 'add_event_event.dart';
 
@@ -11,10 +15,15 @@ part 'add_event_state.dart';
 
 class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
   LocalDatasource localMemoRepository;
+  SharedPreferenceProvider sharedPreferenceProvider;
+  LocalNotificationProvider localNotificationProvider;
+
   dynamic? key;
   String updatedMemo = "";
 
-  AddEventBloc(this.localMemoRepository) : super(AddEventState.add()) {
+  AddEventBloc(this.localMemoRepository, this.sharedPreferenceProvider,
+      this.localNotificationProvider)
+      : super(AddEventState.add()) {
     on<ChangeDateTimeEvent>((event, emit) {
       emit.call(state.copyWith(dateTime: event.memoDateTime));
     });
@@ -43,19 +52,54 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
     }
     var updatedMemoModel = state.memoModel..memo = updatedMemo;
     if (key != null) {
+      // 編輯
       final memoModel = localMemoRepository.getMemo(key);
       await localMemoRepository.saveMemo(memoModel
         ..memo = updatedMemoModel.memo
         ..dateTime = updatedMemoModel.dateTime
-        ..dateString = DateFormat(AppConstants.memoDateFormat).format(updatedMemoModel.dateTime));
+        ..dateString = DateFormat(AppConstants.memoDateFormat)
+            .format(updatedMemoModel.dateTime));
+      await renewNotification(memoModel);
+
       return true;
     } else {
-      await localMemoRepository.saveMemo(updatedMemoModel);
+      // 新增
+      var id = await localMemoRepository.saveMemo(updatedMemoModel);
+      final memoModel = localMemoRepository.getMemo(id);
+      await showNotification(memoModel);
       return true;
     }
   }
 
+  Future<void> renewNotification(MemoModel memoModel) async {
+    if (sharedPreferenceProvider.isMemoNotifyEnable() &&
+        await localNotificationProvider.isPermissionGranted()) {
+      int id = memoModel.getNotifyId();
+      await localNotificationProvider.cancelNotification(id);
+      localNotificationProvider.showNotification(id, memoModel.memo, null,
+          tz.TZDateTime.from(memoModel.dateTime, tz.local));
+    }
+  }
+
+  Future<void> showNotification(MemoModel memoModel) async {
+    if (sharedPreferenceProvider.isMemoNotifyEnable() &&
+        await localNotificationProvider.isPermissionGranted()) {
+      int id = memoModel.getNotifyId();
+      await localNotificationProvider.showNotification(id, memoModel.memo, null,
+          tz.TZDateTime.from(memoModel.dateTime, tz.local));
+    }
+  }
+
+  Future<void> cancelNotification(MemoModel memoModel) async {
+    if (sharedPreferenceProvider.isMemoNotifyEnable()) {
+      int id = memoModel.getNotifyId();
+      await localNotificationProvider.cancelNotification(id);
+    }
+  }
+
   Future<void> delete() async {
+    var memo = localMemoRepository.getMemo(key);
+    await cancelNotification(memo);
     await localMemoRepository.deleteMemo(key);
   }
 }

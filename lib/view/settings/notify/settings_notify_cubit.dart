@@ -2,7 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
+import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
