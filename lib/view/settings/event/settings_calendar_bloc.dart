@@ -113,7 +113,10 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
       }
     }
 
-    if (sharedPreferenceProvider.isCalendarNotifyEnable()) {
+    if (sharedPreferenceProvider.isCalendarNotifyEnable() &&
+        event.eventType != EventType.solar &&
+        event.eventType != EventType.lunar &&
+        event.eventType != EventType.custom) {
       var futureCalendarEvents = await calendarEventRepository
           .getFutureEventsFromLocalDB(event.eventType.toCountryCode());
       for (var event in futureCalendarEvents) {

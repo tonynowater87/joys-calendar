@@ -18,7 +18,6 @@ import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 import 'package:month_year_picker/month_year_picker.dart';
-import 'package:permission_handler/permission_handler.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 import '../../common/constants.dart';
@@ -67,8 +66,7 @@ class _MyHomePageState extends State<MyHomePage> {
                       .checkPermission();
                 },
                 onDoubleTap: () async {
-                  var open = await openAppSettings();
-                  debugPrint('[Tony] open=$open');
+
                 },
                 onTap: () {
                   debugPrint('[Tony] onTap');

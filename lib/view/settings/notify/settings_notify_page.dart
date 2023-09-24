@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/view/settings/notify/settings_notify_cubit.dart';
-import 'package:permission_handler/permission_handler.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class SettingsNotifyPage extends StatelessWidget {
   const SettingsNotifyPage({Key? key}) : super(key: key);
@@ -52,21 +52,24 @@ class SettingsNotifyPage extends StatelessWidget {
           );
         },
         listener: (BuildContext context, state) =>
-            state.showNotifyAlertPermissionDialog
-                ? showDialog(
-                    context: context,
-                    builder: (context) => AlertDialog(
-                          title: const Text('未允許通知權限'),
-                          content: const Text('請至手機設定開啟通知權限'),
-                          actions: [
-                            TextButton(
-                                onPressed: () {
-                                  openAppSettings();
-                                  Navigator.of(context).pop();
-                                },
-                                child: const Text('前往'))
-                          ],
-                        ))
-                : null);
+        state.showNotifyAlertPermissionDialog
+            ? showDialog(
+            context: context,
+            builder: (context) =>
+                AlertDialog(
+                  title: const Text('未允許通知權限'),
+                  content: const Text('請至手機設定開啟通知權限'),
+                  actions: [
+                    TextButton(
+                        onPressed: () {
+                          NotificationPermissions
+                              .requestNotificationPermissions(
+                              openSettings: true);
+                          Navigator.of(context).pop();
+                        },
+                        child: const Text('前往'))
+                  ],
+                ))
+            : null);
   }
 }
