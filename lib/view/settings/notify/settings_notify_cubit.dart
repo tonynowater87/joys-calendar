@@ -1,6 +1,5 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
@@ -24,7 +23,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
             calendarNotify: sharedPreferenceProvider.isCalendarNotifyEnable(),
             memoNotify: sharedPreferenceProvider.isMemoNotifyEnable(),
             solarNotify: sharedPreferenceProvider.isSolarNotifyEnable(),
-            showNotifyAlertPermissionDialog: false));
+            showNotifyAlertPermissionDialog: false,
+            notifyTime: sharedPreferenceProvider.getMemoNotifyTime()));
 
   Future<void> setCalendarNotify(bool enable) async {
     if (enable) {
@@ -71,13 +71,21 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setMemoNotify: $enable');
 
-    for (var event in await calendarEventRepository.getFutureCustomEvents()) {
-      int id = event.getNotifyId();
-      if (enable) {
-        localNotificationProvider.showNotification(id, event.eventName, null,
-            tz.TZDateTime.from(event.date, tz.local));
-      } else {
-        localNotificationProvider.cancelNotification(id);
+    var hasSavedMemoEvent = sharedPreferenceProvider
+        .getSavedCalendarEvents()
+        .where((element) => element == EventType.custom)
+        .toList()
+        .isNotEmpty;
+
+    if (hasSavedMemoEvent) {
+      for (var event in await calendarEventRepository.getFutureCustomEvents()) {
+        int id = event.getNotifyId();
+        if (enable) {
+          localNotificationProvider.showNotification(id, event.eventName, null,
+              tz.TZDateTime.from(event.date, tz.local));
+        } else {
+          localNotificationProvider.cancelNotification(id);
+        }
       }
     }
 
@@ -118,5 +126,65 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     sharedPreferenceProvider.setSolarNotifyEnable(enable);
     emit(state.copyWith(
         solarNotify: enable, showNotifyAlertPermissionDialog: false));
+  }
+
+  Future<void> setNotifyTime(TimeOfDay timeOfDay) async {
+    var result = await sharedPreferenceProvider.setMemoNotifyTime(timeOfDay);
+
+    if (result == false) {
+      return;
+    }
+
+    if (state.solarNotify) {
+      var hasSavedSolarEvent = sharedPreferenceProvider
+          .getSavedCalendarEvents()
+          .where((element) => element == EventType.solar)
+          .toList()
+          .isNotEmpty;
+
+      if (hasSavedSolarEvent) {
+        for (var event
+            in await calendarEventRepository.getFutureSolarEvents()) {
+          int id = event.getNotifyId();
+          localNotificationProvider.showNotification(id, event.eventName, null,
+              tz.TZDateTime.from(event.date, tz.local));
+        }
+      }
+    }
+
+    if (state.calendarNotify) {
+      var countries = sharedPreferenceProvider.getSavedCalendarEvents().where(
+          (element) =>
+              element != EventType.custom &&
+              element != EventType.lunar &&
+              element != EventType.solar);
+      for (var country in countries) {
+        for (var event in await calendarEventRepository
+            .getFutureEventsFromLocalDB(country.toCountryCode())) {
+          int id = event.getNotifyId();
+          localNotificationProvider.showNotification(id, event.eventName, null,
+              tz.TZDateTime.from(event.date, tz.local));
+        }
+      }
+    }
+
+    if (state.memoNotify) {
+      var hasSavedMemoEvent = sharedPreferenceProvider
+          .getSavedCalendarEvents()
+          .where((element) => element == EventType.custom)
+          .toList()
+          .isNotEmpty;
+
+      if (hasSavedMemoEvent) {
+        for (var event
+            in await calendarEventRepository.getFutureCustomEvents()) {
+          int id = event.getNotifyId();
+          localNotificationProvider.showNotification(id, event.eventName, null,
+              tz.TZDateTime.from(event.date, tz.local));
+        }
+      }
+    }
+
+    emit(state.copyWith(notifyTime: timeOfDay));
   }
 }

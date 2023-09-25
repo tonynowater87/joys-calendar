@@ -39,37 +39,61 @@ class SettingsNotifyPage extends StatelessWidget {
                     context.read<SettingsNotifyCubit>().setMemoNotify(checked);
                   }),
               ListTile(
-                dense: true,
-                title: Row(
-                  children: const [
-                    Icon(Icons.info_outlined),
-                    SizedBox(width: 8),
-                    Text('通知提醒的時間為前1日的早上9點'),
+                title: const Text('通知時間'),
+                subtitle: Row(
+                  children: [
+                    const Icon(Icons.info_outline, size: 10),
+                    const SizedBox(width: 4),
+                    Text('固定前一天提醒, 可自訂通知時間',
+                        style: Theme.of(context).textTheme.overline),
                   ],
+                ),
+                trailing: InkWell(
+                  onTap: () async {
+                    var time = await showTimePicker(
+                        context: context,
+                        initialTime: state.notifyTime,
+                        helpText: '選擇通知時間');
+
+                    if (!context.mounted) {
+                      return;
+                    }
+                    if (time != null) {
+                      context.read<SettingsNotifyCubit>().setNotifyTime(time);
+                    }
+                  },
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Text(state.notifyTime.format(context)),
+                      const SizedBox(width: 4),
+                      const Icon(Icons.access_time)
+                    ],
+                  ),
                 ),
               ),
             ],
           );
         },
         listener: (BuildContext context, state) =>
-        state.showNotifyAlertPermissionDialog
-            ? showDialog(
-            context: context,
-            builder: (context) =>
-                AlertDialog(
-                  title: const Text('未允許通知權限'),
-                  content: const Text('請至手機設定開啟通知權限'),
-                  actions: [
-                    TextButton(
-                        onPressed: () {
-                          NotificationPermissions
-                              .requestNotificationPermissions(
-                              openSettings: true);
-                          Navigator.of(context).pop();
-                        },
-                        child: const Text('前往'))
-                  ],
-                ))
-            : null);
+            state.showNotifyAlertPermissionDialog
+                ? showDialog(
+                    context: context,
+                    builder: (context) => AlertDialog(
+                          title: const Text('未允許通知權限'),
+                          content: const Text('請至手機設定開啟通知權限'),
+                          actions: [
+                            TextButton(
+                                onPressed: () {
+                                  NotificationPermissions
+                                      .requestNotificationPermissions(
+                                          openSettings: true);
+                                  Navigator.of(context).pop();
+                                },
+                                child: const Text('前往'))
+                          ],
+                        ))
+                : null);
   }
 }

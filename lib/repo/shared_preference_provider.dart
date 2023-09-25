@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 
 abstract class SharedPreferenceProvider {
@@ -24,4 +25,8 @@ abstract class SharedPreferenceProvider {
   Future<bool> setSolarNotifyEnable(bool enable);
 
   bool isSolarNotifyEnable();
+
+  Future<bool> setMemoNotifyTime(TimeOfDay timeOfDay);
+
+  TimeOfDay getMemoNotifyTime();
 }

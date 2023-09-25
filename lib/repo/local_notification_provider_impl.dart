@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:notification_permissions/notification_permissions.dart';
 import 'package:timezone/timezone.dart' as tz;
 
@@ -12,7 +13,9 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
 
   var _isInitialized = false;
 
-  LocalNotificationProviderImpl();
+  late SharedPreferenceProvider sharedPreferenceProvider;
+
+  LocalNotificationProviderImpl({required this.sharedPreferenceProvider});
 
   @override
   Future<void> cancelNotification(int id) async {
@@ -52,12 +55,17 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
   Future<NotificationStatus> showNotification(
       int id, String title, String? body, tz.TZDateTime targetDateTime) async {
     tz.TZDateTime remindDate;
-    if (kDebugMode) {
+    /*if (kDebugMode) {
       remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
-    } else {
+    } else {*/
+      var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
+      var totalMinute = 24 * 60;
+      var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
+      var subtractHour = (totalMinute - remindTimeInMinute) ~/ 60;
+      var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
       remindDate = targetDateTime
-          .subtract(const Duration(hours: 15)); // TODO get from setting
-    }
+          .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
+    /*}*/
 
     if (tz.TZDateTime.now(tz.local).isAfter(remindDate)) {
       debugPrint('[Tony] showNotification due date in past, $remindDate');
@@ -199,7 +207,8 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
 
   @override
   Future<bool> isPermissionGranted() async {
-    var status = await NotificationPermissions.getNotificationPermissionStatus();
+    var status =
+        await NotificationPermissions.getNotificationPermissionStatus();
     debugPrint('[Tony] permission status = $status');
     return status == PermissionStatus.granted;
   }

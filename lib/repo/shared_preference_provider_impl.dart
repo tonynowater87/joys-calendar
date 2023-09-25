@@ -1,3 +1,4 @@
+import 'package:flutter/material.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -10,6 +11,8 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _isMemoNotifyEnable = "IS_MEMO_NOTIFY_ENABLE";
   static const String _isCalendarNotifyEnable = "IS_CALENDAR_NOTIFY_ENABLE";
   static const String _isSolarNotifyEnable = "IS_SOLAR_NOTIFY_ENABLE";
+  static const String _notifyTime = "NOTIFY_TIME";
+
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
     EventType.lunar,
@@ -86,5 +89,19 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   @override
   Future<bool> setSolarNotifyEnable(bool enable) {
     return _sharedPreferences.setBool(_isSolarNotifyEnable, enable);
+  }
+
+  @override
+  Future<bool> setMemoNotifyTime(TimeOfDay timeOfDay) {
+    return _sharedPreferences.setInt(_notifyTime, timeOfDay.hour * 60 + timeOfDay.minute);
+  }
+
+  @override
+  TimeOfDay getMemoNotifyTime() {
+    final int? time = _sharedPreferences.getInt(_notifyTime);
+    if (time == null) {
+      return const TimeOfDay(hour: 9, minute: 0);
+    }
+    return TimeOfDay(hour: time ~/ 60, minute: time % 60);
   }
 }

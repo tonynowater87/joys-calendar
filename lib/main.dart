@@ -111,7 +111,9 @@ class MyApp extends StatelessWidget {
         }),
         RepositoryProvider<LocalNotificationProvider>(
             create: (BuildContext context) {
-          return LocalNotificationProviderImpl();
+          return LocalNotificationProviderImpl(
+              sharedPreferenceProvider:
+                  context.read<SharedPreferenceProvider>());
         }),
         RepositoryProvider<CalendarEventRepository>(
             create: (BuildContext context) {
