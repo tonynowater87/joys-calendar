@@ -460,51 +460,58 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                               ]),
                           content: SizedBox(
                             width: MediaQuery.of(parentContext).size.width * 0.95,
-                            child: ListView.separated(
-                              shrinkWrap: true,
-                                itemBuilder: (context, index) {
-                                  final event = dayEvents[index];
-                                  return ListTile(
-                                    leading: EventChipView(
-                                        eventName: event
-                                            .getEventType()
-                                            .toInfoDialogName(),
-                                        eventColor: event.eventBackgroundColor),
-                                    title: Text(event.eventName,
-                                        style: TextStyle(
-                                            color: event.eventTextStyle.color)),
-                                    onTap: () async {
-                                      if (event.extractEventTypeName() ==
-                                          EventType.custom.name) {
-                                        analyticsHelper.logEvent(
-                                            name: event_edit_my_event,
-                                            parameters: {
-                                              event_edit_my_event_params_position_name:
-                                                  event_edit_my_event_params_position
-                                                      .dialog.name
-                                            });
-                                        Navigator.pop(context);
-                                        dynamic id = int.tryParse(
-                                            event.extractEventIdForModify());
-                                        var isAdded = await showDialog(
-                                            context: context,
-                                            builder: (context) =>
-                                                AddEventPage(memoModelKey: id));
-                                        if (!mounted) {
-                                          return;
+                            child: ConstrainedBox(
+                              constraints: BoxConstraints(
+                                  minHeight: 200,
+                                  maxHeight:
+                                      MediaQuery.of(context).size.height *
+                                          0.55),
+                              child: ListView.separated(
+                                shrinkWrap: true,
+                                  itemBuilder: (context, index) {
+                                    final event = dayEvents[index];
+                                    return ListTile(
+                                      leading: EventChipView(
+                                          eventName: event
+                                              .getEventType()
+                                              .toInfoDialogName(),
+                                          eventColor: event.eventBackgroundColor),
+                                      title: Text(event.eventName,
+                                          style: TextStyle(
+                                              color: event.eventTextStyle.color)),
+                                      onTap: () async {
+                                        if (event.extractEventTypeName() ==
+                                            EventType.custom.name) {
+                                          analyticsHelper.logEvent(
+                                              name: event_edit_my_event,
+                                              parameters: {
+                                                event_edit_my_event_params_position_name:
+                                                    event_edit_my_event_params_position
+                                                        .dialog.name
+                                              });
+                                          Navigator.pop(context);
+                                          dynamic id = int.tryParse(
+                                              event.extractEventIdForModify());
+                                          var isAdded = await showDialog(
+                                              context: context,
+                                              builder: (context) =>
+                                                  AddEventPage(memoModelKey: id));
+                                          if (!mounted) {
+                                            return;
+                                          }
+                                          if (isAdded == true) {
+                                            parentContext
+                                                .read<HomeCubit>()
+                                                .refreshFromAddOrUpdateCustomEvent();
+                                          }
                                         }
-                                        if (isAdded == true) {
-                                          parentContext
-                                              .read<HomeCubit>()
-                                              .refreshFromAddOrUpdateCustomEvent();
-                                        }
-                                      }
-                                    },
-                                  );
-                                },
-                                separatorBuilder: (context, index) =>
-                                    const Divider(),
-                                itemCount: dayEvents.length),
+                                      },
+                                    );
+                                  },
+                                  separatorBuilder: (context, index) =>
+                                      const Divider(),
+                                  itemCount: dayEvents.length),
+                            ),
                           )));
                 },
                 onPageChanged: (firstDate, lastDate) {
