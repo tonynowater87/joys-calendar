@@ -152,7 +152,7 @@ class LocalDatasourceImpl extends LocalDatasource {
     jsonDecoded.forEach((key, value) {
       MemoModel memoModel = MemoModel.fromJson(value);
       downloadMemos.add(memoModel);
-      debugPrint('[Tony] recover memo=$memoModel');
+      // debugPrint('[Tony] recover memo=$memoModel');
     });
 
     // add to hive

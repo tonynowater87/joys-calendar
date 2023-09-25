@@ -136,7 +136,11 @@ class MyApp extends StatelessWidget {
                 firebaseAuth: FirebaseAuth.instance,
                 firebaseStorage: FirebaseStorage.instance,
                 sharedPreferenceProvider:
-                    context.read<SharedPreferenceProvider>());
+                    context.read<SharedPreferenceProvider>(),
+                localNotificationProvider:
+                    context.read<LocalNotificationProvider>(),
+                calendarEventRepository:
+                    context.read<CalendarEventRepository>());
           },
         ),
         RepositoryProvider<AnalyticsHelper>(create: (BuildContext context) {

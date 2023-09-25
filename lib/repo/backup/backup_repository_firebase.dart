@@ -5,11 +5,15 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:joys_calendar/common/extentions/NumberExtentions.dart';
+import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';
+import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:the_apple_sign_in/the_apple_sign_in.dart';
+import 'package:timezone/timezone.dart' as tz;
 
 class FirebaseBackUpRepository implements BackUpRepository {
   static const String backupFileName = "memo.json";
@@ -19,6 +23,8 @@ class FirebaseBackUpRepository implements BackUpRepository {
   FirebaseAuth firebaseAuth;
   FirebaseStorage firebaseStorage;
   SharedPreferenceProvider sharedPreferenceProvider;
+  LocalNotificationProvider localNotificationProvider;
+  CalendarEventRepository calendarEventRepository;
 
   User? currentUser;
   DateTime? lastUpdatedTime;
@@ -28,7 +34,10 @@ class FirebaseBackUpRepository implements BackUpRepository {
       {required this.localDatasource,
       required this.firebaseAuth,
       required this.firebaseStorage,
-      required this.sharedPreferenceProvider}) {
+      required this.sharedPreferenceProvider,
+      required this.localNotificationProvider,
+      required this.calendarEventRepository}) {
+
     currentUser = firebaseAuth.currentUser;
     var hasRunBefore = sharedPreferenceProvider.getHasRunBefore();
     debugPrint(
@@ -246,7 +255,30 @@ class FirebaseBackUpRepository implements BackUpRepository {
     await dataRef.writeToFile(file);
     final json = await file.readAsString();
     debugPrint('[Tony] 下載, 成功, uid=$uuid, download=$json');
+
+    // cancel notifications if needed
+    if (sharedPreferenceProvider.isMemoNotifyEnable() &&
+        await localNotificationProvider.isPermissionGranted()) {
+      var memos = await calendarEventRepository.getFutureCustomEvents();
+      for (var memo in memos) {
+        var id = memo.getNotifyId();
+        await localNotificationProvider.cancelNotification(id);
+      }
+    }
+
     await localDatasource.replaceWithJson(json);
+
+    // show notifications if needed
+    if (sharedPreferenceProvider.isMemoNotifyEnable() &&
+        await localNotificationProvider.isPermissionGranted()) {
+      var memos = await calendarEventRepository.getFutureCustomEvents();
+      for (var memo in memos) {
+        var id = memo.getNotifyId();
+        await localNotificationProvider.showNotification(
+            id, memo.eventName, null, tz.TZDateTime.from(memo.date, tz.local));
+      }
+    }
+
     _readMetaDataField(fullMetadata);
     return BackUpStatus.success;
   }
