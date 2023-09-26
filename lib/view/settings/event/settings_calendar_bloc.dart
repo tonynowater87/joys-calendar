@@ -5,8 +5,8 @@ import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/settings/event/settings_calendar_event.dart';
+import 'package:joys_calendar/view/settings/event/settings_calendar_state.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
-import 'package:joys_calendar/view/settings/settings_state.dart';
 import 'package:timezone/timezone.dart' as tz;
 
 class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
@@ -17,7 +17,7 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
 
   SettingsCalendarBloc(this.calendarEventRepository,
       this.sharedPreferenceProvider, this.localNotificationProvider)
-      : super(const SettingsState.initial()) {
+      : super(SettingsState(settingEventItems: const [], isLoaded: false)) {
     on<LoadStarted>(_initSettingEventItems);
     on<AddFilterEvent>(_addSettingEventItems);
     on<RemoveFilterEvent>(_removeSettingEventItems);
@@ -34,11 +34,14 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
             EventType.values[index],
             currentEventTypes
                 .any((element) => EventType.values[index] == element)));
-    emitter.call(state.copyWith(settingsEventItems.toList()));
+    emitter
+        .call(state.copyWith(settingEventItems: settingsEventItems.toList()));
   }
 
   _addSettingEventItems(
       AddFilterEvent event, Emitter<SettingsState> emitter) async {
+    emitter.call(state.copyWith(isLoaded: true));
+
     settingsEventItems[settingsEventItems
             .indexWhere((element) => element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, true);
@@ -54,8 +57,8 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
           .getFutureEventsFromLocalDB(event.eventType.toCountryCode());
       for (var event in calendarEvents) {
         int id = event.getNotifyId();
-        localNotificationProvider.showNotification(id, event.eventName, null,
-            tz.TZDateTime.from(event.date, tz.local));
+        await localNotificationProvider.showNotification(id, event.eventName,
+            null, tz.TZDateTime.from(event.date, tz.local));
       }
     }
 
@@ -84,11 +87,14 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
     }
 
     await _update();
-    emitter.call(state.copyWith(settingsEventItems.toList()));
+    emitter.call(state.copyWith(
+        settingEventItems: settingsEventItems.toList(), isLoaded: false));
   }
 
   _removeSettingEventItems(
       RemoveFilterEvent event, Emitter<SettingsState> emitter) async {
+    emitter.call(state.copyWith(isLoaded: true));
+
     settingsEventItems[settingsEventItems
             .indexWhere((element) => element.eventType == event.eventType)] =
         SettingsEventItem(event.eventType, false);
@@ -126,7 +132,8 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
     }
 
     await _update();
-    emitter.call(state.copyWith(settingsEventItems.toList()));
+    emitter.call(state.copyWith(
+        settingEventItems: settingsEventItems.toList(), isLoaded: false));
   }
 
   Future<void> _update() async {

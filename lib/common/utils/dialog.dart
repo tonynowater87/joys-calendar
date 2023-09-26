@@ -1,7 +1,27 @@
 import 'package:flutter/material.dart';
 
 class DialogUtils {
-  static showAlertDialog({required String title,
+  static showLoaderDialog(BuildContext context, String loadingText) {
+    AlertDialog alert = AlertDialog(
+      content: Row(
+        children: [
+          const CircularProgressIndicator(),
+          const SizedBox(width: 10),
+          Text(loadingText),
+        ],
+      ),
+    );
+    showDialog(
+      barrierDismissible: false,
+      context: context,
+      builder: (BuildContext context) {
+        return alert;
+      },
+    );
+  }
+
+  static showAlertDialog(
+      {required String title,
       String? content,
       VoidCallback? onConfirmCallback,
       VoidCallback? onCancelCallback,
@@ -40,5 +60,9 @@ class DialogUtils {
         return alert;
       },
     );
+  }
+
+  static isDialogShowing(BuildContext context) {
+    return ModalRoute.of(context)?.isCurrent != true;
   }
 }

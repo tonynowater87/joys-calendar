@@ -24,7 +24,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
             memoNotify: sharedPreferenceProvider.isMemoNotifyEnable(),
             solarNotify: sharedPreferenceProvider.isSolarNotifyEnable(),
             showNotifyAlertPermissionDialog: false,
-            notifyTime: sharedPreferenceProvider.getMemoNotifyTime()));
+            notifyTime: sharedPreferenceProvider.getMemoNotifyTime(),
+            isLoading: false));
 
   Future<void> setCalendarNotify(bool enable) async {
     if (enable) {
@@ -37,6 +38,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setCalendarNotify: $enable');
 
+    emit(state.copyWith(isLoading: true));
     var countries = sharedPreferenceProvider.getSavedCalendarEvents().where(
         (element) =>
             element != EventType.custom &&
@@ -47,17 +49,19 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
           .getFutureEventsFromLocalDB(country.toCountryCode())) {
         int id = event.getNotifyId();
         if (enable) {
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
+          await localNotificationProvider.showNotification(id, event.eventName,
+              null, tz.TZDateTime.from(event.date, tz.local));
         } else {
-          localNotificationProvider.cancelNotification(id);
+          await localNotificationProvider.cancelNotification(id);
         }
       }
     }
 
     sharedPreferenceProvider.setCalendarNotifyEnable(enable);
     emit(state.copyWith(
-        calendarNotify: enable, showNotifyAlertPermissionDialog: false));
+        calendarNotify: enable,
+        isLoading: false,
+        showNotifyAlertPermissionDialog: false));
   }
 
   Future<void> setMemoNotify(bool enable) async {
@@ -71,6 +75,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setMemoNotify: $enable');
 
+    emit(state.copyWith(isLoading: true));
+
     var hasSavedMemoEvent = sharedPreferenceProvider
         .getSavedCalendarEvents()
         .where((element) => element == EventType.custom)
@@ -81,17 +87,19 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
       for (var event in await calendarEventRepository.getFutureCustomEvents()) {
         int id = event.getNotifyId();
         if (enable) {
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
+          await localNotificationProvider.showNotification(id, event.eventName,
+              null, tz.TZDateTime.from(event.date, tz.local));
         } else {
-          localNotificationProvider.cancelNotification(id);
+          await localNotificationProvider.cancelNotification(id);
         }
       }
     }
 
     sharedPreferenceProvider.setMemoNotifyEnable(enable);
     emit(state.copyWith(
-        memoNotify: enable, showNotifyAlertPermissionDialog: false));
+        memoNotify: enable,
+        showNotifyAlertPermissionDialog: false,
+        isLoading: false));
   }
 
   Future<void> setSolarNotify(bool enable) async {
@@ -105,6 +113,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setSolarNotify: $enable');
 
+    emit(state.copyWith(isLoading: true));
     var hasSavedSolarEvent = sharedPreferenceProvider
         .getSavedCalendarEvents()
         .where((element) => element == EventType.solar)
@@ -125,7 +134,9 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     sharedPreferenceProvider.setSolarNotifyEnable(enable);
     emit(state.copyWith(
-        solarNotify: enable, showNotifyAlertPermissionDialog: false));
+        solarNotify: enable,
+        showNotifyAlertPermissionDialog: false,
+        isLoading: false));
   }
 
   Future<void> setNotifyTime(TimeOfDay timeOfDay) async {
@@ -134,6 +145,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     if (result == false) {
       return;
     }
+
+    emit(state.copyWith(isLoading: true));
 
     if (state.solarNotify) {
       var hasSavedSolarEvent = sharedPreferenceProvider
@@ -146,8 +159,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
         for (var event
             in await calendarEventRepository.getFutureSolarEvents()) {
           int id = event.getNotifyId();
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
+          await localNotificationProvider.showNotification(id, event.eventName,
+              null, tz.TZDateTime.from(event.date, tz.local));
         }
       }
     }
@@ -162,8 +175,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
         for (var event in await calendarEventRepository
             .getFutureEventsFromLocalDB(country.toCountryCode())) {
           int id = event.getNotifyId();
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
+          await localNotificationProvider.showNotification(id, event.eventName,
+              null, tz.TZDateTime.from(event.date, tz.local));
         }
       }
     }
@@ -179,12 +192,12 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
         for (var event
             in await calendarEventRepository.getFutureCustomEvents()) {
           int id = event.getNotifyId();
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
+          await localNotificationProvider.showNotification(id, event.eventName,
+              null, tz.TZDateTime.from(event.date, tz.local));
         }
       }
     }
 
-    emit(state.copyWith(notifyTime: timeOfDay));
+    emit(state.copyWith(notifyTime: timeOfDay, isLoading: false));
   }
 }
