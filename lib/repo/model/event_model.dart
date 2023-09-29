@@ -7,14 +7,15 @@ class EventModel extends Equatable {
   DateTime date;
   EventType eventType;
   String eventName;
+  int continuousDays = 0;
   dynamic idForModify;
 
-  EventModel({
-    required this.date,
-    required this.eventType,
-    required this.eventName,
-    this.idForModify
-  });
+  EventModel(
+      {required this.date,
+      required this.eventType,
+      required this.eventName,
+      this.continuousDays = 0,
+      this.idForModify});
 
   @override
   List<Object?> get props => [date, eventType, eventName, idForModify];

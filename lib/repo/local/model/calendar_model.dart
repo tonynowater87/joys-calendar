@@ -15,8 +15,11 @@ class CalendarModel extends HiveObject {
   @HiveField(2)
   late String country;
 
+  @HiveField(3)
+  late int continuousDays;
+
   @override
   String toString() {
-    return 'CalendarModel{key:$key, displayName: $displayName, dateTime: $dateTime, country: $country}';
+    return 'CalendarModel{key:$key, displayName: $displayName, dateTime: $dateTime, country: $country, continuousDays: $continuousDays}';
   }
 }

@@ -1,5 +1,5 @@
 import 'package:bloc/bloc.dart';
-import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -7,16 +7,19 @@ import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/settings/event/settings_calendar_event.dart';
 import 'package:joys_calendar/view/settings/event/settings_calendar_state.dart';
 import 'package:joys_calendar/view/settings/settings_item.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
   late List<SettingsEventItem> settingsEventItems;
   late CalendarEventRepository calendarEventRepository;
   late SharedPreferenceProvider sharedPreferenceProvider;
   late LocalNotificationProvider localNotificationProvider;
+  late NotificationHelper notificationHelper;
 
-  SettingsCalendarBloc(this.calendarEventRepository,
-      this.sharedPreferenceProvider, this.localNotificationProvider)
+  SettingsCalendarBloc(
+      this.calendarEventRepository,
+      this.sharedPreferenceProvider,
+      this.localNotificationProvider,
+      this.notificationHelper)
       : super(SettingsState(settingEventItems: const [], isLoaded: false)) {
     on<LoadStarted>(_initSettingEventItems);
     on<AddFilterEvent>(_addSettingEventItems);
@@ -53,37 +56,19 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
         event.eventType != EventType.solar &&
         event.eventType != EventType.lunar &&
         event.eventType != EventType.custom) {
-      var calendarEvents = await calendarEventRepository
-          .getFutureEventsFromLocalDB(event.eventType.toCountryCode());
-      for (var event in calendarEvents) {
-        int id = event.getNotifyId();
-        await localNotificationProvider.showNotification(id, event.eventName,
-            null, tz.TZDateTime.from(event.date, tz.local));
-      }
+      notificationHelper.setCalendarNotify([event.eventType], true);
     }
 
     if (isPermissionGranted &&
         sharedPreferenceProvider.isSolarNotifyEnable() &&
         event.eventType == EventType.solar) {
-      var futureSolarEvents =
-          await calendarEventRepository.getFutureSolarEvents();
-      for (var event in futureSolarEvents) {
-        int id = event.getNotifyId();
-        localNotificationProvider.showNotification(id, event.eventName, null,
-            tz.TZDateTime.from(event.date, tz.local));
-      }
+      notificationHelper.setSolarNotify(true);
     }
 
     if (isPermissionGranted &&
         sharedPreferenceProvider.isMemoNotifyEnable() &&
         event.eventType == EventType.custom) {
-      var futureCustomEvents =
-          await calendarEventRepository.getFutureCustomEvents();
-      for (var event in futureCustomEvents) {
-        int id = event.getNotifyId();
-        localNotificationProvider.showNotification(id, event.eventName, null,
-            tz.TZDateTime.from(event.date, tz.local));
-      }
+      notificationHelper.setMemoNotify(true);
     }
 
     await _update();
@@ -101,34 +86,19 @@ class SettingsCalendarBloc extends Bloc<SettingsCalendarEvent, SettingsState> {
 
     if (event.eventType == EventType.solar &&
         sharedPreferenceProvider.isSolarNotifyEnable()) {
-      var futureSolarEvents =
-          await calendarEventRepository.getFutureSolarEvents();
-      for (var event in futureSolarEvents) {
-        int id = event.getNotifyId();
-        localNotificationProvider.cancelNotification(id);
-      }
+      notificationHelper.setSolarNotify(false);
     }
 
     if (event.eventType == EventType.custom &&
         sharedPreferenceProvider.isMemoNotifyEnable()) {
-      var futureCustomEvents =
-          await calendarEventRepository.getFutureCustomEvents();
-      for (var event in futureCustomEvents) {
-        int id = event.getNotifyId();
-        localNotificationProvider.cancelNotification(id);
-      }
+      notificationHelper.setMemoNotify(false);
     }
 
     if (sharedPreferenceProvider.isCalendarNotifyEnable() &&
         event.eventType != EventType.solar &&
         event.eventType != EventType.lunar &&
         event.eventType != EventType.custom) {
-      var futureCalendarEvents = await calendarEventRepository
-          .getFutureEventsFromLocalDB(event.eventType.toCountryCode());
-      for (var event in futureCalendarEvents) {
-        int id = event.getNotifyId();
-        localNotificationProvider.cancelNotification(id);
-      }
+      notificationHelper.setCalendarNotify([event.eventType], false);
     }
 
     await _update();

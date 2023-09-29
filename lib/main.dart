@@ -15,6 +15,7 @@ import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/firebase_options.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/api/logging_interceptor.dart';
@@ -147,6 +148,12 @@ class MyApp extends StatelessWidget {
         ),
         RepositoryProvider<AnalyticsHelper>(create: (BuildContext context) {
           return AnalyticsHelperImpl();
+        }),
+        RepositoryProvider<NotificationHelper>(create: (BuildContext context) {
+          return NotificationHelper(
+              calendarEventRepository: context.read<CalendarEventRepository>(),
+              localNotificationProvider:
+                  context.read<LocalNotificationProvider>());
         }),
       ],
       child: MaterialApp(

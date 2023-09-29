@@ -55,9 +55,9 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
   Future<NotificationStatus> showNotification(
       int id, String title, String? body, tz.TZDateTime targetDateTime) async {
     tz.TZDateTime remindDate;
-    /*if (kDebugMode) {
+    if (kDebugMode) {
       remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
-    } else {*/
+    } else {
     var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
     var totalMinute = 24 * 60;
     var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
@@ -65,7 +65,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
     remindDate = targetDateTime
         .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
-    /*}*/
+    }
 
     if (tz.TZDateTime.now(tz.local).isAfter(remindDate)) {
       debugPrint('[Tony] showNotification due date in past, $remindDate');

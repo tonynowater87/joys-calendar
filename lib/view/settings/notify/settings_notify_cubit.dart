@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
@@ -14,11 +15,13 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
   LocalNotificationProvider localNotificationProvider;
   SharedPreferenceProvider sharedPreferenceProvider;
   CalendarEventRepository calendarEventRepository;
+  NotificationHelper notificationHelper;
 
   SettingsNotifyCubit(
       {required this.localNotificationProvider,
       required this.sharedPreferenceProvider,
-      required this.calendarEventRepository})
+      required this.calendarEventRepository,
+      required this.notificationHelper})
       : super(SettingsNotifyState(
             calendarNotify: sharedPreferenceProvider.isCalendarNotifyEnable(),
             memoNotify: sharedPreferenceProvider.isMemoNotifyEnable(),
@@ -39,23 +42,15 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
     debugPrint('[Tony] setCalendarNotify: $enable');
 
     emit(state.copyWith(isLoading: true));
-    var countries = sharedPreferenceProvider.getSavedCalendarEvents().where(
-        (element) =>
+    var countries = sharedPreferenceProvider
+        .getSavedCalendarEvents()
+        .where((element) =>
             element != EventType.custom &&
             element != EventType.lunar &&
-            element != EventType.solar);
-    for (var country in countries) {
-      for (var event in await calendarEventRepository
-          .getFutureEventsFromLocalDB(country.toCountryCode())) {
-        int id = event.getNotifyId();
-        if (enable) {
-          await localNotificationProvider.showNotification(id, event.eventName,
-              null, tz.TZDateTime.from(event.date, tz.local));
-        } else {
-          await localNotificationProvider.cancelNotification(id);
-        }
-      }
-    }
+            element != EventType.solar)
+        .toList();
+
+    notificationHelper.setCalendarNotify(countries, enable);
 
     sharedPreferenceProvider.setCalendarNotifyEnable(enable);
     emit(state.copyWith(

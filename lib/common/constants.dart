@@ -9,6 +9,9 @@ class AppConstants {
   // memo date format
   static const String memoDateFormat = 'yyyy/MM/dd';
 
+  // notify date format
+  static const String notifyDateFormat = 'MM/dd(E)';
+
   // ad-mob id
   static const String INTERSTITIAL_ANDROID_ID = String.fromEnvironment(
       "INTERSTITIAL-ANDROID-ID",

@@ -166,7 +166,8 @@ class LocalDatasourceImpl extends LocalDatasource {
     var now = DateTime.now();
     var result = getCalendarModels(countryCode)
         .where((element) => element.dateTime.isAfter(now))
-        .toList();
+        .toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime)); // sorted ascending
     return result;
   }
 
@@ -175,7 +176,8 @@ class LocalDatasourceImpl extends LocalDatasource {
     var now = DateTime.now();
     var result = getAllMemos()
         .where((element) => element.dateTime.isAfter(now))
-        .toList();
+        .toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime)); // sorted ascending
     return result;
   }
 
@@ -184,7 +186,8 @@ class LocalDatasourceImpl extends LocalDatasource {
     var now = DateTime.now();
     var result = getJieQiModels()
         .where((element) => element.dateTime.isAfter(now))
-        .toList();
+        .toList()
+      ..sort((a, b) => a.dateTime.compareTo(b.dateTime)); // sorted ascending
     return result;
   }
 }

@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/repo/app_info_provider.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
@@ -65,7 +66,8 @@ class _SettingsPageState extends State<SettingsPage> {
                                         context
                                             .read<SharedPreferenceProvider>(),
                                         context
-                                            .read<LocalNotificationProvider>()),
+                                            .read<LocalNotificationProvider>(),
+                                        context.read<NotificationHelper>()),
                                     child: const SettingsCalendarGridListView(),
                                   ),
                                 ),
@@ -115,7 +117,9 @@ class _SettingsPageState extends State<SettingsPage> {
                                       sharedPreferenceProvider: context
                                           .read<SharedPreferenceProvider>(),
                                       calendarEventRepository: context
-                                          .read<CalendarEventRepository>()),
+                                          .read<CalendarEventRepository>(),
+                                      notificationHelper:
+                                          context.read<NotificationHelper>()),
                                   child: const SettingsNotifyPage(),
                                 ),
                                 isExpanded: item.isExpanded);

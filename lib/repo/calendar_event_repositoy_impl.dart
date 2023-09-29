@@ -49,11 +49,20 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             eventName: element.summary!);
         result.add(eventModel);
       });
+
+      var continuousDayMap = result.fold({}, (map, element) {
+        var key = element.date.year.toString() + element.eventName;
+        map[key] = map[key] == null ? 0 : map[key] + 1;
+        return map;
+      });
+
       await localDatasource.saveCalendarModels(result
           .map((e) => CalendarModel()
             ..displayName = e.eventName
             ..dateTime = e.date
-            ..country = e.eventType.toCountryCode())
+            ..country = e.eventType.toCountryCode()
+            ..continuousDays =
+                continuousDayMap[e.date.year.toString() + e.eventName])
           .toList());
       return result;
     } on Exception catch (e) {
@@ -210,7 +219,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       result.add(EventModel(
           date: element.dateTime,
           eventType: fromCreatorEmail(country)!,
-          eventName: element.displayName));
+          eventName: element.displayName,
+          continuousDays: element.continuousDays));
     }
     return Future.value(result);
   }
