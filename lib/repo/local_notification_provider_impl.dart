@@ -58,13 +58,13 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     /*if (kDebugMode) {
       remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
     } else {*/
-      var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
-      var totalMinute = 24 * 60;
-      var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
-      var subtractHour = (totalMinute - remindTimeInMinute) ~/ 60;
-      var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
-      remindDate = targetDateTime
-          .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
+    var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
+    var totalMinute = 24 * 60;
+    var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
+    var subtractHour = (totalMinute - remindTimeInMinute) ~/ 60;
+    var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
+    remindDate = targetDateTime
+        .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
     /*}*/
 
     if (tz.TZDateTime.now(tz.local).isAfter(remindDate)) {
@@ -76,31 +76,9 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
         '[Tony] showNotification: $id, $title, $body, $targetDateTime $remindDate');
 
     if (Platform.isAndroid) {
-      var permissionResult = await checkPermission();
-      debugPrint('[Tony] showNotify permissionResult: $permissionResult');
-      switch (permissionResult) {
-        case NotificationStatus.granted:
-          return showAndroidNotify(id, title, body, remindDate);
-        case NotificationStatus.denied:
-        case NotificationStatus.androidSettings:
-        case NotificationStatus.iOSSettings:
-        case NotificationStatus.unknown:
-        case NotificationStatus.notificationDueDateInPast:
-          return permissionResult;
-      }
+      return showAndroidNotify(id, title, body, remindDate);
     } else if (Platform.isIOS) {
-      var permissionResult = await checkPermission();
-      debugPrint('[Tony] showNotify permissionResult: $permissionResult');
-      switch (permissionResult) {
-        case NotificationStatus.granted:
-          return showIOSNotify(id, title, body, remindDate);
-        case NotificationStatus.denied:
-        case NotificationStatus.androidSettings:
-        case NotificationStatus.iOSSettings:
-        case NotificationStatus.unknown:
-        case NotificationStatus.notificationDueDateInPast:
-          return permissionResult;
-      }
+      return showIOSNotify(id, title, body, remindDate);
     } else {
       return Future.value(NotificationStatus.unknown);
     }
