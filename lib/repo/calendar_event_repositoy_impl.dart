@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
@@ -51,8 +52,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       });
 
       var continuousDayMap = result.fold({}, (map, element) {
-        var key = element.date.year.toString() + element.eventName;
+        String key = element.getContinuousDayMapKey();
         map[key] = map[key] == null ? 0 : map[key] + 1;
+        //debugPrint('[Tony] key=$key, value=${map[key]}');
         return map;
       });
 
@@ -61,8 +63,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             ..displayName = e.eventName
             ..dateTime = e.date
             ..country = e.eventType.toCountryCode()
-            ..continuousDays =
-                continuousDayMap[e.date.year.toString() + e.eventName])
+            ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
           .toList());
       return result;
     } on Exception catch (e) {

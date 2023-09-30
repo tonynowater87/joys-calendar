@@ -15,11 +15,25 @@ class CalendarModel extends HiveObject {
   @HiveField(2)
   late String country;
 
-  @HiveField(3)
+  @HiveField(3, defaultValue: 0)
   late int continuousDays;
 
-  @override
-  String toString() {
-    return 'CalendarModel{key:$key, displayName: $displayName, dateTime: $dateTime, country: $country, continuousDays: $continuousDays}';
+  static CalendarModel fromJson(Map<String, dynamic> json) {
+    CalendarModel model = CalendarModel()
+      ..displayName = json['displayName'] ?? ''
+      ..dateTime = DateTime.fromMillisecondsSinceEpoch(json['dateTime'] as int)
+      ..country = json['country'] ?? ''
+      ..continuousDays = json['continuousDays'] ?? 0;
+    return model;
+  }
+
+  static Map<String, dynamic> toJson(CalendarModel model) {
+    Map<String, dynamic> json = {
+      'displayName': model.displayName,
+      'dateTime': model.dateTime.millisecondsSinceEpoch,
+      'country': model.country,
+      'continuousDays': model.continuousDays,
+    };
+    return json;
   }
 }

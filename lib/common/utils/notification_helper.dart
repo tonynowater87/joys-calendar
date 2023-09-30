@@ -3,6 +3,7 @@ import 'dart:io';
 import 'package:flutter/foundation.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
+import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
@@ -23,7 +24,7 @@ class NotificationHelper {
           .getFutureEventsFromLocalDB(country.toCountryCode());
 
       var map = countryEvents.fold({}, (map, element) {
-        var key = element.date.year.toString() + element.eventName;
+        var key = element.getContinuousDayMapKey();
         map[key] = map[key] == null ? 0 : map[key]! + 1;
         return map;
       });
@@ -41,7 +42,7 @@ class NotificationHelper {
             await localNotificationProvider.showNotification(id,
                 "明天 $startDateFormat", event.eventName, targetStartDateTime);
           } else {
-            var key = event.date.year.toString() + event.eventName;
+            var key = event.getContinuousDayMapKey();
             if (event.continuousDays == map[key]) {
               map[key] = map[key]! - 1;
               var targetEndDateTime =
@@ -51,8 +52,8 @@ class NotificationHelper {
                       .format(targetEndDateTime);
               await localNotificationProvider.showNotification(
                   id,
-                  "明天開始 [${event.eventName}] 連續假期",
-                  "$startDateFormat - $endDateFormat",
+                  "明天 [${event.eventName}]",
+                  "開始連續假期 $startDateFormat - $endDateFormat",
                   targetStartDateTime);
             }
           }

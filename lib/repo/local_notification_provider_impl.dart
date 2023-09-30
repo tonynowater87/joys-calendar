@@ -58,13 +58,13 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     if (kDebugMode) {
       remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
     } else {
-    var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
-    var totalMinute = 24 * 60;
-    var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
-    var subtractHour = (totalMinute - remindTimeInMinute) ~/ 60;
-    var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
-    remindDate = targetDateTime
-        .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
+      var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
+      var totalMinute = 24 * 60;
+      var remindTimeInMinute = notifyTime.hour * 60 + notifyTime.minute;
+      var subtractHour = (totalMinute - remindTimeInMinute) ~/ 60;
+      var subtractMinute = (totalMinute - remindTimeInMinute) % 60;
+      remindDate = targetDateTime
+          .subtract(Duration(hours: subtractHour, minutes: subtractMinute));
     }
 
     if (tz.TZDateTime.now(tz.local).isAfter(remindDate)) {

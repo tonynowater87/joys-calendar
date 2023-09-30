@@ -18,4 +18,8 @@ class AppConstants {
       defaultValue: "ca-app-pub-3940256099942544/8691691433");
   static const String INTERSTITIAL_IOS_ID = String.fromEnvironment("INTERSTITIAL-IOS-ID",
       defaultValue: "ca-app-pub-3940256099942544/8691691433");
+
+  // constant for chinese lunar notify logic
+  static const String LUNAR_CHINESE_YEAR = "農曆";
+  static const String FOR_LUNAR_CHINESE_YEAR_WORK_DAY = "補班";
 }
