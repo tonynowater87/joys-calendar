@@ -41,7 +41,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setCalendarNotify: $enable');
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+        isLoading: true, showNotifyAlertPermissionDialog: false));
     var countries = sharedPreferenceProvider
         .getSavedCalendarEvents()
         .where((element) =>
@@ -70,7 +71,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setMemoNotify: $enable');
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+        isLoading: true, showNotifyAlertPermissionDialog: false));
 
     var hasSavedMemoEvent = sharedPreferenceProvider
         .getSavedCalendarEvents()
@@ -108,7 +110,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
 
     debugPrint('[Tony] setSolarNotify: $enable');
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+        isLoading: true, showNotifyAlertPermissionDialog: false));
     var hasSavedSolarEvent = sharedPreferenceProvider
         .getSavedCalendarEvents()
         .where((element) => element == EventType.solar)
@@ -141,7 +144,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
       return;
     }
 
-    emit(state.copyWith(isLoading: true));
+    emit(state.copyWith(
+        isLoading: true, showNotifyAlertPermissionDialog: false));
 
     if (state.solarNotify) {
       var hasSavedSolarEvent = sharedPreferenceProvider
