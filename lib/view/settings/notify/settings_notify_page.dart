@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/view/settings/notify/settings_notify_cubit.dart';
+import 'package:notification_permissions/notification_permissions.dart';
 
 class SettingsNotifyPage extends StatelessWidget {
   const SettingsNotifyPage({Key? key}) : super(key: key);
@@ -74,6 +75,7 @@ class SettingsNotifyPage extends StatelessWidget {
         ],
       );
     }, listener: (BuildContext context, state) {
+      debugPrint('[Tony] notify listener: $state');
       if (state.isLoading) {
         DialogUtils.showLoaderDialog(context, "更新通知提醒...");
       } else {
@@ -95,6 +97,9 @@ class SettingsNotifyPage extends StatelessWidget {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
+                        NotificationPermissions
+                            .requestNotificationPermissions(
+                            openSettings: true);
                       },
                       child: const Text('確定'))
                 ],

@@ -103,18 +103,19 @@ class MyApp extends StatelessWidget {
         RepositoryProvider<AppInfoProvider>(create: (BuildContext context) {
           return AppInfoProvider();
         }),
-        RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
-          return LocalDatasourceImpl();
-        }),
         RepositoryProvider<SharedPreferenceProvider>(
             create: (BuildContext context) {
           return SharedPreferenceProviderImpl(_prefs);
         }),
         RepositoryProvider<LocalNotificationProvider>(
             create: (BuildContext context) {
-          return LocalNotificationProviderImpl(
-              sharedPreferenceProvider:
-                  context.read<SharedPreferenceProvider>());
+              return LocalNotificationProviderImpl(
+                  sharedPreferenceProvider:
+                      context.read<SharedPreferenceProvider>());
+            },
+            lazy: false),
+        RepositoryProvider<LocalDatasource>(create: (BuildContext context) {
+          return LocalDatasourceImpl();
         }),
         RepositoryProvider<CalendarEventRepository>(
             create: (BuildContext context) {
@@ -129,7 +130,8 @@ class MyApp extends StatelessWidget {
               CalendarApiClient(dio, baseUrl: apiBaseURL),
               context.read<SharedPreferenceProvider>(),
               context.read<LocalDatasource>(),
-              calendarApiKey);
+              calendarApiKey,
+              context.read<LocalNotificationProvider>());
         }),
         RepositoryProvider<BackUpRepository>(
           lazy: false,

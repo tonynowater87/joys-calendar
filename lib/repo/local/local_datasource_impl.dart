@@ -8,6 +8,7 @@ import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
 import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 
 class LocalDatasourceImpl extends LocalDatasource {
   static Future<void> init() async {
@@ -109,12 +110,21 @@ class LocalDatasourceImpl extends LocalDatasource {
   }
 
   @override
-  Future<void> saveCalendarModels(List<CalendarModel> models) {
+  Future<List<EventModel>> saveCalendarModels(List<CalendarModel> models) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
-    return Future.forEach(
-        models,
-        (element) =>
-            box.put("${element.dateTime} ${element.country}", element));
+    List<EventModel> result = [];
+    return Future.forEach(models, (element) {
+      var key = "${element.dateTime} ${element.country}";
+      var existModel = box.get(key);
+      if (existModel == null) {
+        result.add(EventModel(
+            date: element.dateTime,
+            eventType: fromCreatorEmail(element.country)!,
+            eventName: element.displayName,
+            continuousDays: element.continuousDays));
+      }
+      box.put(key, element);
+    }).then((value) => result);
   }
 
   @override

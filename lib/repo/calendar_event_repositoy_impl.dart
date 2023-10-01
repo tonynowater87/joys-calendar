@@ -1,10 +1,12 @@
 import 'package:flutter/foundation.dart';
 import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
+import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
 import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
+import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/model/event_dto/event_dto.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
@@ -14,10 +16,15 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   final CalendarApiClient _calendarApiClient;
   final SharedPreferenceProvider _sharedPreferenceProvider;
   final LocalDatasource localDatasource;
+  final LocalNotificationProvider localNotificationProvider;
   final String apiKey;
 
-  CalendarEventRepositoryImpl(this._calendarApiClient,
-      this._sharedPreferenceProvider, this.localDatasource, this.apiKey);
+  CalendarEventRepositoryImpl(
+      this._calendarApiClient,
+      this._sharedPreferenceProvider,
+      this.localDatasource,
+      this.apiKey,
+      this.localNotificationProvider);
 
   @override
   Future<List<EventModel>> getEventsFromLocalDB(String country) async {
@@ -58,13 +65,36 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         return map;
       });
 
-      await localDatasource.saveCalendarModels(result
-          .map((e) => CalendarModel()
-            ..displayName = e.eventName
-            ..dateTime = e.date
-            ..country = e.eventType.toCountryCode()
-            ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
-          .toList());
+      List<EventModel> firstTimeAddedCalendarModels =
+          await localDatasource.saveCalendarModels(result
+              .map((e) => CalendarModel()
+                ..displayName = e.eventName
+                ..dateTime = e.date
+                ..country = e.eventType.toCountryCode()
+                ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
+              .toList());
+
+      if (_sharedPreferenceProvider.isCalendarNotifyEnable()) {
+        var savedCalendarEvents =
+            _sharedPreferenceProvider.getSavedCalendarEvents();
+        if (firstTimeAddedCalendarModels.isNotEmpty &&
+            savedCalendarEvents
+                .contains(firstTimeAddedCalendarModels.first.eventType)) {
+          var firstTimeAddedEventsContinuousDayMap =
+              firstTimeAddedCalendarModels.fold({}, (map, element) {
+            var key = element.getContinuousDayMapKey();
+            map[key] = map[key] == null ? 0 : map[key]! + 1;
+            return map;
+          });
+
+          for (var event in firstTimeAddedCalendarModels) {
+            // debugPrint(
+            //     '[Test] handle firsTimeNotify: ${event.eventName}, ${event.date}');
+            localNotificationProvider.showCalendarNotify(
+                event, firstTimeAddedEventsContinuousDayMap);
+          }
+        }
+      }
       return result;
     } on Exception catch (e) {
       return result;

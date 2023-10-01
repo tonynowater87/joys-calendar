@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:math';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
@@ -54,9 +55,16 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
   @override
   Future<NotificationStatus> showNotification(
       int id, String title, String? body, tz.TZDateTime targetDateTime) async {
+
+    var isInit = await _ensureInitialized();
+    if (!isInit) {
+      return Future.value(NotificationStatus.unknown);
+    }
+
     tz.TZDateTime remindDate;
     if (kDebugMode) {
-      remindDate = tz.TZDateTime.now(tz.local).add(const Duration(seconds: 10));
+      Random random = Random();
+      remindDate = tz.TZDateTime.now(tz.local).add(Duration(seconds: random.nextInt(3)));
     } else {
       var notifyTime = sharedPreferenceProvider.getMemoNotifyTime();
       var totalMinute = 24 * 60;

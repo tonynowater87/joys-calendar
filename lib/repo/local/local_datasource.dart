@@ -1,6 +1,7 @@
 import 'package:joys_calendar/repo/local/model/calendar_model.dart';
 import 'package:joys_calendar/repo/local/model/jieqi_model.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 
 abstract class LocalDatasource {
   Future<bool> hasMemo(DateTime dateTime);
@@ -21,7 +22,7 @@ abstract class LocalDatasource {
 
   List<CalendarModel> getCalendarModels(String countryCode);
 
-  Future<void> saveCalendarModels(List<CalendarModel> models);
+  Future<List<EventModel>> saveCalendarModels(List<CalendarModel> models);
 
   List<JieQiModel> getFutureJieQiModels();
 
