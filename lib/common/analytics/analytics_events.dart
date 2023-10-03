@@ -23,6 +23,12 @@ const event_setting_country = 'setting_country';
 const event_setting_country_params_country_code_name = 'country_code';
 const event_setting_country_params_country_code_checked_name = 'checked';
 
+const event_setting_notify = 'setting_notify';
+const event_setting_notify_country_holiday_name = 'country_holiday_notify';
+const event_setting_notify_solar_name = 'country_solar_notify';
+const event_setting_notify_memo_name = 'country_memo_notify';
+const event_setting_notify_checked = 'checked';
+
 
 // home events
 const event_search = 'home_search';

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:joys_calendar/common/analytics/analytics_events.dart';
+import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/utils/dialog.dart';
 import 'package:joys_calendar/view/settings/notify/settings_notify_cubit.dart';
 import 'package:notification_permissions/notification_permissions.dart';
@@ -18,6 +20,11 @@ class SettingsNotifyPage extends StatelessWidget {
               activeColor: Colors.green,
               value: state.calendarNotify,
               onChanged: (checked) {
+                context
+                    .read<AnalyticsHelper>()
+                    .logEvent(name: event_setting_notify, parameters: {
+                  event_setting_notify_country_holiday_name: checked.toString()
+                });
                 debugPrint('[Tony] onChanged: $checked');
                 context.read<SettingsNotifyCubit>().setCalendarNotify(checked);
               }),
@@ -26,6 +33,11 @@ class SettingsNotifyPage extends StatelessWidget {
               activeColor: Colors.green,
               value: state.solarNotify,
               onChanged: (checked) {
+                context.read<AnalyticsHelper>().logEvent(
+                    name: event_setting_notify,
+                    parameters: {
+                      event_setting_notify_solar_name: checked.toString()
+                    });
                 debugPrint('[Tony] onChanged: $checked');
                 context.read<SettingsNotifyCubit>().setSolarNotify(checked);
               }),
@@ -34,6 +46,11 @@ class SettingsNotifyPage extends StatelessWidget {
               activeColor: Colors.green,
               value: state.memoNotify,
               onChanged: (checked) {
+                context.read<AnalyticsHelper>().logEvent(
+                    name: event_setting_notify,
+                    parameters: {
+                      event_setting_notify_memo_name: checked.toString()
+                    });
                 debugPrint('[Tony] onChanged: $checked');
                 context.read<SettingsNotifyCubit>().setMemoNotify(checked);
               }),
@@ -97,8 +114,7 @@ class SettingsNotifyPage extends StatelessWidget {
                   TextButton(
                       onPressed: () {
                         Navigator.of(context).pop();
-                        NotificationPermissions
-                            .requestNotificationPermissions(
+                        NotificationPermissions.requestNotificationPermissions(
                             openSettings: true);
                       },
                       child: const Text('確定'))
