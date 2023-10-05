@@ -99,7 +99,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     return _flutterLocalNotificationsPlugin
         .zonedSchedule(id, title, body, remindDate,
             const NotificationDetails(iOS: iOSPlatformChannelSpecifics),
-            androidScheduleMode: AndroidScheduleMode.exact,
+            androidScheduleMode: AndroidScheduleMode.inexact,
             uiLocalNotificationDateInterpretation:
                 UILocalNotificationDateInterpretation.absoluteTime)
         .then((value) => NotificationStatus.granted);
@@ -117,7 +117,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     return _flutterLocalNotificationsPlugin
         .zonedSchedule(id, title, body, remindDate,
             const NotificationDetails(android: androidNotificationDetails),
-            androidScheduleMode: AndroidScheduleMode.exact,
+            androidScheduleMode: AndroidScheduleMode.inexact,
             uiLocalNotificationDateInterpretation:
                 UILocalNotificationDateInterpretation.absoluteTime)
         .then((value) => NotificationStatus.granted);
