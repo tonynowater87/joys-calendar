@@ -108,7 +108,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
   Future<NotificationStatus> showAndroidNotify(
       int id, String title, String? body, tz.TZDateTime remindDate) {
     const AndroidNotificationDetails androidNotificationDetails =
-        AndroidNotificationDetails('我的記事頻道ID', '我的記事提醒',
+        AndroidNotificationDetails('Joy日曆通知頻道ID', 'Joy日曆通知提醒',
             channelDescription: '',
             importance: Importance.max,
             visibility: NotificationVisibility.secret,
