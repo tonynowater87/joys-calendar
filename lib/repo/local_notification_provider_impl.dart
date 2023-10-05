@@ -111,7 +111,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
         AndroidNotificationDetails('Joy日曆通知頻道ID', 'Joy日曆通知提醒',
             channelDescription: '',
             importance: Importance.max,
-            visibility: NotificationVisibility.secret,
+            visibility: NotificationVisibility.public,
             priority: Priority.high);
 
     return _flutterLocalNotificationsPlugin
