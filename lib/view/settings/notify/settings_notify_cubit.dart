@@ -81,15 +81,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
         .isNotEmpty;
 
     if (hasSavedMemoEvent) {
-      for (var event in await calendarEventRepository.getFutureCustomEvents()) {
-        int id = event.getNotifyId();
-        if (enable) {
-          await localNotificationProvider.showNotification(id, event.eventName,
-              null, tz.TZDateTime.from(event.date, tz.local));
-        } else {
-          await localNotificationProvider.cancelNotification(id);
-        }
-      }
+      await notificationHelper.setMemoNotify(enable);
     }
 
     sharedPreferenceProvider.setMemoNotifyEnable(enable);
@@ -119,15 +111,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
         .isNotEmpty;
 
     if (hasSavedSolarEvent) {
-      for (var event in await calendarEventRepository.getFutureSolarEvents()) {
-        int id = event.getNotifyId();
-        if (enable) {
-          localNotificationProvider.showNotification(id, event.eventName, null,
-              tz.TZDateTime.from(event.date, tz.local));
-        } else {
-          localNotificationProvider.cancelNotification(id);
-        }
-      }
+      await notificationHelper.setSolarNotify(enable);
     }
 
     sharedPreferenceProvider.setSolarNotifyEnable(enable);
@@ -155,12 +139,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
           .isNotEmpty;
 
       if (hasSavedSolarEvent) {
-        for (var event
-            in await calendarEventRepository.getFutureSolarEvents()) {
-          int id = event.getNotifyId();
-          await localNotificationProvider.showNotification(id, event.eventName,
-              null, tz.TZDateTime.from(event.date, tz.local));
-        }
+        notificationHelper.setSolarNotify(true);
       }
     }
 
@@ -169,15 +148,8 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
           (element) =>
               element != EventType.custom &&
               element != EventType.lunar &&
-              element != EventType.solar);
-      for (var country in countries) {
-        for (var event in await calendarEventRepository
-            .getFutureEventsFromLocalDB(country.toCountryCode())) {
-          int id = event.getNotifyId();
-          await localNotificationProvider.showNotification(id, event.eventName,
-              null, tz.TZDateTime.from(event.date, tz.local));
-        }
-      }
+              element != EventType.solar).toList();
+      notificationHelper.setCalendarNotify(countries, true);
     }
 
     if (state.memoNotify) {
@@ -188,12 +160,7 @@ class SettingsNotifyCubit extends Cubit<SettingsNotifyState> {
           .isNotEmpty;
 
       if (hasSavedMemoEvent) {
-        for (var event
-            in await calendarEventRepository.getFutureCustomEvents()) {
-          int id = event.getNotifyId();
-          await localNotificationProvider.showNotification(id, event.eventName,
-              null, tz.TZDateTime.from(event.date, tz.local));
-        }
+        notificationHelper.setMemoNotify(true);
       }
     }
 

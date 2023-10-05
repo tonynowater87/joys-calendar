@@ -2,12 +2,13 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/constants.dart';
+import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local/model/memo_model.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
-import 'package:timezone/timezone.dart' as tz;
 
 part 'add_event_event.dart';
 
@@ -76,17 +77,22 @@ class AddEventBloc extends Bloc<AddEventEvent, AddEventState> {
         await localNotificationProvider.isPermissionGranted()) {
       int id = memoModel.getNotifyId();
       await localNotificationProvider.cancelNotification(id);
-      localNotificationProvider.showNotification(id, memoModel.memo, null,
-          tz.TZDateTime.from(memoModel.dateTime, tz.local));
+      localNotificationProvider.showMemoNotify(EventModel(
+          date: memoModel.dateTime,
+          eventType: EventType.custom,
+          eventName: memoModel.memo,
+          idForModify: memoModel.key));
     }
   }
 
   Future<void> showNotification(MemoModel memoModel) async {
     if (sharedPreferenceProvider.isMemoNotifyEnable() &&
         await localNotificationProvider.isPermissionGranted()) {
-      int id = memoModel.getNotifyId();
-      await localNotificationProvider.showNotification(id, memoModel.memo, null,
-          tz.TZDateTime.from(memoModel.dateTime, tz.local));
+      localNotificationProvider.showMemoNotify(EventModel(
+          date: memoModel.dateTime,
+          eventType: EventType.custom,
+          eventName: memoModel.memo,
+          idForModify: memoModel.key));
     }
   }
 
