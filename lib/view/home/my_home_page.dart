@@ -13,10 +13,12 @@ import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
+import 'package:joys_calendar/view/common/date_picker/date_model.dart';
+import 'package:joys_calendar/view/common/date_picker/default_date_picker_dialog.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
-import 'package:month_year_picker/month_year_picker.dart';
+import 'package:lunar/lunar.dart';
 
 import '../../common/constants.dart';
 
@@ -170,8 +172,7 @@ class HomeCalendarPage extends StatefulWidget {
 
 class _HomeCalendarPageState extends State<HomeCalendarPage>
     with WidgetsBindingObserver {
-  final CellCalendarPageController cellCalendarPageController =
-      CellCalendarPageController();
+  final CellCalendarPageController cellCalendarPageController = CellCalendarPageController();
 
   var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
 
@@ -297,20 +298,30 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                                       .home
                                                       .toString()
                                             });
-                                        final pickedDate =
-                                            await showMonthYearPicker(
-                                                context: parentContext,
-                                                initialMonthYearPickerMode:
-                                                    MonthYearPickerMode.month,
-                                                initialDate: DateTime.now(),
-                                                firstDate: DateTime(1900),
-                                                lastDate: DateTime(2100));
+                                        DateModel? pickedDate =
+                                            await showDialog(
+                                                context: context,
+                                                builder: (context) {
+                                                  return DefaultDatePickerDialog
+                                                      .fromDate(currentDate.year, currentDate.month, null);
+                                                });
                                         if (!mounted) {
                                           return;
                                         }
                                         if (pickedDate != null) {
                                           setState(() {
-                                            currentDate = pickedDate;
+                                            if (pickedDate.isLunar) {
+                                              var solar = pickedDate.toSolar();
+                                              currentDate = DateTime(
+                                                  solar.getYear(),
+                                                  solar.getMonth(),
+                                                  solar.getDay());
+                                            } else {
+                                              currentDate = DateTime(
+                                                  pickedDate.year,
+                                                  pickedDate.month,
+                                                  pickedDate.day ?? 1);
+                                            }
                                           });
                                           cellCalendarPageController
                                               .animateToDate(
@@ -408,8 +419,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                               const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
                           title: Row(
                               mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceAround,
+                              mainAxisAlignment: MainAxisAlignment.spaceAround,
                               children: [
                                 FittedBox(
                                   fit: BoxFit.scaleDown,
@@ -439,8 +449,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                           var isAdded = await showDialog(
                                               context: parentContext,
                                               builder: (context) =>
-                                                  AddEventPage(
-                                                      dateTime: date));
+                                                  AddEventPage(dateTime: date));
                                           if (!mounted) {
                                             return;
                                           }
@@ -459,7 +468,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                 )
                               ]),
                           content: SizedBox(
-                            width: MediaQuery.of(parentContext).size.width * 0.95,
+                            width:
+                                MediaQuery.of(parentContext).size.width * 0.95,
                             child: ConstrainedBox(
                               constraints: BoxConstraints(
                                   minHeight: 200,
@@ -467,7 +477,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                       MediaQuery.of(context).size.height *
                                           0.55),
                               child: ListView.separated(
-                                shrinkWrap: true,
+                                  shrinkWrap: true,
                                   itemBuilder: (context, index) {
                                     final event = dayEvents[index];
                                     return ListTile(
@@ -475,10 +485,12 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                           eventName: event
                                               .getEventType()
                                               .toInfoDialogName(),
-                                          eventColor: event.eventBackgroundColor),
+                                          eventColor:
+                                              event.eventBackgroundColor),
                                       title: Text(event.eventName,
                                           style: TextStyle(
-                                              color: event.eventTextStyle.color)),
+                                              color:
+                                                  event.eventTextStyle.color)),
                                       onTap: () async {
                                         if (event.extractEventTypeName() ==
                                             EventType.custom.name) {
@@ -495,7 +507,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                           var isAdded = await showDialog(
                                               context: context,
                                               builder: (context) =>
-                                                  AddEventPage(memoModelKey: id));
+                                                  AddEventPage(
+                                                      memoModelKey: id));
                                           if (!mounted) {
                                             return;
                                           }
@@ -520,6 +533,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                       firstDate.difference(lastDate).inMilliseconds ~/ 2;
                   final midDate = DateTime.fromMillisecondsSinceEpoch(
                       lastDate.millisecondsSinceEpoch + diff);
+                  debugPrint('[Tony] onPageChanged: $midDate, $firstDate, $lastDate');
                   setState(() {
                     currentDate = midDate;
                     updateLunarAndSolar(cubit);
