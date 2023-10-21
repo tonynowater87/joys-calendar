@@ -11,6 +11,7 @@ import 'package:joys_calendar/common/extentions/date_time_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/view/add/adding_event_page.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/common/date_picker/date_model.dart';
@@ -107,7 +108,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
                             context: context,
-                            builder: (context) => AddEventPage());
+                            builder: (context) => AddingEventPage(dateTime: DateTime.now()));
                         if (!mounted) {
                           return;
                         }

@@ -76,8 +76,8 @@ class _DefaultDatePickerDialogState extends State<DefaultDatePickerDialog> {
                     if (!widget._isLunar && value == 2) {
                       debugPrint(
                           '[Tony] 轉農曆前 ${widget._year} ${widget._month} ${widget._day}');
-                      var luanr = Lunar.fromDate(
-                          DateTime(widget._year, widget._month, widget._day ?? 1));
+                      var luanr = Lunar.fromDate(DateTime(
+                          widget._year, widget._month, widget._day ?? 1));
                       widget._year = luanr.getYear();
                       widget._month = luanr.getMonth();
                       widget._day = widget._day == null ? null : luanr.getDay();

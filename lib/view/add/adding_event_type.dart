@@ -1,0 +1,1 @@
+enum AddingEventType { memo, festival }
