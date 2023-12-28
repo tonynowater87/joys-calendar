@@ -278,8 +278,29 @@ List<EventModel> getLunarEventTask(dynamic map) {
   List<EventModel> result = [];
   for (var year = startYear; year <= endYear; year++) {
     var dateTime = DateTime(year);
-    for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
+    for (var dayOfYear = 0; dayOfYear <= 364; dayOfYear++) {
       var thisDay = dateTime.add(Duration(days: dayOfYear));
+      var thisDayLunar = Lunar.fromDate(thisDay);
+      result.add(EventModel(
+          date: thisDay,
+          eventType: EventType.lunar,
+          eventName:
+              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+    }
+    // add next week lunar events for next year, because calendar will preview next week
+    for (var dayOfYear = 0; dayOfYear <= 6; dayOfYear++) {
+      var thisDay = dateTime.add(Duration(days: 365 + dayOfYear));
+      var thisDayLunar = Lunar.fromDate(thisDay);
+      result.add(EventModel(
+          date: thisDay,
+          eventType: EventType.lunar,
+          eventName:
+              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+    }
+
+    // add previous week lunar events for next year, because calendar will preview previous week
+    for (var dayOfYear = 1; dayOfYear <= 7; dayOfYear++) {
+      var thisDay = dateTime.subtract(Duration(days: dayOfYear));
       var thisDayLunar = Lunar.fromDate(thisDay);
       result.add(EventModel(
           date: thisDay,
