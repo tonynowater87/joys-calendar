@@ -534,10 +534,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                   final midDate = DateTime.fromMillisecondsSinceEpoch(
                       lastDate.millisecondsSinceEpoch + diff);
                   debugPrint('[Tony] onPageChanged: $midDate, $firstDate, $lastDate');
-                  setState(() {
-                    currentDate = midDate;
-                    updateLunarAndSolar(cubit);
-                  });
+                  currentDate = midDate;
+                  updateLunarAndSolar(cubit);
                 },
                 dateTextStyle:
                     JoysCalendarThemeData.calendarTextTheme.bodyText2,
