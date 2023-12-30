@@ -207,341 +207,335 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
         return const Center(child: CircularProgressIndicator());
       case HomeStatus.success:
       case HomeStatus.title:
-        return Column(
-          children: [
-            Expanded(
-              child: CellCalendar(
-                todayMarkColor: Theme.of(parentContext).colorScheme.primary,
-                cellCalendarPageController: cellCalendarPageController,
-                events: state.events,
-                daysOfTheWeekBuilder: (dayIndex) {
-                  final labels = ["日", "一", "二", "三", "四", "五", "六"];
-                  return Padding(
-                    padding: const EdgeInsets.only(bottom: 4.0),
-                    child: Text(
-                      labels[dayIndex],
-                      textAlign: TextAlign.center,
-                    ),
-                  );
-                },
-                monthYearLabelBuilder: (datetime) {
-                  final yearString =
-                      DateFormat('西元 y年', AppConstants.defaultLocale)
-                          .format(datetime!);
-                  final monthString =
-                      DateFormat('MMMM', AppConstants.defaultLocale)
-                          .format(datetime);
+        return CellCalendar(
+          todayMarkColor: Theme.of(parentContext).colorScheme.primary,
+          cellCalendarPageController: cellCalendarPageController,
+          events: state.events,
+          daysOfTheWeekBuilder: (dayIndex) {
+            final labels = ["日", "一", "二", "三", "四", "五", "六"];
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 4.0),
+              child: Text(
+                labels[dayIndex],
+                textAlign: TextAlign.center,
+              ),
+            );
+          },
+          monthYearLabelBuilder: (datetime) {
+            final yearString =
+                DateFormat('西元 y年', AppConstants.defaultLocale)
+                    .format(datetime!);
+            final monthString =
+                DateFormat('MMMM', AppConstants.defaultLocale)
+                    .format(datetime);
 
-                  return Padding(
-                    padding:
-                        const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+            return Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.max,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: <Widget>[
+                        Text("$yearString ${datetime.yearOfRoc}"),
+                        Text(
+                            "$monthString ${datetime.ganZhi} ${datetime.shenXiao}"),
+                      ],
+                    ),
+                  ),
+                  Flexible(
+                    flex: 2,
                     child: Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Flexible(
-                          flex: 3,
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: <Widget>[
-                              Text("$yearString ${datetime.yearOfRoc}"),
-                              Text(
-                                  "$monthString ${datetime.ganZhi} ${datetime.shenXiao}"),
-                            ],
-                          ),
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      mainAxisSize: MainAxisSize.max,
+                      children: <Widget>[
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                              onTap: () {
+                                analyticsHelper.logEvent(
+                                    name: event_previous_month);
+                                setState(() {
+                                  if (currentDate.month == 1) {
+                                    currentDate = DateTime(
+                                        currentDate.year - 1,
+                                        DateTime.december);
+                                  } else {
+                                    currentDate = DateTime(
+                                        currentDate.year,
+                                        currentDate.month - 1);
+                                  }
+                                });
+                                cellCalendarPageController.animateToDate(
+                                    currentDate,
+                                    curve: Curves.linear,
+                                    duration: const Duration(
+                                        milliseconds: 300));
+                              },
+                              child: const Icon(Icons.navigate_before)),
                         ),
-                        Flexible(
-                          flex: 2,
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            mainAxisSize: MainAxisSize.max,
-                            children: <Widget>[
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                    onTap: () {
-                                      analyticsHelper.logEvent(
-                                          name: event_previous_month);
-                                      setState(() {
-                                        if (currentDate.month == 1) {
-                                          currentDate = DateTime(
-                                              currentDate.year - 1,
-                                              DateTime.december);
-                                        } else {
-                                          currentDate = DateTime(
-                                              currentDate.year,
-                                              currentDate.month - 1);
-                                        }
+                        currentDate.year == DateTime.now().year &&
+                                currentDate.month == DateTime.now().month
+                            ? InkWell(
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(Icons.edit_calendar),
+                                ),
+                                onTap: () async {
+                                  analyticsHelper.logEvent(
+                                      name: event_select_date,
+                                      parameters: {
+                                        event_select_date_params_position_name:
+                                            event_select_date_params_position
+                                                .home
+                                                .toString()
                                       });
-                                      cellCalendarPageController.animateToDate(
-                                          currentDate,
-                                          curve: Curves.linear,
-                                          duration: const Duration(
-                                              milliseconds: 300));
-                                    },
-                                    child: const Icon(Icons.navigate_before)),
-                              ),
-                              currentDate.year == DateTime.now().year &&
-                                      currentDate.month == DateTime.now().month
-                                  ? InkWell(
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: Icon(Icons.edit_calendar),
-                                      ),
-                                      onTap: () async {
-                                        analyticsHelper.logEvent(
-                                            name: event_select_date,
-                                            parameters: {
-                                              event_select_date_params_position_name:
-                                                  event_select_date_params_position
-                                                      .home
-                                                      .toString()
-                                            });
-                                        DateModel? pickedDate =
-                                            await showDialog(
-                                                context: context,
-                                                builder: (context) {
-                                                  return DefaultDatePickerDialog
-                                                      .fromDate(currentDate.year, currentDate.month, null);
-                                                });
-                                        if (!mounted) {
-                                          return;
-                                        }
-                                        if (pickedDate != null) {
-                                          setState(() {
-                                            if (pickedDate.isLunar) {
-                                              var solar = pickedDate.toSolar();
-                                              currentDate = DateTime(
-                                                  solar.getYear(),
-                                                  solar.getMonth(),
-                                                  solar.getDay());
-                                            } else {
-                                              currentDate = DateTime(
-                                                  pickedDate.year,
-                                                  pickedDate.month,
-                                                  pickedDate.day ?? 1);
-                                            }
+                                  DateModel? pickedDate =
+                                      await showDialog(
+                                          context: context,
+                                          builder: (context) {
+                                            return DefaultDatePickerDialog
+                                                .fromDate(currentDate.year, currentDate.month, null);
                                           });
-                                          cellCalendarPageController
-                                              .animateToDate(
-                                            currentDate,
-                                            curve: Curves.linear,
-                                            duration: const Duration(
-                                                milliseconds: 300),
-                                          );
-                                        }
-                                      })
-                                  : InkWell(
-                                      onTap: () {
-                                        analyticsHelper.logEvent(
-                                            name: event_back_to_today);
-                                        setState(() {
-                                          currentDate = DateTime.now();
-                                        });
-                                        cellCalendarPageController
-                                            .animateToDate(
-                                          currentDate,
-                                          curve: Curves.linear,
-                                          duration:
-                                              const Duration(milliseconds: 300),
-                                        );
-                                      },
-                                      child: const Padding(
-                                        padding: EdgeInsets.all(8),
-                                        child: Icon(Icons.calendar_today),
-                                      )),
-                              Padding(
-                                padding: const EdgeInsets.all(8),
-                                child: InkWell(
-                                    onTap: () {
-                                      analyticsHelper.logEvent(
-                                          name: event_next_month);
-                                      setState(() {
-                                        if (currentDate.month == 12) {
-                                          currentDate = DateTime(
-                                              currentDate.year + 1,
-                                              DateTime.january);
-                                        } else {
-                                          currentDate = DateTime(
-                                              currentDate.year,
-                                              currentDate.month + 1);
-                                        }
-                                      });
-                                      cellCalendarPageController.animateToDate(
-                                          currentDate,
-                                          curve: Curves.linear,
-                                          duration: const Duration(
-                                              milliseconds: 300));
-                                    },
-                                    child: const Icon(Icons.navigate_next)),
-                              ),
-                            ],
-                          ),
+                                  if (!mounted) {
+                                    return;
+                                  }
+                                  if (pickedDate != null) {
+                                    setState(() {
+                                      if (pickedDate.isLunar) {
+                                        var solar = pickedDate.toSolar();
+                                        currentDate = DateTime(
+                                            solar.getYear(),
+                                            solar.getMonth(),
+                                            solar.getDay());
+                                      } else {
+                                        currentDate = DateTime(
+                                            pickedDate.year,
+                                            pickedDate.month,
+                                            pickedDate.day ?? 1);
+                                      }
+                                    });
+                                    cellCalendarPageController
+                                        .animateToDate(
+                                      currentDate,
+                                      curve: Curves.linear,
+                                      duration: const Duration(
+                                          milliseconds: 300),
+                                    );
+                                  }
+                                })
+                            : InkWell(
+                                onTap: () {
+                                  analyticsHelper.logEvent(
+                                      name: event_back_to_today);
+                                  setState(() {
+                                    currentDate = DateTime.now();
+                                  });
+                                  cellCalendarPageController
+                                      .animateToDate(
+                                    currentDate,
+                                    curve: Curves.linear,
+                                    duration:
+                                        const Duration(milliseconds: 300),
+                                  );
+                                },
+                                child: const Padding(
+                                  padding: EdgeInsets.all(8),
+                                  child: Icon(Icons.calendar_today),
+                                )),
+                        Padding(
+                          padding: const EdgeInsets.all(8),
+                          child: InkWell(
+                              onTap: () {
+                                analyticsHelper.logEvent(
+                                    name: event_next_month);
+                                setState(() {
+                                  if (currentDate.month == 12) {
+                                    currentDate = DateTime(
+                                        currentDate.year + 1,
+                                        DateTime.january);
+                                  } else {
+                                    currentDate = DateTime(
+                                        currentDate.year,
+                                        currentDate.month + 1);
+                                  }
+                                });
+                                cellCalendarPageController.animateToDate(
+                                    currentDate,
+                                    curve: Curves.linear,
+                                    duration: const Duration(
+                                        milliseconds: 300));
+                              },
+                              child: const Icon(Icons.navigate_next)),
                         ),
                       ],
                     ),
-                  );
-                },
-                onCellTapped: (date) {
-                  var newList = state.events.toList();
-                  newList.sort((a, b) {
-                    var aOrder = a.order ?? 0;
-                    var bOrder = b.order ?? 0;
-                    if (aOrder > bOrder) {
-                      return 1;
-                    } else if (aOrder < bOrder) {
-                      return -1;
-                    } else {
-                      return 0;
-                    }
-                  });
-                  final dayEvents = newList.where((event) {
-                    final eventDate = event.eventDate;
-                    return eventDate.year == date.year &&
-                        eventDate.month == date.month &&
-                        eventDate.day == date.day;
-                  }).toList();
-                  final dateFormat = DateFormat(
-                      DateFormat.ABBR_MONTH_WEEKDAY_DAY,
-                      AppConstants.defaultLocale);
-                  showDialog(
-                      context: parentContext,
-                      builder: (_) => AlertDialog(
-                          shape: const RoundedRectangleBorder(
-                              borderRadius:
-                                  BorderRadius.all(Radius.circular(20.0))),
-                          actionsAlignment: MainAxisAlignment.center,
-                          insetPadding: const EdgeInsets.all(8.0),
-                          titlePadding:
-                              const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
-                          contentPadding:
-                              const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
-                          title: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.spaceAround,
-                              children: [
-                                FittedBox(
-                                  fit: BoxFit.scaleDown,
-                                  child: Text(
-                                    dateFormat.format(date),
-                                    style: Theme.of(parentContext)
-                                        .textTheme
-                                        .headline4,
-                                  ),
-                                ),
-                                Padding(
-                                  padding: const EdgeInsets.only(right: 8.0),
-                                  child: FittedBox(
-                                    fit: BoxFit.scaleDown,
-                                    child: OutlinedButton.icon(
-                                        style: appTitleButtonStyle(),
-                                        onPressed: () async {
-                                          analyticsHelper.logEvent(
-                                              name: event_add_event,
-                                              parameters: {
-                                                event_add_event_params_position_name:
-                                                    event_add_event_params_position
-                                                        .dialog
-                                                        .toString()
-                                              });
-                                          Navigator.pop(parentContext);
-                                          var isAdded = await showDialog(
-                                              context: parentContext,
-                                              builder: (context) =>
-                                                  AddEventPage(dateTime: date));
-                                          if (!mounted) {
-                                            return;
-                                          }
-                                          if (isAdded == true) {
-                                            parentContext
-                                                .read<HomeCubit>()
-                                                .refreshFromAddOrUpdateCustomEvent();
-                                          }
-                                        },
-                                        icon: const Icon(Icons.add),
-                                        label: Text("新增記事",
-                                            style: Theme.of(parentContext)
-                                                .textTheme
-                                                .button!)),
-                                  ),
-                                )
-                              ]),
-                          content: SizedBox(
-                            width:
-                                MediaQuery.of(parentContext).size.width * 0.95,
-                            child: ConstrainedBox(
-                              constraints: BoxConstraints(
-                                  minHeight: 200,
-                                  maxHeight:
-                                      MediaQuery.of(context).size.height *
-                                          0.55),
-                              child: ListView.separated(
-                                  shrinkWrap: true,
-                                  itemBuilder: (context, index) {
-                                    final event = dayEvents[index];
-                                    return ListTile(
-                                      leading: EventChipView(
-                                          eventName: event
-                                              .getEventType()
-                                              .toInfoDialogName(),
-                                          eventColor:
-                                              event.eventBackgroundColor),
-                                      title: Text(event.eventName,
-                                          style: TextStyle(
-                                              color:
-                                                  event.eventTextStyle.color)),
-                                      onTap: () async {
-                                        if (event.extractEventTypeName() ==
-                                            EventType.custom.name) {
-                                          analyticsHelper.logEvent(
-                                              name: event_edit_my_event,
-                                              parameters: {
-                                                event_edit_my_event_params_position_name:
-                                                    event_edit_my_event_params_position
-                                                        .dialog.name
-                                              });
-                                          Navigator.pop(context);
-                                          dynamic id = int.tryParse(
-                                              event.extractEventIdForModify());
-                                          var isAdded = await showDialog(
-                                              context: context,
-                                              builder: (context) =>
-                                                  AddEventPage(
-                                                      memoModelKey: id));
-                                          if (!mounted) {
-                                            return;
-                                          }
-                                          if (isAdded == true) {
-                                            parentContext
-                                                .read<HomeCubit>()
-                                                .refreshFromAddOrUpdateCustomEvent();
-                                          }
-                                        }
-                                      },
-                                    );
-                                  },
-                                  separatorBuilder: (context, index) =>
-                                      const Divider(),
-                                  itemCount: dayEvents.length),
-                            ),
-                          )));
-                },
-                onPageChanged: (firstDate, lastDate) {
-                  /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
-                  final diff =
-                      firstDate.difference(lastDate).inMilliseconds ~/ 2;
-                  final midDate = DateTime.fromMillisecondsSinceEpoch(
-                      lastDate.millisecondsSinceEpoch + diff);
-                  debugPrint('[Tony] onPageChanged: $midDate, $firstDate, $lastDate');
-                  currentDate = midDate;
-                  updateLunarAndSolar(cubit);
-                },
-                dateTextStyle:
-                    JoysCalendarThemeData.calendarTextTheme.bodyText2,
+                  ),
+                ],
               ),
-            ),
-          ],
+            );
+          },
+          onCellTapped: (date) {
+            var newList = state.events.toList();
+            newList.sort((a, b) {
+              var aOrder = a.order ?? 0;
+              var bOrder = b.order ?? 0;
+              if (aOrder > bOrder) {
+                return 1;
+              } else if (aOrder < bOrder) {
+                return -1;
+              } else {
+                return 0;
+              }
+            });
+            final dayEvents = newList.where((event) {
+              final eventDate = event.eventDate;
+              return eventDate.year == date.year &&
+                  eventDate.month == date.month &&
+                  eventDate.day == date.day;
+            }).toList();
+            final dateFormat = DateFormat(
+                DateFormat.ABBR_MONTH_WEEKDAY_DAY,
+                AppConstants.defaultLocale);
+            showDialog(
+                context: parentContext,
+                builder: (_) => AlertDialog(
+                    shape: const RoundedRectangleBorder(
+                        borderRadius:
+                            BorderRadius.all(Radius.circular(20.0))),
+                    actionsAlignment: MainAxisAlignment.center,
+                    insetPadding: const EdgeInsets.all(8.0),
+                    titlePadding:
+                        const EdgeInsets.fromLTRB(0.0, 20.0, 0.0, 0.0),
+                    contentPadding:
+                        const EdgeInsets.fromLTRB(10.0, 10.0, 10.0, 20.0),
+                    title: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceAround,
+                        children: [
+                          FittedBox(
+                            fit: BoxFit.scaleDown,
+                            child: Text(
+                              dateFormat.format(date),
+                              style: Theme.of(parentContext)
+                                  .textTheme
+                                  .headline4,
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.only(right: 8.0),
+                            child: FittedBox(
+                              fit: BoxFit.scaleDown,
+                              child: OutlinedButton.icon(
+                                  style: appTitleButtonStyle(),
+                                  onPressed: () async {
+                                    analyticsHelper.logEvent(
+                                        name: event_add_event,
+                                        parameters: {
+                                          event_add_event_params_position_name:
+                                              event_add_event_params_position
+                                                  .dialog
+                                                  .toString()
+                                        });
+                                    Navigator.pop(parentContext);
+                                    var isAdded = await showDialog(
+                                        context: parentContext,
+                                        builder: (context) =>
+                                            AddEventPage(dateTime: date));
+                                    if (!mounted) {
+                                      return;
+                                    }
+                                    if (isAdded == true) {
+                                      parentContext
+                                          .read<HomeCubit>()
+                                          .refreshFromAddOrUpdateCustomEvent();
+                                    }
+                                  },
+                                  icon: const Icon(Icons.add),
+                                  label: Text("新增記事",
+                                      style: Theme.of(parentContext)
+                                          .textTheme
+                                          .button!)),
+                            ),
+                          )
+                        ]),
+                    content: SizedBox(
+                      width:
+                          MediaQuery.of(parentContext).size.width * 0.95,
+                      child: ConstrainedBox(
+                        constraints: BoxConstraints(
+                            minHeight: 200,
+                            maxHeight:
+                                MediaQuery.of(context).size.height *
+                                    0.55),
+                        child: ListView.separated(
+                            shrinkWrap: true,
+                            itemBuilder: (context, index) {
+                              final event = dayEvents[index];
+                              return ListTile(
+                                leading: EventChipView(
+                                    eventName: event
+                                        .getEventType()
+                                        .toInfoDialogName(),
+                                    eventColor:
+                                        event.eventBackgroundColor),
+                                title: Text(event.eventName,
+                                    style: TextStyle(
+                                        color:
+                                            event.eventTextStyle.color)),
+                                onTap: () async {
+                                  if (event.extractEventTypeName() ==
+                                      EventType.custom.name) {
+                                    analyticsHelper.logEvent(
+                                        name: event_edit_my_event,
+                                        parameters: {
+                                          event_edit_my_event_params_position_name:
+                                              event_edit_my_event_params_position
+                                                  .dialog.name
+                                        });
+                                    Navigator.pop(context);
+                                    dynamic id = int.tryParse(
+                                        event.extractEventIdForModify());
+                                    var isAdded = await showDialog(
+                                        context: context,
+                                        builder: (context) =>
+                                            AddEventPage(
+                                                memoModelKey: id));
+                                    if (!mounted) {
+                                      return;
+                                    }
+                                    if (isAdded == true) {
+                                      parentContext
+                                          .read<HomeCubit>()
+                                          .refreshFromAddOrUpdateCustomEvent();
+                                    }
+                                  }
+                                },
+                              );
+                            },
+                            separatorBuilder: (context, index) =>
+                                const Divider(),
+                            itemCount: dayEvents.length),
+                      ),
+                    )));
+          },
+          onPageChanged: (firstDate, lastDate) {
+            /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
+            final diff =
+                firstDate.difference(lastDate).inMilliseconds ~/ 2;
+            final midDate = DateTime.fromMillisecondsSinceEpoch(
+                lastDate.millisecondsSinceEpoch + diff);
+            debugPrint('[Tony] onPageChanged: $midDate, $firstDate, $lastDate');
+            currentDate = midDate;
+            updateLunarAndSolar(cubit);
+          },
+          dateTextStyle:
+              JoysCalendarThemeData.calendarTextTheme.bodyText2,
         );
     }
   }
