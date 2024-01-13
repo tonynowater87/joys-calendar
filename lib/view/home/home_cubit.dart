@@ -1,6 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
 import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
@@ -224,5 +226,9 @@ class HomeCubit extends Cubit<HomeState> {
       }
       emit(HomeState.success(newEventsList));
     });
+  }
+
+  void copyEventToClipboard(CalendarEvent event) {
+    Clipboard.setData(ClipboardData(text: event.eventName));
   }
 }

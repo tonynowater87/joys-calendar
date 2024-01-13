@@ -3,6 +3,7 @@ import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_speed_dial/flutter_speed_dial.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:intl/intl.dart';
 import 'package:joys_calendar/common/analytics/analytics_events.dart';
 import 'package:joys_calendar/common/analytics/analytics_helper.dart';
@@ -515,6 +516,18 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                           .refreshFromAddOrUpdateCustomEvent();
                                     }
                                   }
+                                },
+                                onLongPress: () {
+                                  debugPrint('[Tony] onLongPress $event');
+                                  parentContext.read<HomeCubit>().copyEventToClipboard(event);
+                                  Fluttertoast.showToast(
+                                      msg: "複製成功",
+                                      toastLength: Toast.LENGTH_SHORT,
+                                      gravity: ToastGravity.BOTTOM,
+                                      timeInSecForIosWeb: 1,
+                                      backgroundColor: Theme.of(context).primaryColor,
+                                      textColor: Colors.white,
+                                      fontSize: 16.0);
                                 },
                               );
                             },
