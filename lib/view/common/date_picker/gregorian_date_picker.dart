@@ -33,8 +33,8 @@ class GregorianDatePicker extends StatefulWidget {
 class _GregorianDatePickerState extends State<GregorianDatePicker> {
   ValueNotifier<List<int>> _daysNotifier = ValueNotifier([]);
 
-  List<int> _years = List.generate(201, (index) => 1900 + index);
-  List<int> _months = List.generate(12, (index) => index + 1);
+  final List<int> _years = List.generate(DateTime.now().year + 100, (index) => index + 1);
+  final List<int> _months = List.generate(12, (index) => index + 1);
 
   FixedExtentScrollController _yearController = FixedExtentScrollController();
   FixedExtentScrollController _monthController = FixedExtentScrollController();

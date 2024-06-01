@@ -16,6 +16,7 @@ import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/common/date_picker/date_model.dart';
 import 'package:joys_calendar/view/common/date_picker/default_date_picker_dialog.dart';
+import 'package:joys_calendar/view/common/days_of_the_week_builder.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
@@ -139,6 +140,21 @@ class _MyHomePageState extends State<MyHomePage> {
                             .refreshFromAddOrUpdateCustomEvent();
                       })),
               SpeedDialChild(
+                  label: "日期計算器",
+                  child: FloatingActionButton.small(
+                      child: const Icon(Icons.calculate_outlined),
+                      onPressed: () async {
+                        // TODO Analytics
+                        isDialOpen.value = !isDialOpen.value;
+                        await Navigator.of(rootContext).pushNamed(AppConstants.routeDateCalculator);
+                        if (!mounted) {
+                          return;
+                        }
+                        scaffoldContext
+                            .read<HomeCubit>()
+                            .refreshFromAddOrUpdateCustomEvent();
+                      })),
+              SpeedDialChild(
                   label: "設定",
                   child: FloatingActionButton.small(
                       child: const Icon(Icons.settings_outlined),
@@ -212,16 +228,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
           todayMarkColor: Theme.of(parentContext).colorScheme.primary,
           cellCalendarPageController: cellCalendarPageController,
           events: state.events,
-          daysOfTheWeekBuilder: (dayIndex) {
-            final labels = ["日", "一", "二", "三", "四", "五", "六"];
-            return Padding(
-              padding: const EdgeInsets.only(bottom: 4.0),
-              child: Text(
-                labels[dayIndex],
-                textAlign: TextAlign.center,
-              ),
-            );
-          },
+          daysOfTheWeekBuilder: daysOfTheWeekBuilder,
           monthYearLabelBuilder: (datetime) {
             final yearString =
                 DateFormat('西元 y年', AppConstants.defaultLocale)

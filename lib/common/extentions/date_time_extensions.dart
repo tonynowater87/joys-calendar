@@ -23,4 +23,8 @@ extension DateTimeExtensions on DateTime {
   String get lunarDay {
     return Lunar.fromDate(this).getDayInChinese();
   }
+
+  bool isSameMonth(DateTime? other) {
+    return year == other?.year && month == other?.month;
+  }
 }

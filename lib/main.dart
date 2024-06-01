@@ -31,6 +31,8 @@ import 'package:joys_calendar/repo/local_notification_provider.dart';
 import 'package:joys_calendar/repo/local_notification_provider_impl.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/repo/shared_preference_provider_impl.dart';
+import 'package:joys_calendar/view/date_calculator/date_calculator_cubit.dart';
+import 'package:joys_calendar/view/date_calculator/date_calculator_page.dart';
 import 'package:joys_calendar/view/home/my_home_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_page.dart';
@@ -193,7 +195,11 @@ class MyApp extends StatelessWidget {
             AppConstants.routeSearchResult: (context) => BlocProvider(
                 create: (context) =>
                     SearchResultCubit(context.read<CalendarEventRepository>()),
-                child: const SearchResultPage())
+                child: const SearchResultPage()),
+            AppConstants.routeDateCalculator: (context) => BlocProvider(
+              create: (context) => DateCalculatorCubit(DateTime.now()),
+                  child: const DateCalculatorPage(),
+                ),
           }),
     );
   }

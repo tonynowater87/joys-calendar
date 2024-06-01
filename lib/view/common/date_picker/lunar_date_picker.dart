@@ -37,7 +37,7 @@ class LunarDatePicker extends StatefulWidget {
 
 class _LunarDatePickerState extends State<LunarDatePicker> {
   final List<Tuple2<int, String>> _years =
-  List.generate(201, (index) => Tuple2(1900 + index, '年'));
+  List.generate(DateTime.now().year + 100, (index) => Tuple2(index + 1, '年'));
   final ValueNotifier<List<Tuple2<int, String>>> _monthsNotifier = ValueNotifier([]);
   ValueNotifier<List<Tuple2<int, String>>> _daysNotifier = ValueNotifier([]);
 
