@@ -29,31 +29,180 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
   late final CalendarEventRepository _calendarEventRepository;
   DateTime? _startDate;
   DateTime? _endDate;
-  DateTime? currentDate;
+  DateTime? _currentDate;
 
   @override
   void initState() {
     super.initState();
     // TODO show lunar date
     _calendarEventRepository = context.read<CalendarEventRepository>();
+    _currentDate = DateTime.now();
+    _startDate = _currentDate;
+    _endDate = _currentDate;
   }
 
   @override
   Widget build(BuildContext context) {
     DateCalculatorState state = context.watch<DateCalculatorCubit>().state;
 
+    List<GestureTapCallback> navIconTapCallback = [];
+    List<bool> navIconEnable = [];
+    switch (state.runtimeType) {
+      case DateCalculatorInterval:
+      case DateCalculatorAddition:
+        navIconTapCallback = [
+              () {
+            if (_currentDate?.isSameMonth(_startDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _startDate;
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_startDate) ==
+                true) {
+              return;
+            }
+
+            setState(() {
+              _currentDate = _currentDate!
+                  .subtract(const Duration(days: 30));
+            });
+
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_endDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _currentDate!
+                  .add(const Duration(days: 30));
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_endDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _endDate;
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          }
+        ];
+        navIconEnable = [
+          _currentDate?.isSameMonth(_startDate) == false,
+          _currentDate?.isSameMonth(_startDate) == false,
+          _currentDate?.isSameMonth(_endDate) == false,
+          _currentDate?.isSameMonth(_endDate) == false
+        ];
+        break;
+      case DateCalculatorSubtraction:
+        navIconTapCallback = [
+              () {
+            if (_currentDate?.isSameMonth(_endDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _endDate;
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_endDate) ==
+                true) {
+              return;
+            }
+
+            setState(() {
+              _currentDate = _currentDate!
+                  .subtract(const Duration(days: 30));
+            });
+
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_startDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _currentDate!
+                  .add(const Duration(days: 30));
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          },
+              () {
+            if (_currentDate?.isSameMonth(_startDate) ==
+                true) {
+              return;
+            }
+            setState(() {
+              _currentDate = _startDate;
+            });
+            _cellCalendarPageController.animateToDate(
+                _currentDate!,
+                duration:
+                const Duration(milliseconds: 300),
+                curve: Curves.easeIn);
+          }
+        ];
+        navIconEnable = [
+          _currentDate?.isSameMonth(_endDate) == false,
+          _currentDate?.isSameMonth(_endDate) == false,
+          _currentDate?.isSameMonth(_startDate) == false,
+          _currentDate?.isSameMonth(_startDate) == false
+        ];
+        break;
+    }
+
     return BlocListener<DateCalculatorCubit, DateCalculatorState>(
       listener: (context, state) {
         _startDate = state.startDateDateTime;
-        currentDate = _startDate;
-        _cellCalendarPageController.animateToDate(currentDate!,
+        _currentDate = _startDate;
+        _cellCalendarPageController.animateToDate(_currentDate!,
             duration: const Duration(milliseconds: 300), curve: Curves.easeIn);
 
         if (state is DateCalculatorAddition) {
           _endDate = ClassUtils.tryCast<DateCalculatorAddition>(state)
               ?.endDateDateTime;
         } else if (state is DateCalculatorSubtraction) {
-          _endDate = ClassUtils.tryCast<DateCalculatorAddition>(state)
+          _endDate = ClassUtils.tryCast<DateCalculatorSubtraction>(state)
               ?.endDateDateTime;
         } else if (state is DateCalculatorInterval) {
           var endDate = ClassUtils.tryCast<DateCalculatorInterval>(state)
@@ -62,6 +211,8 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
           if (endDate != null) {
             _endDate = DateTime(
                 endDate.getYear(), endDate.getMonth(), endDate.getDay());
+          } else {
+            _endDate = _startDate;
           }
         }
       },
@@ -83,8 +234,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                         child: CellCalendar(
                             cellCalendarPageController:
                                 _cellCalendarPageController,
-                            todayMarkColor: Colors.transparent,
-                            todayTextColor: Colors.black,
+                            todayMarkColor: Theme.of(context).colorScheme.primary,
                             events: state.calcDaysEvents,
                             daysOfTheWeekBuilder: daysOfTheWeekBuilder,
                             monthYearLabelBuilder: (datetime) {
@@ -125,30 +275,13 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.end,
                         mainAxisSize: MainAxisSize.max,
-                        children: <Widget>[
+                        children: [
                           Padding(
                             padding: const EdgeInsets.all(8),
                             child: InkWell(
-                                onTap: () {
-                                  if (currentDate?.isSameMonth(_startDate) ==
-                                      true) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    currentDate = _startDate;
-                                  });
-                                  _cellCalendarPageController.animateToDate(
-                                      currentDate!,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeIn);
-                                },
+                                onTap: navIconTapCallback[0],
                                 child: Opacity(
-                                  opacity:
-                                      currentDate?.isSameMonth(_startDate) ==
-                                              true
-                                          ? 0.3
-                                          : 1.0,
+                                  opacity: navIconEnable[0] == false ? 0.3 : 1.0,
                                   child: const Icon(Icons
                                       .keyboard_double_arrow_left_outlined),
                                 )),
@@ -156,79 +289,25 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                           Padding(
                             padding: const EdgeInsets.all(8),
                             child: InkWell(
-                                onTap: () {
-                                  if (currentDate?.isSameMonth(_startDate) ==
-                                      true) {
-                                    return;
-                                  }
-
-                                  setState(() {
-                                    currentDate = currentDate!
-                                        .subtract(const Duration(days: 30));
-                                  });
-
-                                  _cellCalendarPageController.animateToDate(
-                                      currentDate!,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeIn);
-                                },
+                                onTap: navIconTapCallback[1],
                                 child: Opacity(
-                                    opacity:
-                                        currentDate?.isSameMonth(_startDate) ==
-                                                true
-                                            ? 0.3
-                                            : 1.0,
+                                    opacity: navIconEnable[1] == false ? 0.3 : 1.0,
                                     child: const Icon(Icons.navigate_before))),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
                             child: InkWell(
-                                onTap: () {
-                                  if (currentDate?.isSameMonth(_endDate) ==
-                                      true) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    currentDate = currentDate!
-                                        .add(const Duration(days: 30));
-                                  });
-                                  _cellCalendarPageController.animateToDate(
-                                      currentDate!,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeIn);
-                                },
+                                onTap: navIconTapCallback[2],
                                 child: Opacity(
-                                    opacity:
-                                        currentDate?.isSameMonth(_endDate) ==
-                                                true
-                                            ? 0.3
-                                            : 1.0,
+                                    opacity: navIconEnable[2] == false ? 0.3 : 1.0,
                                     child: const Icon(Icons.navigate_next))),
                           ),
                           Padding(
                             padding: const EdgeInsets.all(8),
                             child: InkWell(
-                                onTap: () {
-                                  if (currentDate?.isSameMonth(_endDate) ==
-                                      true) {
-                                    return;
-                                  }
-                                  setState(() {
-                                    currentDate = _endDate;
-                                  });
-                                  _cellCalendarPageController.animateToDate(
-                                      currentDate!,
-                                      duration:
-                                          const Duration(milliseconds: 300),
-                                      curve: Curves.easeIn);
-                                },
+                                onTap: navIconTapCallback[3],
                                 child: Opacity(
-                                  opacity:
-                                      currentDate?.isSameMonth(_endDate) == true
-                                          ? 0.3
-                                          : 1.0,
+                                  opacity: navIconEnable[3] == false ? 0.3 : 1.0,
                                   child: const Icon(Icons
                                       .keyboard_double_arrow_right_outlined),
                                 )),
@@ -249,9 +328,6 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                     onTap: () {
                       switch (state.runtimeType) {
                         case DateCalculatorInterval:
-                          showDialog(
-                              context: context,
-                              builder: (context) => AddEventPage());
                           break;
                         case DateCalculatorAddition:
                           showDialog(

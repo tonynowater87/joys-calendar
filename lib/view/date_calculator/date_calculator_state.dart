@@ -46,27 +46,27 @@ class DateCalculatorInterval extends DateCalculatorState {
     var day = (diff % 365) % 30;
 
     if (year > 0 && month > 0 && day > 0) {
-      return "$year 年 $month 月 $day 天";
+      return "$year 年 $month 個月又 $day 天";
     }
 
     if (year > 0 && month > 0 && day == 0) {
-      return "$year 年 $month 月";
+      return "$year 年又 $month 個月";
     }
 
     if (year > 0 && month == 0 && day > 0) {
-      return "$year 年 $day 天";
+      return "$year 年又 $day 天";
     }
 
     if (year == 0 && month > 0 && day > 0) {
-      return "$month 月 $day 天";
+      return "$month 個月又 $day 天";
     }
 
     if (year > 0 && month == 0 && day == 0) {
-      return "$year 年";
+      return "剛好 $year 年整";
     }
 
     if (year == 0 && month > 0 && day == 0) {
-      return "$month 月";
+      return "剛好 $month 個月";
     }
 
     return "$day 天";
@@ -119,7 +119,7 @@ class DateCalculatorInterval extends DateCalculatorState {
         eventName: i == 0 ? '開始日期' : '第 $i 天',
         eventBackgroundColor:
             JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: const TextStyle(color: Colors.black, fontSize: 8),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
       ));
     }
     return events;
@@ -160,9 +160,9 @@ class DateCalculatorAddition extends DateCalculatorState {
     var endSolarDate = startDate.toSolar().next(_totalAdditionDays);
 
     if (startDate.isLunar) {
-      return "${startDate.toLunar().next(_totalAdditionDays).toString()} (星期${endSolarDate.getWeekInChinese()})";
+      return "農曆 ${startDate.toLunar().next(_totalAdditionDays).toString()} (星期${endSolarDate.getWeekInChinese()})";
     } else {
-      return "${startDate.toSolar().next(_totalAdditionDays).toString()} (星期${endSolarDate.getWeekInChinese()})";
+      return "國曆 ${startDate.toSolar().next(_totalAdditionDays).toString()} (星期${endSolarDate.getWeekInChinese()})";
     }
   }
 
@@ -182,10 +182,10 @@ class DateCalculatorAddition extends DateCalculatorState {
       events.add(CalendarEvent(
         eventDate: DateTime(startDate.toSolar().getYear(),
             startDate.toSolar().getMonth(), startDate.toSolar().getDay() + i),
-        eventName: i == 0 ? '開始日期' : '第 $i 天',
+        eventName: i == 0 ? '開始日期' : '加 $i 天',
         eventBackgroundColor:
             JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: const TextStyle(color: Colors.black, fontSize: 8),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
       ));
     }
     return events;
@@ -248,10 +248,9 @@ class DateCalculatorSubtraction extends DateCalculatorState {
       events.add(CalendarEvent(
         eventDate: DateTime(startDate.toSolar().getYear(),
             startDate.toSolar().getMonth(), startDate.toSolar().getDay() - i),
-        eventName: i == 0 ? '開始日期' : '第 $i 天',
-        eventBackgroundColor:
-            JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: const TextStyle(color: Colors.black, fontSize: 8),
+        eventName: i == 0 ? '開始日期' : '減 $i 天',
+        eventBackgroundColor: JoysCalendarThemeData.lightThemeData.colorScheme.primary,
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
       ));
     }
     return events;
