@@ -107,7 +107,7 @@ class DateCalculatorInterval extends DateCalculatorState {
             ),
             eventBackgroundColor:
                 JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-            eventTextStyle: const TextStyle(color: Colors.black, fontSize: 8))
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8))
       ];
     }
 
@@ -123,6 +123,11 @@ class DateCalculatorInterval extends DateCalculatorState {
       ));
     }
     return events;
+  }
+
+  @override
+  String toString() {
+    return 'DateCalculatorInterval{startDate: $startDate, endDate: $endDate, calcDaysEvents: ${calcDaysEvents.length}}';
   }
 }
 

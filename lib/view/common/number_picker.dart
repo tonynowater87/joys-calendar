@@ -54,7 +54,8 @@ class _NumberPickerState extends State<NumberPicker> {
           width: 50,
           child: TextField(
             controller: textEditingController,
-            keyboardType: TextInputType.number,
+            // below input type is to make ios keyboard show done button
+            keyboardType: const TextInputType.numberWithOptions(signed: true, decimal: true),
             textAlign: TextAlign.center,
             onChanged: (value) {
               final intValue = int.tryParse(value);
