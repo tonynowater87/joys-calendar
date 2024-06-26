@@ -138,9 +138,11 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/custom-fonts/#from-packages
+  #  flutter pub run flutter_launcher_icons
 flutter_icons:
   android: true
   image_path_android: "assets/images/ic_launcher.png"
   min_sdk_android: 21
   ios: true
-  image_path_ios: "assets/images/appstore.png"
+  image_path_ios: "assets/images/appstore.jpeg"
+  remove_alpha_ios: true

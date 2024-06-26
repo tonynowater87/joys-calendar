@@ -43,7 +43,7 @@ def releaseFilePath = localProperties.getProperty("release.key.file.path")
 def releaseKeyStorePassword = localProperties.getProperty("release.key.store.password")
 
 android {
-    compileSdkVersion 33
+    compileSdkVersion 34
 
     ndkVersion flutter.ndkVersion
 

@@ -8,11 +8,13 @@ import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/app_bloc_observer.dart';
+import 'package:joys_calendar/common/configs/colors.dart';
 import 'package:joys_calendar/common/constants.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
 import 'package:joys_calendar/common/utils/notification_helper.dart';
@@ -100,6 +102,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // 設定狀態欄顏色
+    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
+      statusBarColor: AppColors.nord14,
+    ));
     return MultiRepositoryProvider(
       providers: [
         RepositoryProvider<AppInfoProvider>(create: (BuildContext context) {

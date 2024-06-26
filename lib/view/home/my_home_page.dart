@@ -20,7 +20,6 @@ import 'package:joys_calendar/view/common/days_of_the_week_builder.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
-import 'package:lunar/lunar.dart';
 
 import '../../common/constants.dart';
 
@@ -36,17 +35,17 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   var isDialOpen = ValueNotifier<bool>(false);
   TextEditingController textEditingController = TextEditingController();
-  final GlobalKey _titleKey = GlobalKey();
-  var _titleTextWidth = 0.0;
+  final GlobalKey _titleRowKey = GlobalKey();
+  var _titleRowWidth = 0.0;
 
   @override
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      final keyContext = _titleKey.currentContext;
-      if (keyContext != null) {
-        final box = keyContext.findRenderObject() as RenderBox;
-        setState(() => _titleTextWidth = box.size.width);
+      final titleRow = _titleRowKey.currentContext;
+      if (titleRow != null) {
+        final box = titleRow.findRenderObject() as RenderBox;
+        setState(() => _titleRowWidth = box.size.width);
       }
     });
   }
@@ -61,11 +60,24 @@ class _MyHomePageState extends State<MyHomePage> {
         return Scaffold(
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
-            title: Text(key: _titleKey, widget.title),
+            title: Row(
+              key: _titleRowKey,
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Image.asset(
+                  'assets/icons/joys-calendar-icon.png',
+                  width: 30,
+                  height: 30,
+                ),
+                const SizedBox(width: 4),
+                Text(widget.title),
+              ],
+            ),
             actions: [
               AnimSearchBar(
                 boxShadow: false,
-                width: MediaQuery.of(context).size.width - _titleTextWidth - 45,
+                autoFocus: true,
+                width: MediaQuery.of(context).size.width - _titleRowWidth - 45,
                 textController: textEditingController,
                 helpText: '搜尋關鍵字',
                 onSuffixTap: () {},
@@ -146,7 +158,8 @@ class _MyHomePageState extends State<MyHomePage> {
                       onPressed: () async {
                         // TODO Analytics
                         isDialOpen.value = !isDialOpen.value;
-                        await Navigator.of(rootContext).pushNamed(AppConstants.routeDateCalculator);
+                        await Navigator.of(rootContext)
+                            .pushNamed(AppConstants.routeDateCalculator);
                         if (!mounted) {
                           return;
                         }
@@ -189,7 +202,8 @@ class HomeCalendarPage extends StatefulWidget {
 
 class _HomeCalendarPageState extends State<HomeCalendarPage>
     with WidgetsBindingObserver {
-  final CellCalendarPageController cellCalendarPageController = CellCalendarPageController();
+  final CellCalendarPageController cellCalendarPageController =
+      CellCalendarPageController();
 
   var currentDate = DateTime(MyHomePage.now.year, MyHomePage.now.month);
 
@@ -230,16 +244,13 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
           events: state.events,
           daysOfTheWeekBuilder: daysOfTheWeekBuilder,
           monthYearLabelBuilder: (datetime) {
-            final yearString =
-                DateFormat('西元 y年', AppConstants.defaultLocale)
-                    .format(datetime!);
+            final yearString = DateFormat('西元 y年', AppConstants.defaultLocale)
+                .format(datetime!);
             final monthString =
-                DateFormat('MMMM', AppConstants.defaultLocale)
-                    .format(datetime);
+                DateFormat('MMMM', AppConstants.defaultLocale).format(datetime);
 
             return Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
+              padding: const EdgeInsets.symmetric(vertical: 4, horizontal: 4),
               child: Row(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -270,20 +281,18 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                     name: event_previous_month);
                                 setState(() {
                                   if (currentDate.month == 1) {
-                                    currentDate = DateTime(
-                                        currentDate.year - 1,
+                                    currentDate = DateTime(currentDate.year - 1,
                                         DateTime.december);
                                   } else {
-                                    currentDate = DateTime(
-                                        currentDate.year,
+                                    currentDate = DateTime(currentDate.year,
                                         currentDate.month - 1);
                                   }
                                 });
                                 cellCalendarPageController.animateToDate(
                                     currentDate,
                                     curve: Curves.linear,
-                                    duration: const Duration(
-                                        milliseconds: 300));
+                                    duration:
+                                        const Duration(milliseconds: 300));
                               },
                               child: const Icon(Icons.navigate_before)),
                         ),
@@ -303,13 +312,14 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                                 .home
                                                 .toString()
                                       });
-                                  DateModel? pickedDate =
-                                      await showDialog(
-                                          context: context,
-                                          builder: (context) {
-                                            return DefaultDatePickerDialog
-                                                .fromDate(currentDate.year, currentDate.month, null);
-                                          });
+                                  DateModel? pickedDate = await showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return DefaultDatePickerDialog.fromDate(
+                                            currentDate.year,
+                                            currentDate.month,
+                                            null);
+                                      });
                                   if (!mounted) {
                                     return;
                                   }
@@ -317,10 +327,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                     setState(() {
                                       if (pickedDate.isLunar) {
                                         var solar = pickedDate.toSolar();
-                                        currentDate = DateTime(
-                                            solar.getYear(),
-                                            solar.getMonth(),
-                                            solar.getDay());
+                                        currentDate = DateTime(solar.getYear(),
+                                            solar.getMonth(), solar.getDay());
                                       } else {
                                         currentDate = DateTime(
                                             pickedDate.year,
@@ -328,12 +336,11 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                             pickedDate.day ?? 1);
                                       }
                                     });
-                                    cellCalendarPageController
-                                        .animateToDate(
+                                    cellCalendarPageController.animateToDate(
                                       currentDate,
                                       curve: Curves.linear,
-                                      duration: const Duration(
-                                          milliseconds: 300),
+                                      duration:
+                                          const Duration(milliseconds: 300),
                                     );
                                   }
                                 })
@@ -344,12 +351,10 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                   setState(() {
                                     currentDate = DateTime.now();
                                   });
-                                  cellCalendarPageController
-                                      .animateToDate(
+                                  cellCalendarPageController.animateToDate(
                                     currentDate,
                                     curve: Curves.linear,
-                                    duration:
-                                        const Duration(milliseconds: 300),
+                                    duration: const Duration(milliseconds: 300),
                                   );
                                 },
                                 child: const Padding(
@@ -365,19 +370,17 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                 setState(() {
                                   if (currentDate.month == 12) {
                                     currentDate = DateTime(
-                                        currentDate.year + 1,
-                                        DateTime.january);
+                                        currentDate.year + 1, DateTime.january);
                                   } else {
-                                    currentDate = DateTime(
-                                        currentDate.year,
+                                    currentDate = DateTime(currentDate.year,
                                         currentDate.month + 1);
                                   }
                                 });
                                 cellCalendarPageController.animateToDate(
                                     currentDate,
                                     curve: Curves.linear,
-                                    duration: const Duration(
-                                        milliseconds: 300));
+                                    duration:
+                                        const Duration(milliseconds: 300));
                               },
                               child: const Icon(Icons.navigate_next)),
                         ),
@@ -408,14 +411,12 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                   eventDate.day == date.day;
             }).toList();
             final dateFormat = DateFormat(
-                DateFormat.ABBR_MONTH_WEEKDAY_DAY,
-                AppConstants.defaultLocale);
+                DateFormat.ABBR_MONTH_WEEKDAY_DAY, AppConstants.defaultLocale);
             showDialog(
                 context: parentContext,
                 builder: (_) => AlertDialog(
                     shape: const RoundedRectangleBorder(
-                        borderRadius:
-                            BorderRadius.all(Radius.circular(20.0))),
+                        borderRadius: BorderRadius.all(Radius.circular(20.0))),
                     actionsAlignment: MainAxisAlignment.center,
                     insetPadding: const EdgeInsets.all(8.0),
                     titlePadding:
@@ -430,9 +431,8 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                             fit: BoxFit.scaleDown,
                             child: Text(
                               dateFormat.format(date),
-                              style: Theme.of(parentContext)
-                                  .textTheme
-                                  .headline4,
+                              style:
+                                  Theme.of(parentContext).textTheme.headline4,
                             ),
                           ),
                           Padding(
@@ -473,29 +473,24 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                           )
                         ]),
                     content: SizedBox(
-                      width:
-                          MediaQuery.of(parentContext).size.width * 0.95,
+                      width: MediaQuery.of(parentContext).size.width * 0.95,
                       child: ConstrainedBox(
                         constraints: BoxConstraints(
                             minHeight: 200,
                             maxHeight:
-                                MediaQuery.of(context).size.height *
-                                    0.55),
+                                MediaQuery.of(context).size.height * 0.55),
                         child: ListView.separated(
                             shrinkWrap: true,
                             itemBuilder: (context, index) {
                               final event = dayEvents[index];
                               return ListTile(
                                 leading: EventChipView(
-                                    eventName: event
-                                        .getEventType()
-                                        .toInfoDialogName(),
-                                    eventColor:
-                                        event.eventBackgroundColor),
+                                    eventName:
+                                        event.getEventType().toInfoDialogName(),
+                                    eventColor: event.eventBackgroundColor),
                                 title: Text(event.eventName,
                                     style: TextStyle(
-                                        color:
-                                            event.eventTextStyle.color)),
+                                        color: event.eventTextStyle.color)),
                                 onTap: () async {
                                   if (event.extractEventTypeName() ==
                                       EventType.custom.name) {
@@ -512,8 +507,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                     var isAdded = await showDialog(
                                         context: context,
                                         builder: (context) =>
-                                            AddEventPage(
-                                                memoModelKey: id));
+                                            AddEventPage(memoModelKey: id));
                                     if (!mounted) {
                                       return;
                                     }
@@ -526,13 +520,16 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                 },
                                 onLongPress: () {
                                   debugPrint('[Tony] onLongPress $event');
-                                  parentContext.read<HomeCubit>().copyEventToClipboard(event);
+                                  parentContext
+                                      .read<HomeCubit>()
+                                      .copyEventToClipboard(event);
                                   Fluttertoast.showToast(
                                       msg: "複製成功",
                                       toastLength: Toast.LENGTH_SHORT,
                                       gravity: ToastGravity.BOTTOM,
                                       timeInSecForIosWeb: 1,
-                                      backgroundColor: Theme.of(context).primaryColor,
+                                      backgroundColor:
+                                          Theme.of(context).primaryColor,
                                       textColor: Colors.white,
                                       fontSize: 16.0);
                                 },
@@ -546,16 +543,14 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
           },
           onPageChanged: (firstDate, lastDate) {
             /// Fetch additional events by using the range between [firstDate] and [lastDate] if you want
-            final diff =
-                firstDate.difference(lastDate).inMilliseconds ~/ 2;
+            final diff = firstDate.difference(lastDate).inMilliseconds ~/ 2;
             final midDate = DateTime.fromMillisecondsSinceEpoch(
                 lastDate.millisecondsSinceEpoch + diff);
             debugPrint('[Tony] onPageChanged: $midDate, $firstDate, $lastDate');
             currentDate = midDate;
             updateLunarAndSolar(cubit);
           },
-          dateTextStyle:
-              JoysCalendarThemeData.calendarTextTheme.bodyText2,
+          dateTextStyle: JoysCalendarThemeData.calendarTextTheme.bodyText2,
         );
     }
   }
