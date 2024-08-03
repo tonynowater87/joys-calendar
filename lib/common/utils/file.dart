@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:io';
 
-import 'package:joys_calendar/common/extentions/NumberExtentions.dart';
+import 'package:joys_calendar/common/extentions/number_extensions.dart';
 import 'package:path_provider/path_provider.dart';
 
 class FileUtils {

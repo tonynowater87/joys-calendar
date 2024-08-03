@@ -4,7 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
-import 'package:joys_calendar/common/extentions/NumberExtentions.dart';
+import 'package:joys_calendar/common/extentions/number_extensions.dart';
 import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/backup/backup_repository.dart';

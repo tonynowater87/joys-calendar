@@ -13,6 +13,7 @@ import 'package:joys_calendar/view/search_result/search_result_cubit.dart';
 import 'package:joys_calendar/view/search_result/search_result_list_item_page.dart';
 import 'package:joys_calendar/view/search_result/search_ui_model.dart';
 
+@Deprecated('Use SearchDelegate instead')
 class SearchResultPage extends StatefulWidget {
   const SearchResultPage({Key? key}) : super(key: key);
 

@@ -1,4 +1,3 @@
-import 'package:anim_search_bar/anim_search_bar.dart';
 import 'package:cell_calendar/cell_calendar.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,7 +19,6 @@ import 'package:joys_calendar/view/common/days_of_the_week_builder.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
 import 'package:joys_calendar/view/search_result/event_search_delegate.dart';
-import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 
 import '../../common/constants.dart';
 
