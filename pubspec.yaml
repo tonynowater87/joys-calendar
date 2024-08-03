@@ -51,7 +51,6 @@ dependencies:
   flutter_speed_dial: 6.0.0
   fluttertoast: 8.2.1
   package_info_plus: 3.0.1
-  anim_search_bar: 2.0.3
   animated_button: 0.2.0
   firebase_core: 2.11.0
   firebase_crashlytics: 3.2.0

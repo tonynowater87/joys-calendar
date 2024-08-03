@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
 import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
+import 'package:joys_calendar/common/extentions/string_extensions.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
@@ -66,22 +67,22 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       });
 
       List<EventModel> firstTimeAddedCalendarModels =
-          await localDatasource.saveCalendarModels(result
-              .map((e) => CalendarModel()
-                ..displayName = e.eventName
-                ..dateTime = e.date
-                ..country = e.eventType.toCountryCode()
-                ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
-              .toList());
+      await localDatasource.saveCalendarModels(result
+          .map((e) => CalendarModel()
+        ..displayName = e.eventName
+        ..dateTime = e.date
+        ..country = e.eventType.toCountryCode()
+        ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
+          .toList());
 
       if (_sharedPreferenceProvider.isCalendarNotifyEnable()) {
         var savedCalendarEvents =
-            _sharedPreferenceProvider.getSavedCalendarEvents();
+        _sharedPreferenceProvider.getSavedCalendarEvents();
         if (firstTimeAddedCalendarModels.isNotEmpty &&
             savedCalendarEvents
                 .contains(firstTimeAddedCalendarModels.first.eventType)) {
           var firstTimeAddedEventsContinuousDayMap =
-              firstTimeAddedCalendarModels.fold({}, (map, element) {
+          firstTimeAddedCalendarModels.fold({}, (map, element) {
             var key = element.getContinuousDayMapKey();
             map[key] = map[key] == null ? 0 : map[key]! + 1;
             return map;
@@ -124,8 +125,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     solarEvents = await compute(getSolarEventTask, arguments);
     await localDatasource.saveJieQiModels(solarEvents
         .map((e) => JieQiModel()
-          ..displayName = e.eventName
-          ..dateTime = e.date)
+      ..displayName = e.eventName
+      ..dateTime = e.date)
         .toList());
     // var cost = DateTime.now().millisecondsSinceEpoch - start;
     // debugPrint('[Tony] getSolarEvents($year, $range) cost $cost');
@@ -138,9 +139,9 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         .getJieQiModels()
         .where((element) => element.dateTime.year == year)
         .map((e) => EventModel(
-            date: e.dateTime,
-            eventType: EventType.solar,
-            eventName: e.displayName))
+        date: e.dateTime,
+        eventType: EventType.solar,
+        eventName: e.displayName))
         .toList();
     return Future.value(solarEvents);
   }
@@ -188,35 +189,42 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     final countries = EventType.values.where((element) => element.index <= 5);
     List<EventModel> allEvents = [];
 
+    // 為了只搜尋前一年、今天、明年的事件
+    var currentYear = DateTime.now().year;
+
     List<EventModel> calendars = [];
     for (var country in countries) {
       calendars.addAll(localDatasource
           .getCalendarModels(country.toCountryCode())
-          .where((element) => element.displayName.contains(keyword))
+          .where((element) =>
+      element.displayName.containsIgnoreCase(keyword) &&
+          (element.dateTime.year - currentYear).abs() <= 1)
           .map((e) => EventModel(
-              date: e.dateTime,
-              eventType: fromCreatorEmail(e.country)!,
-              eventName: e.displayName)));
+          date: e.dateTime,
+          eventType: fromCreatorEmail(e.country)!,
+          eventName: e.displayName)));
     }
 
     List<EventModel> solarEvents = [];
     solarEvents.addAll(localDatasource
         .getJieQiModels()
-        .where((element) => element.displayName.contains(keyword))
+        .where((element) =>
+    element.displayName.containsIgnoreCase(keyword) &&
+        (element.dateTime.year - currentYear).abs() <= 1)
         .map((e) => EventModel(
-            date: e.dateTime,
-            eventType: EventType.solar,
-            eventName: e.displayName)));
+        date: e.dateTime,
+        eventType: EventType.solar,
+        eventName: e.displayName)));
 
     List<EventModel> customEvents = [];
     customEvents.addAll(localDatasource
         .getAllMemos()
-        .where((element) => element.memo.contains(keyword))
+        .where((element) => element.memo.containsIgnoreCase(keyword))
         .map((e) => EventModel(
-            date: e.dateTime,
-            eventType: EventType.custom,
-            eventName: e.memo,
-            idForModify: e.key)));
+        date: e.dateTime,
+        eventType: EventType.custom,
+        eventName: e.memo,
+        idForModify: e.key)));
 
     allEvents.addAll(calendars);
     allEvents.addAll(solarEvents);
@@ -285,7 +293,7 @@ List<EventModel> getLunarEventTask(dynamic map) {
           date: thisDay,
           eventType: EventType.lunar,
           eventName:
-              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+          "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
     }
     // add next week lunar events for next year, because calendar will preview next week
     for (var dayOfYear = 0; dayOfYear <= 13; dayOfYear++) {
@@ -295,7 +303,7 @@ List<EventModel> getLunarEventTask(dynamic map) {
           date: thisDay,
           eventType: EventType.lunar,
           eventName:
-              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+          "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
     }
 
     // add previous week lunar events for next year, because calendar will preview previous week
@@ -306,7 +314,7 @@ List<EventModel> getLunarEventTask(dynamic map) {
           date: thisDay,
           eventType: EventType.lunar,
           eventName:
-              "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
+          "${thisDayLunar.getMonthInChinese()}月${thisDayLunar.getDayInChinese()}"));
     }
   }
 

@@ -19,6 +19,7 @@ import 'package:joys_calendar/view/common/date_picker/default_date_picker_dialog
 import 'package:joys_calendar/view/common/days_of_the_week_builder.dart';
 import 'package:joys_calendar/view/common/event_chip_view.dart';
 import 'package:joys_calendar/view/home/home_cubit.dart';
+import 'package:joys_calendar/view/search_result/event_search_delegate.dart';
 import 'package:joys_calendar/view/search_result/search_result_argument.dart';
 
 import '../../common/constants.dart';
@@ -34,21 +35,6 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   var isDialOpen = ValueNotifier<bool>(false);
-  TextEditingController textEditingController = TextEditingController();
-  final GlobalKey _titleRowKey = GlobalKey();
-  var _titleRowWidth = 0.0;
-
-  @override
-  void initState() {
-    super.initState();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      final titleRow = _titleRowKey.currentContext;
-      if (titleRow != null) {
-        final box = titleRow.findRenderObject() as RenderBox;
-        setState(() => _titleRowWidth = box.size.width);
-      }
-    });
-  }
 
   @override
   Widget build(BuildContext rootContext) {
@@ -61,7 +47,6 @@ class _MyHomePageState extends State<MyHomePage> {
           resizeToAvoidBottomInset: false,
           appBar: AppBar(
             title: Row(
-              key: _titleRowKey,
               mainAxisSize: MainAxisSize.min,
               children: [
                 Image.asset(
@@ -74,22 +59,22 @@ class _MyHomePageState extends State<MyHomePage> {
               ],
             ),
             actions: [
-              AnimSearchBar(
-                boxShadow: false,
-                autoFocus: true,
-                width: MediaQuery.of(context).size.width - _titleRowWidth - 45,
-                textController: textEditingController,
-                helpText: '搜尋關鍵字',
-                onSuffixTap: () {},
-                onSubmitted: (text) {
-                  analyticsHelper.logEvent(
-                      name: event_search,
-                      parameters: {event_search_params_keyword_name: text});
-                  Navigator.of(rootContext).pushNamed(
-                      AppConstants.routeSearchResult,
-                      arguments: SearchResultArguments(text));
-                },
-              )
+              IconButton(
+                  onPressed: () async {
+                    analyticsHelper.logEvent(name: event_search);
+                    await showSearch(
+                        context: context,
+                        delegate: EventSearchDelegate(
+                            context.read<CalendarEventRepository>()));
+
+                    if (!mounted) {
+                      return;
+                    }
+                    scaffoldContext
+                        .read<HomeCubit>()
+                        .refreshFromAddOrUpdateCustomEvent();
+                  },
+                  icon: const Icon(Icons.search)),
             ],
           ),
           body: HomeCalendarPage(),
