@@ -91,7 +91,9 @@ Future<void> main() async {
   }
 
   final prefs = await SharedPreferences.getInstance();
-  MobileAds.instance.initialize();
+  MobileAds.instance.initialize().then((value) => {
+    MobileAds.instance..setAppMuted(true)..setAppVolume(0.05)
+  });
   runApp(MyApp(prefs));
 }
 
