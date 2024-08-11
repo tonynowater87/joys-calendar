@@ -18,7 +18,7 @@ extension LocalNotificationProviderExtension on LocalNotificationProvider {
             .format(event.date)
             .toString();
     if (event.continuousDays == 0) {
-      await showNotification(
+      showNotification(
           id, "明天 $startDateFormat", event.eventName, targetStartDateTime);
     } else {
       var key = event.getContinuousDayMapKey();
@@ -29,7 +29,7 @@ extension LocalNotificationProviderExtension on LocalNotificationProvider {
         var endDateFormat =
             DateFormat(AppConstants.notifyDateFormat, Platform.localeName)
                 .format(targetEndDateTime);
-        await showNotification(id, "明天 [${event.eventName}]",
+        showNotification(id, "明天 [${event.eventName}]",
             "開始連續假期 $startDateFormat - $endDateFormat", targetStartDateTime);
       }
     }

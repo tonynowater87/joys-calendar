@@ -80,8 +80,8 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
       return Future.value(NotificationStatus.notificationDueDateInPast);
     }
 
-    debugPrint(
-        '[Tony] showNotification: $id, $title, $body, $targetDateTime $remindDate');
+    // debugPrint(
+    //     '[Tony] showNotification: $id, $title, $body, $targetDateTime $remindDate');
 
     if (Platform.isAndroid) {
       return showAndroidNotify(id, title, body, remindDate);
@@ -129,7 +129,7 @@ class LocalNotificationProviderImpl implements LocalNotificationProvider {
     }
     return init().then((value) {
       if (value == true) {
-        debugPrint('[Tony] Local notification initialized');
+        // debugPrint('[Tony] Local notification initialized');
         _isInitialized = true;
         return Future.value(true);
       } else {

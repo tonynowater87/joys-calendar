@@ -4,21 +4,27 @@ import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/common/utils/string_utils.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
 
 part 'home_state.dart';
 
 class HomeCubit extends Cubit<HomeState> {
-
   final CalendarEventRepository _calendarEventRepository;
+  final SharedPreferenceProvider _sharedPreferenceProvider;
+  NotificationHelper _notificationHelper;
 
   int _currentYear = DateTime.now().year;
 
-  HomeCubit(this._calendarEventRepository) : super(const HomeState.loading());
+  HomeCubit(this._calendarEventRepository, this._sharedPreferenceProvider,
+      this._notificationHelper)
+      : super(const HomeState.loading());
 
   Future<void> getEventWhenAppLaunch() async {
     var start = DateTime.now().millisecondsSinceEpoch;
@@ -41,7 +47,8 @@ class HomeCubit extends Cubit<HomeState> {
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
+            eventID: StringUtils.combineEventTypeAndIdForModify(
+                e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -49,11 +56,12 @@ class HomeCubit extends Cubit<HomeState> {
       var cost = DateTime.now().millisecondsSinceEpoch - start;
       debugPrint('[Tony] update all event, cost=$cost');
       emit(HomeState.success(combinedCalendarEvents));
-      refreshGoogleCalendarHolidays();
+      _refreshNotification();
+      _refreshGoogleCalendarHolidays();
     });
   }
 
-  Future<void> refreshGoogleCalendarHolidays() async {
+  Future<void> _refreshGoogleCalendarHolidays() async {
     final List<CalendarEvent> originCombinedCalendarEvents =
         state.events.toList();
 
@@ -67,21 +75,74 @@ class HomeCubit extends Cubit<HomeState> {
               .getDisplayEventType()
               .contains(events.first.eventType)) {
         // remove old event-type data from database
-        originCombinedCalendarEvents.removeWhere(
-            (element) => element.extractEventTypeName() == events.first.eventType.name);
+        originCombinedCalendarEvents.removeWhere((element) =>
+            element.extractEventTypeName() == events.first.eventType.name);
 
         // add new event-type data from api
         originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
             order: e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
+            eventID: StringUtils.combineEventTypeAndIdForModify(
+                e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
       }
     }
     emit(HomeState.success(originCombinedCalendarEvents));
+  }
+
+  Future<void> _refreshNotification() async {
+    int? recentRefreshCalendarNotificationTime =
+        _sharedPreferenceProvider.getRecentRefreshCalendarNotificationTime();
+    if (recentRefreshCalendarNotificationTime != null) {
+      var now = DateTime.now().millisecondsSinceEpoch;
+      if (now - recentRefreshCalendarNotificationTime <=
+          30 * 24 * 60 * 60 * 1000) {
+        // 每個月僅更新一次, 一個月內不再更新
+        debugPrint('[TONY] 每個月僅更新一次, 一個月內不再更新');
+        return;
+      }
+    }
+
+    var isEnableNotify = _sharedPreferenceProvider.isCalendarNotifyEnable() ||
+        _sharedPreferenceProvider.isSolarNotifyEnable() ||
+        _sharedPreferenceProvider.isMemoNotifyEnable();
+    if (!isEnableNotify) {
+      debugPrint('[TONY] 沒有啟動通知不用更新');
+      return;
+    }
+
+    debugPrint('[TONY] 更新通知, 並取消所有通知重新');
+    var savedCalendarEvents =
+        _sharedPreferenceProvider.getSavedCalendarEvents();
+
+    final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+        FlutterLocalNotificationsPlugin();
+    await flutterLocalNotificationsPlugin.cancelAll();
+
+    for (var eventType in savedCalendarEvents) {
+      if (_sharedPreferenceProvider.isCalendarNotifyEnable() &&
+          eventType != EventType.custom &&
+          eventType != EventType.lunar &&
+          eventType != EventType.solar) {
+        await _notificationHelper.setCalendarNotify([eventType], true);
+      }
+
+      if (_sharedPreferenceProvider.isSolarNotifyEnable() &&
+          eventType == EventType.solar) {
+        await _notificationHelper.setSolarNotify(true);
+      }
+
+      if (_sharedPreferenceProvider.isMemoNotifyEnable() &&
+          eventType == EventType.custom) {
+        await _notificationHelper.setMemoNotify(true);
+      }
+    }
+
+    await _sharedPreferenceProvider.setRecentRefreshCalendarNotificationTime(
+        DateTime.now().millisecondsSinceEpoch);
   }
 
   Future<void> refreshAllEventsFromSettings() async {
@@ -103,7 +164,8 @@ class HomeCubit extends Cubit<HomeState> {
             order: e.eventType == EventType.lunar ? -1 : e.eventType.index,
             eventName: e.eventName,
             eventDate: e.date,
-            eventID: StringUtils.combineEventTypeAndIdForModify(e.eventType.name, e.idForModify),
+            eventID: StringUtils.combineEventTypeAndIdForModify(
+                e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
                 JoysCalendarThemeData.calendarTextTheme.overline!)));
@@ -131,7 +193,8 @@ class HomeCubit extends Cubit<HomeState> {
             future = Future.value(List.empty());
           }
         } else {
-          future = _calendarEventRepository.getEvents(eventType.toCountryCode());
+          future =
+              _calendarEventRepository.getEvents(eventType.toCountryCode());
         }
         futures.add(future);
       } on Exception catch (e) {
@@ -160,7 +223,7 @@ class HomeCubit extends Cubit<HomeState> {
       var events =
           await _calendarEventRepository.getSolarEventsFromLocalDB(year);
       if (events.isEmpty) {
-        return _calendarEventRepository.getSolarEvents(year, 0);
+        return _calendarEventRepository.getSolarEvents(year, 1);
       } else {
         return Future.value(events);
       }
@@ -207,7 +270,8 @@ class HomeCubit extends Cubit<HomeState> {
       for (var refreshEvents in allRefreshedEvents) {
         for (var refreshEvent in refreshEvents) {
           if (newEventsList.indexWhere((element) =>
-                  element.extractEventTypeName() == refreshEvent.eventType.name &&
+                  element.extractEventTypeName() ==
+                      refreshEvent.eventType.name &&
                   element.eventDate == refreshEvent.date) !=
               -1) {
             continue;
@@ -218,7 +282,8 @@ class HomeCubit extends Cubit<HomeState> {
                   : refreshEvent.eventType.index,
               eventName: refreshEvent.eventName,
               eventDate: refreshEvent.date,
-              eventID: StringUtils.combineEventTypeAndIdForModify(refreshEvent.eventType.name, refreshEvent.idForModify),
+              eventID: StringUtils.combineEventTypeAndIdForModify(
+                  refreshEvent.eventType.name, refreshEvent.idForModify),
               eventBackgroundColor: refreshEvent.eventType.toEventColor(),
               eventTextStyle:
                   JoysCalendarThemeData.calendarTextTheme.overline!));

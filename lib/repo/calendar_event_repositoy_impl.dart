@@ -1,6 +1,5 @@
 import 'package:flutter/foundation.dart';
 import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
-import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
 import 'package:joys_calendar/common/extentions/string_extensions.dart';
 import 'package:joys_calendar/repo/api/calendar_api_client.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
@@ -62,11 +61,8 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       var continuousDayMap = result.fold({}, (map, element) {
         String key = element.getContinuousDayMapKey();
         map[key] = map[key] == null ? 0 : map[key] + 1;
-        //debugPrint('[Tony] key=$key, value=${map[key]}');
         return map;
       });
-
-      List<EventModel> firstTimeAddedCalendarModels =
       await localDatasource.saveCalendarModels(result
           .map((e) => CalendarModel()
         ..displayName = e.eventName
@@ -74,27 +70,6 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
         ..country = e.eventType.toCountryCode()
         ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
           .toList());
-
-      if (_sharedPreferenceProvider.isCalendarNotifyEnable()) {
-        var savedCalendarEvents =
-        _sharedPreferenceProvider.getSavedCalendarEvents();
-        if (savedCalendarEvents.contains(firstTimeAddedCalendarModels.first.eventType)) {
-          var firstTimeAddedEventsContinuousDayMap =
-          firstTimeAddedCalendarModels.fold({}, (map, element) {
-            var key = element.getContinuousDayMapKey();
-            map[key] = map[key] == null ? 0 : map[key]! + 1;
-            return map;
-          });
-
-          var now = DateTime.now();
-          for (var event in firstTimeAddedCalendarModels) {
-            if (event.date.isAfter(now) && event.date.difference(now).inDays.abs() <= 365) {
-              localNotificationProvider.showCalendarNotify(
-                  event, firstTimeAddedEventsContinuousDayMap);
-            }
-          }
-        }
-      }
       return result;
     } on Exception catch (e) {
       return result;
@@ -250,7 +225,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
   }
 
   @override
-  Future<List<EventModel>> getFutureEventsFromLocalDB(String country) {
+  List<EventModel> getFutureEventsFromLocalDB(String country) {
     List<EventModel> result = [];
     var calendars = localDatasource.getFutureCalendarModels(country);
     for (var element in calendars) {
@@ -260,7 +235,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           eventName: element.displayName,
           continuousDays: element.continuousDays));
     }
-    return Future.value(result);
+    return result;
   }
 
   @override
@@ -327,7 +302,7 @@ List<EventModel> getSolarEventTask(dynamic map) {
   List<EventModel> result = [];
   for (var year = startYear; year <= endYear; year++) {
     var dateTime = DateTime(year);
-    for (var dayOfYear = 1; dayOfYear <= 365; dayOfYear++) {
+    for (var dayOfYear = 0; dayOfYear <= 364; dayOfYear++) {
       var thisDay = dateTime.add(Duration(days: dayOfYear));
       var thisDayLunar = Lunar.fromDate(thisDay);
       var jieQi = thisDayLunar.getJieQi();

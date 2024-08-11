@@ -9,8 +9,10 @@ import 'package:joys_calendar/common/analytics/analytics_helper.dart';
 import 'package:joys_calendar/common/extentions/calendar_event_extensions.dart';
 import 'package:joys_calendar/common/extentions/date_time_extensions.dart';
 import 'package:joys_calendar/common/themes/theme_data.dart';
+import 'package:joys_calendar/common/utils/notification_helper.dart';
 import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/repo/model/event_model.dart';
+import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/common/button_style.dart';
 import 'package:joys_calendar/view/common/date_picker/date_model.dart';
@@ -38,7 +40,9 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext rootContext) {
     final analyticsHelper = context.read<AnalyticsHelper>();
     return BlocProvider(
-      create: (context) => HomeCubit(context.read<CalendarEventRepository>())
+      create: (context) => HomeCubit(context.read<CalendarEventRepository>(),
+          context.read<SharedPreferenceProvider>(),
+          context.read<NotificationHelper>())
         ..getEventWhenAppLaunch(),
       child: Builder(builder: (scaffoldContext) {
         return Scaffold(

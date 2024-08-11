@@ -1,4 +1,5 @@
 import 'package:flutter/foundation.dart';
+import 'package:joys_calendar/common/extentions/date_time_extensions.dart';
 import 'package:joys_calendar/common/extentions/event_model_extensions.dart';
 import 'package:joys_calendar/common/extentions/local_notification_provider_extensions.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
@@ -15,9 +16,17 @@ class NotificationHelper {
       required this.localNotificationProvider});
 
   Future<void> setCalendarNotify(List<EventType> countries, bool enable) async {
+    var now = DateTime.now();
     for (var country in countries) {
-      var countryEvents = await calendarEventRepository
-          .getFutureEventsFromLocalDB(country.toCountryCode());
+      var countryEvents = calendarEventRepository
+          .getFutureEventsFromLocalDB(country.toCountryCode())
+          .where((element) {
+            if (enable) {
+              return element.date.isWithingYear(now);
+            } else {
+              return true;
+            }
+          });
 
       var map = countryEvents.fold({}, (map, element) {
         var key = element.getContinuousDayMapKey();
@@ -29,37 +38,53 @@ class NotificationHelper {
         debugPrint('[Test] event: ${event.eventName}, ${event.date}');
         int id = event.getNotifyId();
         if (enable) {
-          await localNotificationProvider.showCalendarNotify(event, map);
+          localNotificationProvider.showCalendarNotify(event, map);
         } else {
-          await localNotificationProvider.cancelNotification(id);
+          localNotificationProvider.cancelNotification(id);
         }
       }
     }
   }
 
   Future<void> setSolarNotify(bool enable) async {
+    var now = DateTime.now();
     var futureSolarEvents =
-        await calendarEventRepository.getFutureSolarEvents();
+        (await calendarEventRepository.getFutureSolarEvents()).where((element) {
+      if (enable) {
+        return element.date.isWithingYear(now);
+      } else {
+        return true;
+      }
+    });
+
     for (var event in futureSolarEvents) {
       int id = event.getNotifyId();
       if (enable) {
-        localNotificationProvider.showSolarNotify(event);
+        await localNotificationProvider.showSolarNotify(event);
       } else {
-        localNotificationProvider.cancelNotification(id);
+        await localNotificationProvider.cancelNotification(id);
       }
     }
   }
 
   Future<void> setMemoNotify(bool enable) async {
+    var now = DateTime.now();
     var futureCustomEvents =
-        await calendarEventRepository.getFutureCustomEvents();
+        (await calendarEventRepository.getFutureCustomEvents())
+            .where((element) {
+      if (enable) {
+        return element.date.isWithingYear(now);
+      } else {
+        return true;
+      }
+    });
+
     for (var event in futureCustomEvents) {
       int id = event.getNotifyId();
-
       if (enable) {
-        localNotificationProvider.showMemoNotify(event);
+        await localNotificationProvider.showMemoNotify(event);
       } else {
-        localNotificationProvider.cancelNotification(id);
+        await localNotificationProvider.cancelNotification(id);
       }
     }
   }

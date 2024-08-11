@@ -6,6 +6,10 @@ abstract class SharedPreferenceProvider {
 
   bool getHasRunBefore();
 
+  Future<bool> setRecentRefreshCalendarNotificationTime(int recentRefreshCalendarNotificationTime);
+
+  int? getRecentRefreshCalendarNotificationTime();
+
   Future<bool> saveCalendarEvents(List<EventType> calendarEvents);
 
   List<EventType> getSavedCalendarEvents();

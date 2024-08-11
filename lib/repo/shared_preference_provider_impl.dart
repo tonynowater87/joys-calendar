@@ -6,12 +6,15 @@ import 'model/event_model.dart';
 
 class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   static const String _calendarKey = "CALENDAR_KEY";
-  static const String _googleCalendarApiUpdatedYear = "GOOGLE_CALENDAR_API_UPDATED_YEAR";
+  static const String _googleCalendarApiUpdatedYear =
+      "GOOGLE_CALENDAR_API_UPDATED_YEAR";
   static const String _hasRunBefore = "HAS_RUN_BEFORE";
   static const String _isMemoNotifyEnable = "IS_MEMO_NOTIFY_ENABLE";
   static const String _isCalendarNotifyEnable = "IS_CALENDAR_NOTIFY_ENABLE";
   static const String _isSolarNotifyEnable = "IS_SOLAR_NOTIFY_ENABLE";
   static const String _notifyTime = "NOTIFY_TIME";
+  static const String _recentRefreshCalendarNotificationTime =
+      "RECENT_REFRESH_CALENDAR_NOTIFICATION_TIME";
 
   static const List<EventType> _defaultCalendarEvent = [
     EventType.taiwan,
@@ -27,11 +30,10 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
   @override
   List<EventType> getSavedCalendarEvents() {
     return _sharedPreferences
-        .getStringList(_calendarKey)
-        ?.map((e) =>
-    EventType.values[
-    EventType.values.indexWhere((element) => element.name == e)])
-        .toList() ??
+            .getStringList(_calendarKey)
+            ?.map((e) => EventType.values[
+                EventType.values.indexWhere((element) => element.name == e)])
+            .toList() ??
         _defaultCalendarEvent;
   }
 
@@ -93,7 +95,8 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
 
   @override
   Future<bool> setMemoNotifyTime(TimeOfDay timeOfDay) {
-    return _sharedPreferences.setInt(_notifyTime, timeOfDay.hour * 60 + timeOfDay.minute);
+    return _sharedPreferences.setInt(
+        _notifyTime, timeOfDay.hour * 60 + timeOfDay.minute);
   }
 
   @override
@@ -103,5 +106,17 @@ class SharedPreferenceProviderImpl extends SharedPreferenceProvider {
       return const TimeOfDay(hour: 9, minute: 0);
     }
     return TimeOfDay(hour: time ~/ 60, minute: time % 60);
+  }
+
+  @override
+  int? getRecentRefreshCalendarNotificationTime() {
+    return _sharedPreferences.getInt(_recentRefreshCalendarNotificationTime);
+  }
+
+  @override
+  Future<bool> setRecentRefreshCalendarNotificationTime(
+      int recentRefreshCalendarNotificationTime) {
+    return _sharedPreferences.setInt(_recentRefreshCalendarNotificationTime,
+        recentRefreshCalendarNotificationTime);
   }
 }

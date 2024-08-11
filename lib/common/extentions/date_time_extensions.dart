@@ -27,4 +27,8 @@ extension DateTimeExtensions on DateTime {
   bool isSameMonth(DateTime? other) {
     return year == other?.year && month == other?.month;
   }
+
+  bool isWithingYear(DateTime other) {
+    return difference(other).inDays.abs() <= 365;
+  }
 }
