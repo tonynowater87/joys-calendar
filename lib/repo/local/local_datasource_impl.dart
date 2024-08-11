@@ -94,8 +94,8 @@ class LocalDatasourceImpl extends LocalDatasource {
     final allValues = box.values
         .where((element) =>
             element.country == countryCode &&
-            element.key.toString().length >
-                23) // 過濾掉舊版key是單純用日期的資料, 新版key為`日期 country`
+            // 過濾掉舊版key是2027-08-16 00:00:00.000, 新版key為`2027-08-16 00:00:00.000 zh-tw 中秋節`
+            element.key.toString().length > 23)
         .toList();
     allValues.sort((a, b) => b.dateTime.compareTo(a.dateTime));
     return allValues;
@@ -113,16 +113,15 @@ class LocalDatasourceImpl extends LocalDatasource {
   Future<List<EventModel>> saveCalendarModels(List<CalendarModel> models) {
     final box = Hive.box<CalendarModel>(CalendarModel.boxKey);
     List<EventModel> result = [];
-    return Future.forEach(models, (element) {
-      var key = "${element.dateTime} ${element.country}";
-      var existModel = box.get(key);
-      if (existModel == null) {
-        result.add(EventModel(
-            date: element.dateTime,
-            eventType: fromCreatorEmail(element.country)!,
-            eventName: element.displayName,
-            continuousDays: element.continuousDays));
-      }
+    return Future.forEach(models, (element) async {
+
+      await box.delete("${element.dateTime} ${element.country}"); // remove old key
+      var key = "${element.dateTime} ${element.country} ${element.displayName}"; // save new key
+      result.add(EventModel(
+          date: element.dateTime,
+          eventType: fromCreatorEmail(element.country)!,
+          eventName: element.displayName,
+          continuousDays: element.continuousDays));
       box.put(key, element);
     }).then((value) => result);
   }

@@ -78,9 +78,7 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
       if (_sharedPreferenceProvider.isCalendarNotifyEnable()) {
         var savedCalendarEvents =
         _sharedPreferenceProvider.getSavedCalendarEvents();
-        if (firstTimeAddedCalendarModels.isNotEmpty &&
-            savedCalendarEvents
-                .contains(firstTimeAddedCalendarModels.first.eventType)) {
+        if (savedCalendarEvents.contains(firstTimeAddedCalendarModels.first.eventType)) {
           var firstTimeAddedEventsContinuousDayMap =
           firstTimeAddedCalendarModels.fold({}, (map, element) {
             var key = element.getContinuousDayMapKey();
@@ -88,11 +86,12 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
             return map;
           });
 
+          var now = DateTime.now();
           for (var event in firstTimeAddedCalendarModels) {
-            // debugPrint(
-            //     '[Test] handle firsTimeNotify: ${event.eventName}, ${event.date}');
-            localNotificationProvider.showCalendarNotify(
-                event, firstTimeAddedEventsContinuousDayMap);
+            if (event.date.isAfter(now) && event.date.difference(now).inDays.abs() <= 365) {
+              localNotificationProvider.showCalendarNotify(
+                  event, firstTimeAddedEventsContinuousDayMap);
+            }
           }
         }
       }
