@@ -45,7 +45,7 @@ class MyEventListItemPage extends StatelessWidget {
                                     const BorderRadius.all(Radius.circular(8))),
                             child: Text(
                               date,
-                              style: Theme.of(context).textTheme.caption,
+                              style: Theme.of(context).textTheme.bodySmall,
                             ),
                           )),
                     ),
@@ -57,7 +57,7 @@ class MyEventListItemPage extends StatelessWidget {
                             padding: const EdgeInsets.all(8.0),
                             child: Text(
                               memo,
-                              style: Theme.of(context).textTheme.subtitle1,
+                              style: Theme.of(context).textTheme.titleMedium,
                             ),
                           )),
                     )

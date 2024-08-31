@@ -120,7 +120,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                             '西元 $date ${itemDateTime.yearOfRoc} ${itemDateTime.ganZhi} ${itemDateTime.shenXiao}',
                             style: Theme.of(context)
                                 .textTheme
-                                .headline4!)
+                                .headlineMedium!)
                       ),
                     ),
                   );
@@ -154,7 +154,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                         title: Text('$date $weekday',
                             style: Theme.of(context)
                                 .textTheme
-                                .headline5!
+                                .headlineSmall!
                                 .copyWith(
                                     color:
                                         Theme.of(context).colorScheme.primary,

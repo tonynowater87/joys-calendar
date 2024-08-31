@@ -61,7 +61,7 @@ class SettingsNotifyPage extends StatelessWidget {
                 const Icon(Icons.info_outline, size: 10),
                 const SizedBox(width: 4),
                 Text('固定前一天提醒, 可自訂通知時間',
-                    style: Theme.of(context).textTheme.overline),
+                    style: Theme.of(context).textTheme.labelSmall),
               ],
             ),
             trailing: InkWell(

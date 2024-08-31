@@ -51,7 +51,7 @@ class HomeCubit extends Cubit<HomeState> {
                 e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
-                JoysCalendarThemeData.calendarTextTheme.overline!)));
+                JoysCalendarThemeData.calendarTextTheme.labelSmall!)));
       }
       var cost = DateTime.now().millisecondsSinceEpoch - start;
       debugPrint('[Tony] update all event, cost=$cost');
@@ -88,7 +88,7 @@ class HomeCubit extends Cubit<HomeState> {
                 e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
-                JoysCalendarThemeData.calendarTextTheme.overline!)));
+                JoysCalendarThemeData.calendarTextTheme.labelSmall!)));
       }
     }
     emit(HomeState.success(originCombinedCalendarEvents));
@@ -169,7 +169,7 @@ class HomeCubit extends Cubit<HomeState> {
                 e.eventType.name, e.idForModify),
             eventBackgroundColor: e.eventType.toEventColor(),
             eventTextStyle:
-                JoysCalendarThemeData.calendarTextTheme.overline!)));
+                JoysCalendarThemeData.calendarTextTheme.labelSmall!)));
       }
     }
 
@@ -260,7 +260,7 @@ class HomeCubit extends Cubit<HomeState> {
         eventID: StringUtils.combineEventTypeAndIdForModify(
             e.eventType.name, e.idForModify),
         eventBackgroundColor: e.eventType.toEventColor(),
-        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!)));
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.labelSmall!)));
     emit(HomeState.success(newEventsList));
   }
 
@@ -292,7 +292,7 @@ class HomeCubit extends Cubit<HomeState> {
                   refreshEvent.eventType.name, refreshEvent.idForModify),
               eventBackgroundColor: refreshEvent.eventType.toEventColor(),
               eventTextStyle:
-                  JoysCalendarThemeData.calendarTextTheme.overline!));
+                  JoysCalendarThemeData.calendarTextTheme.labelSmall!));
         }
       }
       emit(HomeState.success(newEventsList));

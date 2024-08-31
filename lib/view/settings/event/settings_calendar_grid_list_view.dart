@@ -69,14 +69,13 @@ class _SettingsCalendarGridListViewState
                     border: Border.all(
                         width: 2, color: item.eventType.toEventColor()),
                   ),
-                  child: Text(
-                    item.eventType.toSettingName(),
-                    style: Theme.of(context).textTheme.button!.copyWith(
-                        fontWeight: item.isSelected
-                            ? FontWeight.bold
-                            : FontWeight.normal,
-                        color: item.isSelected ? Colors.white : Colors.black38),
-                  ),
+                  child: Text(item.eventType.toSettingName(),
+                      style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                          fontWeight: item.isSelected
+                              ? FontWeight.bold
+                              : FontWeight.normal,
+                          color:
+                              item.isSelected ? Colors.white : Colors.black38)),
                 ),
               );
             });

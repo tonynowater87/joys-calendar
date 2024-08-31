@@ -37,7 +37,7 @@ class JoysCalendarThemeData {
           _lightFillColor.withOpacity(0.80),
           _darkFillColor,
         ),
-        contentTextStyle: _textTheme.subtitle1!.apply(color: _darkFillColor),
+        contentTextStyle: _textTheme.titleMedium!.apply(color: _darkFillColor),
       ),
     );
   }
@@ -63,16 +63,16 @@ class JoysCalendarThemeData {
   static const _bold = FontWeight.w700;
 
   static final TextTheme _textTheme = TextTheme(
-    headline4: lightText.copyWith(fontWeight: _bold, fontSize: 20.0),
-    caption: lightText.copyWith(fontWeight: _semiBold, fontSize: 16.0),
-    headline5: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
-    subtitle1: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
-    overline: lightText.copyWith(fontWeight: _regular, fontSize: 10.0),
-    bodyText1: lightText.copyWith(fontWeight: _regular, fontSize: 14.0),
-    subtitle2: lightText.copyWith(fontWeight: _medium, fontSize: 14.0),
-    bodyText2: lightText.copyWith(fontWeight: _regular, fontSize: 16.0),
-    headline6: lightText.copyWith(fontWeight: _bold, fontSize: 16.0),
-    button: lightText.copyWith(fontWeight: _semiBold, fontSize: 14.0),
+    headlineMedium: lightText.copyWith(fontWeight: _bold, fontSize: 20.0),
+    bodySmall: lightText.copyWith(fontWeight: _semiBold, fontSize: 16.0),
+    headlineSmall: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
+    titleMedium: lightText.copyWith(fontWeight: _medium, fontSize: 16.0),
+    labelSmall: lightText.copyWith(fontWeight: _regular, fontSize: 10.0),
+    bodyLarge: lightText.copyWith(fontWeight: _regular, fontSize: 14.0),
+    titleSmall: lightText.copyWith(fontWeight: _medium, fontSize: 14.0),
+    bodyMedium: lightText.copyWith(fontWeight: _regular, fontSize: 16.0),
+    titleLarge: lightText.copyWith(fontWeight: _bold, fontSize: 16.0),
+    labelLarge: lightText.copyWith(fontWeight: _semiBold, fontSize: 14.0),
   );
 
   static TextTheme get calendarTextTheme => _textTheme;

@@ -419,7 +419,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                             child: Text(
                               dateFormat.format(date),
                               style:
-                                  Theme.of(parentContext).textTheme.headline4,
+                                  Theme.of(parentContext).textTheme.headlineMedium,
                             ),
                           ),
                           Padding(
@@ -455,7 +455,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                   label: Text("新增記事",
                                       style: Theme.of(parentContext)
                                           .textTheme
-                                          .button!)),
+                                          .labelLarge!)),
                             ),
                           )
                         ]),
@@ -537,7 +537,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
             currentDate = midDate;
             updateLunarAndSolar(cubit);
           },
-          dateTextStyle: JoysCalendarThemeData.calendarTextTheme.bodyText2,
+          dateTextStyle: JoysCalendarThemeData.calendarTextTheme.bodyMedium,
         );
     }
   }

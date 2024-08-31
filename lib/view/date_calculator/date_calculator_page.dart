@@ -333,12 +333,12 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                                   padding: const EdgeInsets.only(bottom: 4.0),
                                   child: Text(state.resultTitle,
                                       style: JoysCalendarThemeData
-                                          .lightThemeData.textTheme.subtitle2),
+                                          .lightThemeData.textTheme.titleSmall),
                                 )),
                             Center(
                                 child: Text(state.result,
                                     style: JoysCalendarThemeData
-                                        .lightThemeData.textTheme.headline4))
+                                        .lightThemeData.textTheme.headlineMedium))
                           ])),
                     ),
                   ),
@@ -396,7 +396,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                               decoration: InputDecoration(
                                   labelText: '開始日期',
                                   labelStyle:
-                                      Theme.of(context).textTheme.headline6!,
+                                      Theme.of(context).textTheme.titleLarge!,
                                   suffixIcon: const Icon(Icons.calendar_today),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -454,7 +454,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                                     suffixIcon:
                                         const Icon(Icons.calendar_today),
                                     labelStyle:
-                                        Theme.of(context).textTheme.headline6!,
+                                        Theme.of(context).textTheme.titleLarge!,
                                     border: OutlineInputBorder(
                                       borderRadius: BorderRadius.circular(10.0),
                                     ),
@@ -500,7 +500,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                               decoration: InputDecoration(
                                   labelText: '開始日期',
                                   labelStyle:
-                                      Theme.of(context).textTheme.headline6!,
+                                      Theme.of(context).textTheme.titleLarge!,
                                   suffixIcon: const Icon(Icons.calendar_today),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),
@@ -597,7 +597,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                               decoration: InputDecoration(
                                   labelText: '開始日期',
                                   labelStyle:
-                                      Theme.of(context).textTheme.headline6!,
+                                      Theme.of(context).textTheme.titleLarge!,
                                   suffixIcon: const Icon(Icons.calendar_today),
                                   border: OutlineInputBorder(
                                     borderRadius: BorderRadius.circular(10.0),

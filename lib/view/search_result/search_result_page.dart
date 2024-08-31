@@ -62,7 +62,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         child: ListTile(
                             title: Text(
                                 '西元 $date ${item.eventModel.date.yearOfRoc} ${item.eventModel.date.ganZhi} ${item.eventModel.date.shenXiao}',
-                                style: Theme.of(context).textTheme.headline4!)),
+                                style: Theme.of(context).textTheme.headlineMedium!)),
                       ),
                     );
                   case ItemType.date:
@@ -95,7 +95,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                           title: Text('$date $weekday',
                               style: Theme.of(context)
                                   .textTheme
-                                  .headline5!
+                                  .headlineSmall!
                                   .copyWith(
                                       color:
                                           Theme.of(context).colorScheme.primary,

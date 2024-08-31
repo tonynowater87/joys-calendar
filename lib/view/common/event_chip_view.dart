@@ -17,7 +17,7 @@ class EventChipView extends StatelessWidget {
           borderRadius: const BorderRadius.all(Radius.circular(8))),
       child: Text(
         eventName,
-        style: Theme.of(context).textTheme.subtitle2,
+        style: Theme.of(context).textTheme.titleSmall,
       ),
     );
   }

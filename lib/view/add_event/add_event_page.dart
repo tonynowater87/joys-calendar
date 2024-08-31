@@ -83,7 +83,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   DateFormat(
                           DateFormat.YEAR_MONTH_DAY, AppConstants.defaultLocale)
                       .format(state.memoModel.dateTime),
-                  style: Theme.of(context).textTheme.caption);
+                  style: Theme.of(context).textTheme.bodySmall);
 
               return AlertDialog(
                 insetPadding: const EdgeInsets.all(8.0),
@@ -98,7 +98,7 @@ class _AddEventPageState extends State<AddEventPage> {
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     Text(titleText,
-                        style: Theme.of(context).textTheme.headline4),
+                        style: Theme.of(context).textTheme.headlineMedium),
                     InkWell(
                       onTap: () async {
                         if (addEventState.status == AddEventStatus.add) {

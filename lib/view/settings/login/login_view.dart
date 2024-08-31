@@ -65,7 +65,7 @@ class _LoginViewState extends State<LoginView> {
                     width: 6,
                   ),
                   Text('Google 登入',
-                      style: Theme.of(context).textTheme.bodyText1?.copyWith(
+                      style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                           fontSize: fontSize, fontWeight: FontWeight.w500)),
                 ],
               ),
@@ -348,7 +348,7 @@ class _LoginViewState extends State<LoginView> {
                     await loginCubit.init();
                   },
                   child: Text('重試一次',
-                      style: Theme.of(context).textTheme.bodyText1)),
+                      style: Theme.of(context).textTheme.bodyLarge)),
             ),
           ]);
       }

@@ -107,7 +107,7 @@ class DateCalculatorInterval extends DateCalculatorState {
             ),
             eventBackgroundColor:
                 JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8))
+            eventTextStyle: JoysCalendarThemeData.calendarTextTheme.labelSmall!.copyWith(fontSize: 8))
       ];
     }
 
@@ -119,7 +119,7 @@ class DateCalculatorInterval extends DateCalculatorState {
         eventName: i == 0 ? '開始日期' : '第 $i 天',
         eventBackgroundColor:
             JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.labelSmall!.copyWith(fontSize: 8),
       ));
     }
     return events;
@@ -190,7 +190,7 @@ class DateCalculatorAddition extends DateCalculatorState {
         eventName: i == 0 ? '開始日期' : '加 $i 天',
         eventBackgroundColor:
             JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.labelSmall!.copyWith(fontSize: 8),
       ));
     }
     return events;
@@ -255,7 +255,7 @@ class DateCalculatorSubtraction extends DateCalculatorState {
             startDate.toSolar().getMonth(), startDate.toSolar().getDay() - i),
         eventName: i == 0 ? '開始日期' : '減 $i 天',
         eventBackgroundColor: JoysCalendarThemeData.lightThemeData.colorScheme.primary,
-        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.overline!.copyWith(fontSize: 8),
+        eventTextStyle: JoysCalendarThemeData.calendarTextTheme.labelSmall!.copyWith(fontSize: 8),
       ));
     }
     return events;

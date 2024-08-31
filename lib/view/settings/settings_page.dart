@@ -54,7 +54,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return ListTile(
                                       title: Text(
                                     item.headerValue.toLocalization(),
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ));
                                 },
                                 body: Padding(
@@ -78,7 +78,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return ListTile(
                                       title: Text(
                                     item.headerValue.toLocalization(),
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ));
                                 },
                                 body: const ListTile(title: Text('施工中...')),
@@ -89,7 +89,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return ListTile(
                                       title: Text(
                                     item.headerValue.toLocalization(),
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ));
                                 },
                                 body: const Padding(
@@ -107,7 +107,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                   return ListTile(
                                       title: Text(
                                     item.headerValue.toLocalization(),
-                                    style: Theme.of(context).textTheme.caption,
+                                    style: Theme.of(context).textTheme.bodySmall,
                                   ));
                                 },
                                 body: BlocProvider(

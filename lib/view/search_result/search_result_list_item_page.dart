@@ -27,7 +27,7 @@ class SearchResultListItemPage extends StatelessWidget {
                 const EdgeInsets.only(left: 8.0, right: 0, top: 4, bottom: 4),
             child: Text(
               memo,
-              style: Theme.of(context).textTheme.subtitle1,
+              style: Theme.of(context).textTheme.titleMedium,
             ),
           ),
         )
