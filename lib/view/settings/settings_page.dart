@@ -50,6 +50,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         switch (item.headerValue) {
                           case SettingType.eventType:
                             return ExpansionPanel(
+                                canTapOnHeader: true,
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
@@ -71,9 +72,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                     child: const SettingsCalendarGridListView(),
                                   ),
                                 ),
-                                isExpanded: item.isExpanded);
+                                isExpanded: !item.isExpanded);
                           case SettingType.locale:
                             return ExpansionPanel(
+                                canTapOnHeader: true,
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
@@ -82,9 +84,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                   ));
                                 },
                                 body: const ListTile(title: Text('施工中...')),
-                                isExpanded: item.isExpanded);
+                                isExpanded: !item.isExpanded);
                           case SettingType.backup:
                             return ExpansionPanel(
+                                canTapOnHeader: true,
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
@@ -100,9 +103,10 @@ class _SettingsPageState extends State<SettingsPage> {
                                     child: LoginView(),
                                   ),
                                 ),
-                                isExpanded: item.isExpanded);
+                                isExpanded: !item.isExpanded);
                           case SettingType.notify:
                             return ExpansionPanel(
+                                canTapOnHeader: true,
                                 headerBuilder: (context, bool isExpanded) {
                                   return ListTile(
                                       title: Text(
@@ -122,7 +126,7 @@ class _SettingsPageState extends State<SettingsPage> {
                                           context.read<NotificationHelper>()),
                                   child: const SettingsNotifyPage(),
                                 ),
-                                isExpanded: item.isExpanded);
+                                isExpanded: !item.isExpanded);
                         }
                       }).toList()),
                 ],
