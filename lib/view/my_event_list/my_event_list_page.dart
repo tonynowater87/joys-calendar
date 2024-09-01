@@ -177,6 +177,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                     });
                     bool? isUpdated = await showDialog(
                         context: context,
+                        barrierDismissible: false,
                         builder: (context) => AddEventPage(
                             memoModelKey: myEventState.myEventList[index].key));
                     if (!mounted) {
@@ -211,10 +212,12 @@ class _MyEventListPageState extends State<MyEventListPage> {
                 if (model.key == -1 || model.key == -2 || nextIsHeader) {
                   return const SizedBox.shrink();
                 } else {
-                  return const Divider(
-                    height: 10,
-                    indent: 20,
-                    endIndent: 20,
+                  return Divider(
+                    height: 5,
+                    thickness: 1,
+                    indent: 10,
+                    endIndent: 10,
+                    color: Colors.grey.withOpacity(0.5),
                   );
                 }
               },

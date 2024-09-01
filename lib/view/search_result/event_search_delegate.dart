@@ -132,6 +132,7 @@ class EventSearchDelegate extends SearchDelegate<SearchUiModel> {
                               }
                               bool? isUpdated = await showDialog(
                                   context: context,
+                                  barrierDismissible: false,
                                   builder: (context) => AddEventPage(
                                       memoModelKey: item.eventModel.idForModify));
                               if (isUpdated == true) {

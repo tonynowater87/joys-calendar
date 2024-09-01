@@ -308,6 +308,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                           case DateCalculatorAddition:
                             showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (context) => AddEventPage(
                                     dateTime: ClassUtils.tryCast<
                                             DateCalculatorAddition>(state)!
@@ -316,6 +317,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                           case DateCalculatorSubtraction:
                             showDialog(
                                 context: context,
+                                barrierDismissible: false,
                                 builder: (context) => AddEventPage(
                                     dateTime: ClassUtils.tryCast<
                                             DateCalculatorSubtraction>(state)!
@@ -389,6 +391,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                             },
                             child: TextField(
                               enabled: false,
+                              style: Theme.of(context).textTheme.bodyMedium!,
                               controller: TextEditingController(
                                   text: ClassUtils.tryCast<
                                           DateCalculatorInterval>(state)
@@ -445,6 +448,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                               },
                               child: TextField(
                                   enabled: false,
+                                  style: Theme.of(context).textTheme.bodyMedium!,
                                   controller: TextEditingController(
                                       text: ClassUtils.tryCast<
                                               DateCalculatorInterval>(state)
@@ -493,6 +497,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                             },
                             child: TextField(
                               enabled: false,
+                              style: Theme.of(context).textTheme.bodyMedium!,
                               controller: TextEditingController(
                                   text: ClassUtils.tryCast<
                                           DateCalculatorAddition>(state)
@@ -590,6 +595,7 @@ class _DateCalculatorPageState extends State<DateCalculatorPage> {
                             },
                             child: TextField(
                               enabled: false,
+                              style: Theme.of(context).textTheme.bodyMedium!,
                               controller: TextEditingController(
                                   text: ClassUtils.tryCast<
                                           DateCalculatorSubtraction>(state)

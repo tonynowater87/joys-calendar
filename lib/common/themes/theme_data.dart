@@ -39,21 +39,22 @@ class JoysCalendarThemeData {
         ),
         contentTextStyle: _textTheme.titleMedium!.apply(color: _darkFillColor),
       ),
+      dividerColor: Colors.grey[300],
     );
   }
 
   static ColorScheme lightColorScheme = ColorScheme(
     primary: Colors.green,
-    primaryContainer: Color(0xFF117378),
+    primaryContainer: Colors.teal,
     secondary: Color(0xFFEFF3F3),
     background: Color(0xFFE6EBEB),
     surface: Color(0xFFFAFBFB),
     error: _lightFillColor,
     onError: _lightFillColor,
     onPrimary: _lightFillColor,
-    onSecondary: Colors.teal.shade900,
-    onSurface: Colors.teal.shade900,
-    onBackground: Colors.teal.shade900,
+    onSecondary: Colors.teal,
+    onSurface: Colors.teal,
+    onBackground: Colors.teal,
     brightness: Brightness.light,
   );
 

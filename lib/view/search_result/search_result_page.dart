@@ -116,6 +116,7 @@ class _SearchResultPageState extends State<SearchResultPage> {
                         });
                         bool? isUpdated = await showDialog(
                             context: context,
+                            barrierDismissible: false,
                             builder: (context) => AddEventPage(
                                 memoModelKey: item.eventModel.idForModify));
                         if (!mounted) {

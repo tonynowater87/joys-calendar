@@ -82,6 +82,8 @@ class _MyHomePageState extends State<MyHomePage> {
           body: HomeCalendarPage(),
           floatingActionButton: SpeedDial(
             icon: Icons.menu_rounded,
+            backgroundColor: Colors.white,
+            foregroundColor: Colors.green,
             activeIcon: Icons.close,
             spacing: 3,
             overlayOpacity: 0,
@@ -92,6 +94,8 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "新增我的記事",
                   child: FloatingActionButton.small(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
                       child: const Icon(Icons.add),
                       onPressed: () async {
                         analyticsHelper
@@ -107,6 +111,7 @@ class _MyHomePageState extends State<MyHomePage> {
                         });
                         isDialOpen.value = !isDialOpen.value;
                         var isAdded = await showDialog(
+                            barrierDismissible: false,
                             context: context,
                             builder: (context) => AddEventPage());
                         if (!mounted) {
@@ -121,6 +126,8 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "我的記事列表",
                   child: FloatingActionButton.small(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
                       child: const Icon(Icons.list_alt),
                       onPressed: () async {
                         analyticsHelper
@@ -141,6 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "日期計算器",
                   child: FloatingActionButton.small(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
                       child: const Icon(Icons.calculate_outlined),
                       onPressed: () async {
                         // TODO Analytics
@@ -157,6 +166,8 @@ class _MyHomePageState extends State<MyHomePage> {
               SpeedDialChild(
                   label: "設定",
                   child: FloatingActionButton.small(
+                      backgroundColor: Colors.white,
+                      foregroundColor: Colors.green,
                       child: const Icon(Icons.settings_outlined),
                       onPressed: () async {
                         analyticsHelper
@@ -440,6 +451,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                     Navigator.pop(parentContext);
                                     var isAdded = await showDialog(
                                         context: parentContext,
+                                        barrierDismissible: false,
                                         builder: (context) =>
                                             AddEventPage(dateTime: date));
                                     if (!mounted) {
@@ -493,6 +505,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                                         event.extractEventIdForModify());
                                     var isAdded = await showDialog(
                                         context: context,
+                                        barrierDismissible: false,
                                         builder: (context) =>
                                             AddEventPage(memoModelKey: id));
                                     if (!mounted) {
@@ -523,7 +536,7 @@ class _HomeCalendarPageState extends State<HomeCalendarPage>
                               );
                             },
                             separatorBuilder: (context, index) =>
-                                const Divider(),
+                                Divider(color: Colors.grey[300],),
                             itemCount: dayEvents.length),
                       ),
                     )));
