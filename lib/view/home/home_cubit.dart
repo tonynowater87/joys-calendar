@@ -58,6 +58,7 @@ class HomeCubit extends Cubit<HomeState> {
       emit(HomeState.success(combinedCalendarEvents));
       _refreshNotification();
       _refreshGoogleCalendarHolidays();
+      _refreshGoogleCalendarHolidaysNearNow();
     });
   }
 
@@ -176,7 +177,7 @@ class HomeCubit extends Cubit<HomeState> {
   }
 
   Future<List<List<EventModel>>> _getAllSelectedCountryEvents(
-      {required bool isFromLocal}) async {
+      {required bool isFromLocal, DateTime? timeMin, DateTime? timeMax}) async {
     var eventTypes = EventType.values;
     List<Future<List<EventModel>>> futures = [];
 
@@ -193,8 +194,13 @@ class HomeCubit extends Cubit<HomeState> {
             future = Future.value(List.empty());
           }
         } else {
-          future =
-              _calendarEventRepository.getEvents(eventType.toCountryCode());
+          if (timeMin != null && timeMax != null) {
+            future = _calendarEventRepository.getEventsWithTimeRange(
+                eventType.toCountryCode(), timeMin, timeMax);
+          } else {
+            future =
+                _calendarEventRepository.getEvents(eventType.toCountryCode());
+          }
         }
         futures.add(future);
       } on Exception catch (e) {
@@ -295,5 +301,40 @@ class HomeCubit extends Cubit<HomeState> {
 
   void copyEventToClipboard(CalendarEvent event) {
     Clipboard.setData(ClipboardData(text: event.eventName));
+  }
+
+  Future<void> _refreshGoogleCalendarHolidaysNearNow() async {
+    final List<CalendarEvent> originCombinedCalendarEvents =
+    state.events.toList();
+
+    List<List<EventModel>> allCountryEvents =
+    await _getAllSelectedCountryEvents(
+        isFromLocal: false,
+        timeMin: DateTime.now().subtract(const Duration(days: 365)),
+        timeMax: DateTime.now().add(const Duration(days: 365)));
+    debugPrint('[Tony] _refreshGoogleCalendarHolidaysNearNow done');
+
+    for (var events in allCountryEvents) {
+      if (events.isNotEmpty &&
+          _calendarEventRepository
+              .getDisplayEventType()
+              .contains(events.first.eventType)) {
+        // remove old event-type data from database
+        originCombinedCalendarEvents.removeWhere((element) =>
+        element.extractEventTypeName() == events.first.eventType.name);
+
+        // add new event-type data from api
+        originCombinedCalendarEvents.addAll(events.map((e) => CalendarEvent(
+            order: e.eventType.index,
+            eventName: e.eventName,
+            eventDate: e.date,
+            eventID: StringUtils.combineEventTypeAndIdForModify(
+                e.eventType.name, e.idForModify),
+            eventBackgroundColor: e.eventType.toEventColor(),
+            eventTextStyle:
+            JoysCalendarThemeData.calendarTextTheme.labelSmall!)));
+      }
+    }
+    emit(HomeState.success(originCombinedCalendarEvents));
   }
 }

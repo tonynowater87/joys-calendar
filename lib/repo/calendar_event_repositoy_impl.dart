@@ -47,33 +47,43 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
     List<EventModel> result = [];
     String format = "$country%23holiday%40group.v.calendar.google.com/events";
     try {
-      EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey);
-      eventDto.items?.takeWhile((element) {
-        return fromCreatorEmail(element.creator?.email) != null;
-      }).forEach((element) {
-        EventModel eventModel = EventModel(
-            date: DateTime.parse(element.start!.date!),
-            eventType: fromCreatorEmail(element.creator!.email!)!,
-            eventName: element.summary!);
-        result.add(eventModel);
-      });
-
-      var continuousDayMap = result.fold({}, (map, element) {
-        String key = element.getContinuousDayMapKey();
-        map[key] = map[key] == null ? 0 : map[key] + 1;
-        return map;
-      });
-      await localDatasource.saveCalendarModels(result
-          .map((e) => CalendarModel()
-        ..displayName = e.eventName
-        ..dateTime = e.date
-        ..country = e.eventType.toCountryCode()
-        ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
-          .toList());
+      EventDto eventDto = await _calendarApiClient.getEvents(format, apiKey, null);
+      await saveResponseToLocalDB(eventDto, result);
+      if (eventDto.nextPageToken != null) {
+        while (eventDto.nextPageToken != null) {
+          eventDto = await _calendarApiClient.getEvents(format, apiKey, eventDto.nextPageToken);
+          await saveResponseToLocalDB(eventDto, result);
+        }
+      }
       return result;
     } on Exception catch (e) {
       return result;
     }
+  }
+
+  Future<void> saveResponseToLocalDB(EventDto eventDto, List<EventModel> result) async {
+    eventDto.items?.takeWhile((element) {
+      return fromCreatorEmail(element.creator?.email) != null;
+    }).forEach((element) {
+      EventModel eventModel = EventModel(
+          date: DateTime.parse(element.start!.date!),
+          eventType: fromCreatorEmail(element.creator!.email!)!,
+          eventName: element.summary!);
+      result.add(eventModel);
+    });
+
+    var continuousDayMap = result.fold({}, (map, element) {
+      String key = element.getContinuousDayMapKey();
+      map[key] = map[key] == null ? 0 : map[key] + 1;
+      return map;
+    });
+    await localDatasource.saveCalendarModels(result
+        .map((e) => CalendarModel()
+      ..displayName = e.eventName
+      ..dateTime = e.date
+      ..country = e.eventType.toCountryCode()
+      ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
+        .toList());
   }
 
   @override
@@ -249,6 +259,41 @@ class CalendarEventRepositoryImpl implements CalendarEventRepository {
           eventName: element.displayName));
     }
     return Future.value(result);
+  }
+
+  @override
+  Future<List<EventModel>> getEventsWithTimeRange(String country, DateTime timeMin, DateTime timeMax) async {
+    List<EventModel> result = [];
+    String format = "$country%23holiday%40group.v.calendar.google.com/events";
+    try {
+      EventDto eventDto = await _calendarApiClient.getEventsByTimeRange(
+          format, apiKey, timeMin.toUtc().toIso8601String(), timeMax.toUtc().toIso8601String());
+      eventDto.items?.takeWhile((element) {
+        return fromCreatorEmail(element.creator?.email) != null;
+      }).forEach((element) {
+        EventModel eventModel = EventModel(
+            date: DateTime.parse(element.start!.date!),
+            eventType: fromCreatorEmail(element.creator!.email!)!,
+            eventName: element.summary!);
+        result.add(eventModel);
+      });
+
+      var continuousDayMap = result.fold({}, (map, element) {
+        String key = element.getContinuousDayMapKey();
+        map[key] = map[key] == null ? 0 : map[key] + 1;
+        return map;
+      });
+      localDatasource.saveCalendarModels(result
+          .map((e) => CalendarModel()
+        ..displayName = e.eventName
+        ..dateTime = e.date
+        ..country = e.eventType.toCountryCode()
+        ..continuousDays = continuousDayMap[e.getContinuousDayMapKey()])
+          .toList());
+      return Future.value(result);
+    } on Exception catch (e) {
+      return Future.value(result);
+    }
   }
 }
 

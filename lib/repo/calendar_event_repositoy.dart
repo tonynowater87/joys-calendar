@@ -7,6 +7,8 @@ abstract class CalendarEventRepository {
 
   Future<List<EventModel>> getEvents(String country);
 
+  Future<List<EventModel>> getEventsWithTimeRange(String country, DateTime timeMin, DateTime timeMax);
+
   Future<List<EventModel>> getLunarEvents(int year, int range);
 
   Future<List<EventModel>> getSolarEventsFromLocalDB(int year);

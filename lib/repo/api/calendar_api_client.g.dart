@@ -22,9 +22,46 @@ class _CalendarApiClient implements CalendarApiClient {
   Future<EventDto> getEvents(
     countryCalendarEventPath,
     apiKey,
+    nextPageToken,
   ) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{r'key': apiKey};
+    final queryParameters = <String, dynamic>{
+      r'key': apiKey,
+      r'pageToken': nextPageToken,
+    };
+    queryParameters.removeWhere((k, v) => v == null);
+    final _headers = <String, dynamic>{};
+    final _data = <String, dynamic>{};
+    final _result =
+        await _dio.fetch<Map<String, dynamic>>(_setStreamType<EventDto>(Options(
+      method: 'GET',
+      headers: _headers,
+      extra: _extra,
+    )
+            .compose(
+              _dio.options,
+              'v3/calendars/${countryCalendarEventPath}',
+              queryParameters: queryParameters,
+              data: _data,
+            )
+            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = EventDto.fromJson(_result.data!);
+    return value;
+  }
+
+  @override
+  Future<EventDto> getEventsByTimeRange(
+    countryCalendarEventPath,
+    apiKey,
+    timeMin,
+    timeMax,
+  ) async {
+    const _extra = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{
+      r'key': apiKey,
+      r'timeMin': timeMin,
+      r'timeMax': timeMax,
+    };
     final _headers = <String, dynamic>{};
     final _data = <String, dynamic>{};
     final _result =
