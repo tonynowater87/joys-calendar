@@ -52,11 +52,11 @@ dependencies:
   fluttertoast: 8.2.1
   package_info_plus: 8.0.2
   animated_button: 0.2.0
-  firebase_core: 2.11.0
-  firebase_crashlytics: 3.2.0
-  firebase_storage: 11.0.10
-  firebase_auth: 4.2.5
-  firebase_analytics: 10.3.0
+  firebase_core: 2.27.2
+  firebase_crashlytics: 3.4.20
+  firebase_storage: 11.6.11
+  firebase_auth: 4.17.7
+  firebase_analytics: 10.8.7
   path_provider: 2.0.12
   google_sign_in: 6.0.1
   the_apple_sign_in: 1.1.1
