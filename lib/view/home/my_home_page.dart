@@ -67,7 +67,11 @@ class _MyHomePageState extends State<MyHomePage> {
                     await showSearch(
                         context: context,
                         delegate: EventSearchDelegate(
-                            context.read<CalendarEventRepository>()));
+                            context.read<CalendarEventRepository>(),
+                            context
+                                .read<SharedPreferenceProvider>()
+                                .getSavedCalendarEvents()
+                                .contains(EventType.lunar)));
 
                     if (!mounted) {
                       return;

@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:joys_calendar/common/extentions/notify_id_extensions.dart';
 import 'package:joys_calendar/repo/local/local_datasource.dart';
 import 'package:joys_calendar/repo/local_notification_provider.dart';
+import 'package:joys_calendar/repo/model/event_model.dart';
 import 'package:joys_calendar/repo/shared_preference_provider.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_state.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_ui_model.dart';
@@ -18,6 +19,9 @@ class MyEventListCubit extends Cubit<MyEventListState> {
 
   List<MyEventUIModel> _getMyEventList() {
     DateTime? dateTime;
+    var enableLunarEvent = sharedPreferenceProvider
+        .getSavedCalendarEvents()
+        .contains(EventType.lunar);
     var allMemos = localDatasource.getAllMemos();
     var myEventList = <MyEventUIModel>[];
     if (allMemos.isEmpty) {
@@ -29,18 +33,27 @@ class MyEventListCubit extends Cubit<MyEventListState> {
       if (year != value.dateTime.year) {
         year = value.dateTime.year;
         myEventList.add(MyEventUIModel(
-            key: -2, memo: "", dateTime: value.dateTime, isChecked: false));
+            key: -2,
+            memo: "",
+            dateTime: value.dateTime,
+            isChecked: false,
+            showLunar: enableLunarEvent));
       }
 
       if (dateTime?.toIso8601String() != value.dateTime.toIso8601String()) {
         myEventList.add(MyEventUIModel(
-            key: -1, memo: "", dateTime: value.dateTime, isChecked: false));
+            key: -1,
+            memo: "",
+            dateTime: value.dateTime,
+            isChecked: false,
+            showLunar: enableLunarEvent));
       }
       myEventList.add(MyEventUIModel(
           key: value.key,
           memo: value.memo,
           dateTime: value.dateTime,
-          isChecked: false));
+          isChecked: false,
+          showLunar: enableLunarEvent));
 
       dateTime = value.dateTime;
     });

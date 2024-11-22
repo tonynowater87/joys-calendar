@@ -7,11 +7,13 @@ import 'package:joys_calendar/repo/calendar_event_repositoy.dart';
 import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/search_result/search_result_list_item_page.dart';
 import 'package:joys_calendar/view/search_result/search_ui_model.dart';
+import 'package:lunar/lunar.dart';
 
 class EventSearchDelegate extends SearchDelegate<SearchUiModel> {
   CalendarEventRepository calendarRepository;
+  bool showLunar;
 
-  EventSearchDelegate(this.calendarRepository);
+  EventSearchDelegate(this.calendarRepository, this.showLunar);
 
   @override
   PreferredSizeWidget? buildBottom(BuildContext context) {
@@ -98,8 +100,17 @@ class EventSearchDelegate extends SearchDelegate<SearchUiModel> {
                               .format(item.eventModel.date);
 
                           final weekday = DateFormat(
-                              DateFormat.WEEKDAY, AppConstants.defaultLocale)
+                              DateFormat.ABBR_WEEKDAY, AppConstants.defaultLocale)
                               .format(item.eventModel.date);
+
+                          String displayDate = '$date $weekday';
+
+                          if (showLunar) {
+                            Lunar lunar = Solar.fromDate(item.eventModel.date).getLunar();
+                            String lunarDate = "${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}日";
+                            displayDate = "國曆$date 農曆$lunarDate ($weekday)";
+                          }
+
                           return Column(
                             children: [
                               previousIsHeader
@@ -113,7 +124,7 @@ class EventSearchDelegate extends SearchDelegate<SearchUiModel> {
                                     .withOpacity(0.5),
                               ),
                               ListTile(
-                                title: Text('$date $weekday',
+                                title: Text(displayDate,
                                     style: Theme.of(context)
                                         .textTheme
                                         .headlineSmall!
@@ -164,10 +175,11 @@ class EventSearchDelegate extends SearchDelegate<SearchUiModel> {
                           nextIsHeader) {
                         return const SizedBox.shrink();
                       } else {
-                        return const Divider(
+                        return Divider(
                           height: 10,
                           indent: 20,
                           endIndent: 20,
+                          color: Colors.grey.withOpacity(0.5)
                         );
                       }
                     },

@@ -12,6 +12,7 @@ import 'package:joys_calendar/view/add_event/add_event_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_cubit.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_item_page.dart';
 import 'package:joys_calendar/view/my_event_list/my_event_list_state.dart';
+import 'package:lunar/lunar.dart';
 
 class MyEventListPage extends StatefulWidget {
   const MyEventListPage({Key? key}) : super(key: key);
@@ -136,8 +137,17 @@ class _MyEventListPageState extends State<MyEventListPage> {
                       .format(itemDateTime);
 
                   final weekday =
-                      DateFormat(DateFormat.WEEKDAY, AppConstants.defaultLocale)
+                      DateFormat(DateFormat.ABBR_WEEKDAY, AppConstants.defaultLocale)
                           .format(itemDateTime);
+
+                  String displayDate = '$date $weekday';
+
+                  final uiModel = myEventState.myEventList[index];
+                  if (uiModel.showLunar) {
+                    Lunar lunar = Solar.fromDate(uiModel.dateTime).getLunar();
+                    String lunarDate = "${lunar.getMonthInChinese()}月${lunar.getDayInChinese()}日";
+                    displayDate = "國曆$date 農曆$lunarDate ($weekday)";
+                  }
                   return Column(
                     children: [
                       previousIsHeader
@@ -151,7 +161,7 @@ class _MyEventListPageState extends State<MyEventListPage> {
                                   .withOpacity(0.5),
                             ),
                       ListTile(
-                        title: Text('$date $weekday',
+                        title: Text(displayDate,
                             style: Theme.of(context)
                                 .textTheme
                                 .headlineSmall!
